@@ -8,26 +8,18 @@
 #include <iostream>
 #include <sstream>
 #include "shlwapi.h"
+#include "typedefine.h"
 #define THROW(info) std::cout<<info<<std::endl; system("pause");
 using namespace YCompoundFiles;
 using namespace YExcel;
-struct sSFAuthData
-{
-	wstring number;
-	wstring weight;
-	wstring vaServices;
-	int row;
-};
 
-struct sYCExportData
-{
-	wstring number;
-	double weight;
-	int row;
-};
+
+bool ParseALLData();
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	ParseALLData();
 	BasicExcel sfExcel;
 	BasicExcel ycExcel;
 	BasicExcel recordExcel;
@@ -229,3 +221,87 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 }
 
+bool ParseALLData()
+{
+	std::cout<<"请输入对账年月:"<<std::endl;
+	std::string strYM;
+	std::cin>>strYM;
+	std::string strTotalFileName = "销售出库单" + strYM + ".xls";
+	std::string strDetailFileName = "销售出库明细" + strYM + ".xls";
+	BasicExcel totalExcel;
+	BasicExcel detailExcel;
+	totalExcel.Load(strTotalFileName.c_str());
+	BasicExcelWorksheet* totalSheet = totalExcel.GetWorksheet(L"Sheet1");
+	if(totalSheet)
+	{
+		size_t maxRows = totalSheet->GetTotalRows();
+		size_t maxCols = totalSheet->GetTotalCols();
+
+		int nHuoZhu = -1;
+		int nShouJianRen = -1;
+		int nWuLiuGongSi = -1;
+		int nWuLiuDanHao = -1;
+		int nShouJianRenDiZhi = -1;
+		int nZhongLiang = -1;
+		int nFaHuoShijian = -1;
+
+		for(size_t c = 0; c < maxCols; ++c)
+		{
+			BasicExcelCell* cell = totalSheet->Cell(0, c);
+			std::wstring strTitle = cell->GetWString();
+			if(strTitle == L"货主")
+				nHuoZhu = c;
+			else if(strTitle == L"收件人")
+				nShouJianRen = c;
+			else if(strTitle == L"物流公司")
+				nWuLiuGongSi = c;
+			else if(strTitle == L"物流单号")
+				nWuLiuDanHao = c;
+			else if(strTitle == L"收件人地址")
+				nShouJianRenDiZhi = c;
+			else if(strTitle == L"实际重量")
+				nZhongLiang = c;
+			else if(strTitle == L"发货时间")
+				nFaHuoShijian = c;
+		}
+		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1)
+		{
+			THROW("发货销售表 有标题未找到");
+		}
+		for(size_t r = 1; r < maxRows; ++r)
+		{
+			sSalesInfo _data;
+			const wchar_t* _pStr = NULL;
+			_pStr = totalSheet->Cell(r, nHuoZhu)->GetWString();
+			g_mapAllSalesInfo[_pStr->]
+		}
+
+		for(size_t r = 1; r < maxRows; ++r)
+		{
+			sYCExportData _data;
+			const wchar_t* _pStr = NULL;
+			BasicExcelCell* cell = totalSheet->Cell(r, colCompany);
+			_pStr = cell->GetWString();
+			if(_pStr)
+			{
+				if(wcscmp(_pStr, L"顺丰热敏") != 0)
+					continue;
+			}
+			cell = totalSheet->Cell(r, colNumber);
+			_pStr = cell->GetWString();
+			if(_pStr)
+				_data.number = _pStr;
+			cell = totalSheet->Cell(r, colWeight);
+			_data.weight = cell->GetDouble();
+			_data.weight += 0.05;
+			_data.row = r;
+			std::set<std::wstring>::iterator itSFHandled = setSFHandled.find(_data.number);
+			if(itSFHandled == setSFHandled.end())
+			{
+				mapYCExportData[_data.number] = _data;
+				setYCNeedHandle.insert(_data.number);
+			}
+		}
+	}
+	detailExcel.Load(strDetailFileName.c_str());
+}

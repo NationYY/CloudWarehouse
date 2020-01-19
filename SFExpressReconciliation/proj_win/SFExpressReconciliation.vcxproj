@@ -81,6 +81,7 @@
     <ClInclude Include="..\src\BasicExcel\BasicExcel.hpp" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\targetver.h" />
+    <ClInclude Include="..\src\typedefine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\BasicExcel\BasicExcel.cpp" />
