@@ -14,14 +14,16 @@ struct sYCExportData
 };
 struct sSalesInfo
 {
-	std::string strHuoZhu;
-	std::string strShouJianRen;
-	std::string strWuLiuGongSi;
-	std::string strWuLiuDanHao;
-	std::string strSheng;
-	std::string strShouJianRenDiZhi;
-	double dZhongLiang;
-	std::string strFaHuoShijian;
-	std::string strHuoPinMingXi;
+	std::wstring strHuoZhu;				//货主
+	std::wstring strShouJianRen;		//收件人
+	std::wstring strWuLiuGongSi;		//物流公司
+	std::wstring strWuLiuDanHao;		//物流单号
+	std::wstring strSheng;				//省
+	std::wstring strShouJianRenDiZhi;	//收件人地址
+	double dZhongLiang;					//重量
+	std::wstring strFaHuoShijian;		//发货地址
+	std::wstring strHuoPinZongShuLiang;	//货品总数量
+	std::wstring strHuoPinMingXi;
 };
 std::map< std::wstring, std::list<sSalesInfo> > g_mapAllSalesInfo;
+std::map< std::wstring, sSalesInfo* > g_mapTempSalesInfo;

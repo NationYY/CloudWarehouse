@@ -9,7 +9,11 @@
 #include <sstream>
 #include "shlwapi.h"
 #include "typedefine.h"
-#define THROW(info) std::cout<<info<<std::endl; system("pause");
+#define THROW_ERROR(info) std::cout<<info<<std::endl; system("pause");
+#define SHEET_CELL(sheet, r, c, strOut) _pStr = sheet->Cell(r, c)->GetWString();\
+	if(_pStr)\
+		strOut = _pStr;
+
 using namespace YCompoundFiles;
 using namespace YExcel;
 
@@ -109,7 +113,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	else
 	{
-		THROW("error load sf data");
+		THROW_ERROR("error load sf data");
 	}
 	//step2. load yc data
 	ycExcel.Load("./云仓.xls");
@@ -162,7 +166,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	else
 	{
-		THROW("error load yc data");
+		THROW_ERROR("error load yc data");
 	}
 	//step3. compare
 	int errorCnt = 0;
@@ -226,8 +230,8 @@ bool ParseALLData()
 	std::cout<<"请输入对账年月:"<<std::endl;
 	std::string strYM;
 	std::cin>>strYM;
-	std::string strTotalFileName = "销售出库单" + strYM + ".xls";
-	std::string strDetailFileName = "销售出库明细" + strYM + ".xls";
+	std::string strTotalFileName = "./测试数据/销售出库单" + strYM + ".xls";
+	std::string strDetailFileName = "./测试数据/销售出库明细" + strYM + ".xls";
 	BasicExcel totalExcel;
 	BasicExcel detailExcel;
 	totalExcel.Load(strTotalFileName.c_str());
@@ -266,17 +270,26 @@ bool ParseALLData()
 		}
 		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1)
 		{
-			THROW("发货销售表 有标题未找到");
+			THROW_ERROR("销售出库单 有标题未找到");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
 			sSalesInfo _data;
 			const wchar_t* _pStr = NULL;
-			_pStr = totalSheet->Cell(r, nHuoZhu)->GetWString();
-			g_mapAllSalesInfo[_pStr->]
+			SHEET_CELL(totalSheet, r, nHuoZhu, _data.strHuoZhu);
+			SHEET_CELL(totalSheet, r, nShouJianRen, _data.strShouJianRen);
+			SHEET_CELL(totalSheet, r, nWuLiuGongSi, _data.strWuLiuGongSi);
+			SHEET_CELL(totalSheet, r, nWuLiuDanHao, _data.strWuLiuDanHao);
+			SHEET_CELL(totalSheet, r, nShouJianRenDiZhi, _data.strShouJianRenDiZhi);
+			_data.dZhongLiang = totalSheet->Cell(r, nZhongLiang)->GetDouble();
+			SHEET_CELL(totalSheet, r, nFaHuoShijian, _data.strFaHuoShijian);
+			g_mapAllSalesInfo[_data.strHuoZhu].push_back(_data);
+			std::list<sSalesInfo>::iterator it = --g_mapAllSalesInfo[_data.strHuoZhu].end();
+			g_mapTempSalesInfo[_data.strWuLiuDanHao] = &(*it);
 		}
+	}
 
-		for(size_t r = 1; r < maxRows; ++r)
+		/*for(size_t r = 1; r < maxRows; ++r)
 		{
 			sYCExportData _data;
 			const wchar_t* _pStr = NULL;
@@ -301,7 +314,62 @@ bool ParseALLData()
 				mapYCExportData[_data.number] = _data;
 				setYCNeedHandle.insert(_data.number);
 			}
+		}*/
+	detailExcel.Load(strDetailFileName.c_str());
+	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
+	if(detailSheet)
+	{
+		size_t maxRows = detailSheet->GetTotalRows();
+		size_t maxCols = detailSheet->GetTotalCols();
+
+		int nHuoPinMingCheng = -1;
+		int nHuoPinZongShuLiang = -1;
+		int nHuoPinShuLiang = -1;
+		int nWuLiuDanHao = -1;
+		int nSheng = -1;
+
+		for(size_t c = 0; c < maxCols; ++c)
+		{
+			BasicExcelCell* cell = detailSheet->Cell(0, c);
+			std::wstring strTitle = cell->GetWString();
+			if(strTitle == L"货品名称")
+				nHuoPinMingCheng = c;
+			else if(strTitle == L"货品总数量")
+				nHuoPinZongShuLiang = c;
+			else if(strTitle == L"货品数量")
+				nHuoPinShuLiang = c;
+			else if(strTitle == L"物流单号")
+				nWuLiuDanHao = c;
+			else if(strTitle == L"省")
+				nSheng = c;
+		}
+		if(nHuoPinMingCheng == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nWuLiuDanHao == -1 || nSheng == -1)
+		{
+			THROW_ERROR("销售出库明细 有标题未找到");
+		}
+		for(size_t r = 1; r < maxRows; ++r)
+		{
+			std::wstring strWuLiuDanHao;
+			const wchar_t* _pStr = NULL;
+			SHEET_CELL(detailSheet, r, nWuLiuDanHao, strWuLiuDanHao);
+			std::map< std::wstring, sSalesInfo* >::iterator it = g_mapTempSalesInfo.find(strWuLiuDanHao);
+			if(it == g_mapTempSalesInfo.end())
+			{
+				wchar_t szBuffer[128];
+				wprintf(szBuffer, "销售出库明细 未找到单号%s", strWuLiuDanHao.c_str());
+				THROW_ERROR(szBuffer);
+			}
+			SHEET_CELL(detailSheet, r, nHuoPinZongShuLiang, it->second->strHuoPinZongShuLiang);
+			SHEET_CELL(detailSheet, r, nSheng, it->second->strSheng);
+			std::wstring strHuoPinMingCheng;
+			std::wstring strHuoPinShuLiang;
+			SHEET_CELL(detailSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
+			SHEET_CELL(detailSheet, r, nHuoPinZongShuLiang, strHuoPinShuLiang);
+			if(it->second->strHuoPinMingXi == L"")
+				it->second->strHuoPinMingXi = strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
+			else
+				it->second->strHuoPinMingXi = it->second->strHuoPinMingXi + L";" + strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
 		}
 	}
-	detailExcel.Load(strDetailFileName.c_str());
+	return true;
 }
