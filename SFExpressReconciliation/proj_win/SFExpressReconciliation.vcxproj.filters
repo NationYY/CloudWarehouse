@@ -30,6 +30,9 @@
     <ClInclude Include="..\src\typedefine.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\func_common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\SFExpressReconciliation.cpp">
@@ -40,6 +43,9 @@
     </ClCompile>
     <ClCompile Include="..\src\BasicExcel\BasicExcel.cpp">
       <Filter>BasicExcel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\func_common.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

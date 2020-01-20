@@ -2,18 +2,15 @@
 //
 
 #include "stdafx.h"
-#include "BasicExcel.hpp"
-#include <list>
-#include <set>
-#include <iostream>
-#include <sstream>
-#include "shlwapi.h"
 #include "typedefine.h"
+#include "BasicExcel.hpp"
+#include "func_common.h"
 #define THROW_ERROR(info) std::cout<<info<<std::endl; system("pause");
 #define SHEET_CELL(sheet, r, c, strOut) _pStr = sheet->Cell(r, c)->GetWString();\
 	if(_pStr)\
 		strOut = _pStr;
-
+std::map< std::wstring, std::list<sSalesInfo> > g_mapAllSalesInfo;
+std::map< std::wstring, sSalesInfo* > g_mapTempSalesInfo;
 using namespace YCompoundFiles;
 using namespace YExcel;
 
@@ -338,7 +335,7 @@ bool ParseALLData()
 				nHuoPinZongShuLiang = c;
 			else if(strTitle == L"货品数量")
 				nHuoPinShuLiang = c;
-			else if(strTitle == L"物流单号")
+			else if(strTitle == L"物流编号")
 				nWuLiuDanHao = c;
 			else if(strTitle == L"省")
 				nSheng = c;
@@ -359,17 +356,19 @@ bool ParseALLData()
 				wprintf(szBuffer, "销售出库明细 未找到单号%s", strWuLiuDanHao.c_str());
 				THROW_ERROR(szBuffer);
 			}
-			SHEET_CELL(detailSheet, r, nHuoPinZongShuLiang, it->second->strHuoPinZongShuLiang);
+			double dZSL = detailSheet->Cell(r, nHuoPinZongShuLiang)->GetDouble();
+			it->second->strHuoPinZongShuLiang = CFuncCommon::Double2WString(dZSL+DOUBLE_PRECISION, 0);
 			SHEET_CELL(detailSheet, r, nSheng, it->second->strSheng);
 			std::wstring strHuoPinMingCheng;
-			std::wstring strHuoPinShuLiang;
 			SHEET_CELL(detailSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
-			SHEET_CELL(detailSheet, r, nHuoPinZongShuLiang, strHuoPinShuLiang);
+			double dSL = detailSheet->Cell(r, nHuoPinShuLiang)->GetDouble();
+			std::wstring strHuoPinShuLiang = CFuncCommon::Double2WString(dSL+DOUBLE_PRECISION, 0);
 			if(it->second->strHuoPinMingXi == L"")
 				it->second->strHuoPinMingXi = strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
 			else
 				it->second->strHuoPinMingXi = it->second->strHuoPinMingXi + L";" + strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
 		}
 	}
+	g_mapTempSalesInfo.clear();
 	return true;
 }

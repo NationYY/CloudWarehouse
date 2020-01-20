@@ -1,3 +1,7 @@
+#include <string>
+#include <map>
+#include <set>
+using namespace std;
 struct sSFAuthData
 {
 	wstring number;
@@ -25,5 +29,5 @@ struct sSalesInfo
 	std::wstring strHuoPinZongShuLiang;	//货品总数量
 	std::wstring strHuoPinMingXi;
 };
-std::map< std::wstring, std::list<sSalesInfo> > g_mapAllSalesInfo;
-std::map< std::wstring, sSalesInfo* > g_mapTempSalesInfo;
+
+#define DOUBLE_PRECISION 0.00000001
