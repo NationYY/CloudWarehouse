@@ -7,7 +7,17 @@ struct sSFAuthData
 	wstring number;
 	wstring weight;
 	wstring vaServices;
+	bool bHandle;
 	int row;
+	sSFAuthData():
+		number(L""),
+		weight(L""),
+		vaServices(L""),
+		bHandle(false),
+		row(-1)
+	{
+
+	}
 };
 
 struct sYCExportData

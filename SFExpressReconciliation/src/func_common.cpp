@@ -75,45 +75,46 @@ std::string CFuncCommon::Double2String(double value, int decimal)
 
 std::wstring CFuncCommon::Double2WString(double value, int decimal)
 {
-	wchar_t szBuff[64] ={0};
+	char szBuff[64] ={0};
 	if(decimal == 0)
-		wsprintfW(szBuff, L"%d", (int)value);
+		sprintf(szBuff, "%d", (int)value);
 	else if(decimal == 1)
-		wsprintfW(szBuff, L"%.2f", value);
+		sprintf(szBuff, "%.2f", value);
 	else if(decimal == 2)
-		wsprintfW(szBuff, L"%.3f", value);
+		sprintf(szBuff, "%.3f", value);
 	else if(decimal == 3)
-		wsprintfW(szBuff, L"%.4f", value);
+		sprintf(szBuff, "%.4f", value);
 	else if(decimal == 4)
-		wsprintfW(szBuff, L"%.5f", value);
+		sprintf(szBuff, "%.5f", value);
 	else if(decimal == 5)
-		wsprintfW(szBuff, L"%.6f", value);
+		sprintf(szBuff, "%.6f", value);
 	else if(decimal == 6)
-		wsprintfW(szBuff, L"%.7f", value);
+		sprintf(szBuff, "%.7f", value);
 	else if(decimal == 7)
-		wsprintfW(szBuff, L"%.8f", value);
+		sprintf(szBuff, "%.8f", value);
 	else if(decimal == 8)
-		wsprintfW(szBuff, L"%.9f", value);
+		sprintf(szBuff, "%.9f", value);
 	else if(decimal == 9)
-		wsprintfW(szBuff, L"%.10f", value);
+		sprintf(szBuff, "%.10f", value);
 	if(decimal > 0)
 	{
-		szBuff[wcslen(szBuff)-1] = L'\0';
-		int nPos = wcslen(szBuff)-1;
-		while(szBuff[nPos] == L'0')
+		szBuff[strlen(szBuff)-1] = '\0';
+		int nPos = strlen(szBuff)-1;
+		while(szBuff[nPos] == '0')
 		{
-			if(szBuff[nPos-1] == L'.')
+			if(szBuff[nPos-1] == '.')
 				break;
-			szBuff[nPos] = L'\0';
-			nPos = wcslen(szBuff)-1;
-			if(szBuff[nPos] == L'.')
+			szBuff[nPos] = '\0';
+			nPos = strlen(szBuff)-1;
+			if(szBuff[nPos] == '.')
 			{
-				szBuff[nPos] = L'\0';
+				szBuff[nPos] = '\0';
 				break;
 			}
 		}
 	}
-	return szBuff;
+	std::wstring retValue = String2WString(szBuff);
+	return retValue;
 }
 
 double CFuncCommon::Round(double value, int decimal)
@@ -377,7 +378,7 @@ std::string CFuncCommon::WString2String(const wchar_t* wchar)
 	return value;
 }
 
-static std::wstring String2WString(const char* cchar)
+std::wstring CFuncCommon::String2WString(const char* cchar)
 {
 	wchar_t *_wchar;
 	int len = MultiByteToWideChar(CP_ACP, 0, cchar, strlen(cchar), NULL, 0);
