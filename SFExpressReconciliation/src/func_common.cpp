@@ -98,17 +98,17 @@ std::wstring CFuncCommon::Double2WString(double value, int decimal)
 		wsprintfW(szBuff, L"%.10f", value);
 	if(decimal > 0)
 	{
-		szBuff[wcslen(szBuff)-1] = '\0';
+		szBuff[wcslen(szBuff)-1] = L'\0';
 		int nPos = wcslen(szBuff)-1;
-		while(szBuff[nPos] == '0')
+		while(szBuff[nPos] == L'0')
 		{
-			if(szBuff[nPos-1] == '.')
+			if(szBuff[nPos-1] == L'.')
 				break;
-			szBuff[nPos] = '\0';
+			szBuff[nPos] = L'\0';
 			nPos = wcslen(szBuff)-1;
-			if(szBuff[nPos] == '.')
+			if(szBuff[nPos] == L'.')
 			{
-				szBuff[nPos] = '\0';
+				szBuff[nPos] = L'\0';
 				break;
 			}
 		}
@@ -363,4 +363,28 @@ int CFuncCommon::crc32(const unsigned char *buf, unsigned int size)
 		crc = crc32tab[(crc ^ buf[i]) & 0xff] ^ (crc >> 8);
 
 	return int(crc^0xFFFFFFFF);
+}
+
+std::string CFuncCommon::WString2String(const wchar_t* wchar)
+{
+	char * _char;
+	int len = WideCharToMultiByte(CP_ACP, 0, wchar, wcslen(wchar), NULL, 0, NULL, NULL);
+	_char = new char[len + 1];
+	WideCharToMultiByte(CP_ACP, 0, wchar, wcslen(wchar), _char, len, NULL, NULL);
+	_char[len] = '\0';
+	std::string value = _char;
+	delete [] _char;
+	return value;
+}
+
+static std::wstring String2WString(const char* cchar)
+{
+	wchar_t *_wchar;
+	int len = MultiByteToWideChar(CP_ACP, 0, cchar, strlen(cchar), NULL, 0);
+	_wchar = new wchar_t[len + 1];
+	MultiByteToWideChar(CP_ACP, 0, cchar, strlen(cchar), _wchar, len);
+	_wchar[len] = '\0';
+	std::wstring value = _wchar;
+	delete [] _wchar;
+	return value;
 }

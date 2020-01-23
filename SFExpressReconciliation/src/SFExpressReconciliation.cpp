@@ -5,22 +5,42 @@
 #include "typedefine.h"
 #include "BasicExcel.hpp"
 #include "func_common.h"
-#define THROW_ERROR(info) std::cout<<info<<std::endl; system("pause");
+#include <stdio.h>
+#include <io.h>
+#include <direct.h>
+#include "shlwapi.h"
+#define THROW_ERROR(info) std::wcout<<info<<std::endl; system("pause"); return 0;
 #define SHEET_CELL(sheet, r, c, strOut) _pStr = sheet->Cell(r, c)->GetWString();\
 	if(_pStr)\
 		strOut = _pStr;
 std::map< std::wstring, std::list<sSalesInfo> > g_mapAllSalesInfo;
 std::map< std::wstring, sSalesInfo* > g_mapTempSalesInfo;
+std::wstring g_strYM;
+const wchar_t* g_arrHuoZhuName[] = {L"魔合科技N", L"永创耀辉", L"弥雅食器"};
 using namespace YCompoundFiles;
 using namespace YExcel;
 
 
 bool ParseALLData();
+bool CreateHuoZhuFile();
+bool Handle_MoHeKeJi();
+bool Handle_YongChuangYaoHui();
+bool Handle_MiYaShiQi();
 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	ParseALLData();
+	wcout.imbue(locale("chs"));
+	if(!ParseALLData())
+		return 0;
+	if(!CreateHuoZhuFile())
+		return 0;
+	if(!Handle_MoHeKeJi())
+		return 0;
+	if(!Handle_YongChuangYaoHui())
+		return 0;
+	if(!Handle_MiYaShiQi())
+		return 0;
 	BasicExcel sfExcel;
 	BasicExcel ycExcel;
 	BasicExcel recordExcel;
@@ -225,13 +245,13 @@ int _tmain(int argc, _TCHAR* argv[])
 bool ParseALLData()
 {
 	std::cout<<"请输入对账年月:"<<std::endl;
-	std::string strYM;
-	std::cin>>strYM;
-	std::string strTotalFileName = "./测试数据/销售出库单" + strYM + ".xls";
-	std::string strDetailFileName = "./测试数据/销售出库明细" + strYM + ".xls";
+	std::wcin>>g_strYM;
+	std::wstring strTotalFileName = L"./测试数据/销售出库单" + g_strYM + L".xls";
+	std::wstring strDetailFileName = L"./测试数据/销售出库明细" + g_strYM + L".xls";
 	BasicExcel totalExcel;
 	BasicExcel detailExcel;
-	totalExcel.Load(strTotalFileName.c_str());
+	std::string _strTotalFileName = CFuncCommon::WString2String(strTotalFileName.c_str());
+	totalExcel.Load(_strTotalFileName.c_str());
 	BasicExcelWorksheet* totalSheet = totalExcel.GetWorksheet(L"Sheet1");
 	if(totalSheet)
 	{
@@ -267,7 +287,7 @@ bool ParseALLData()
 		}
 		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1)
 		{
-			THROW_ERROR("销售出库单 有标题未找到");
+			THROW_ERROR(L"销售出库单 有标题未找到");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
@@ -278,7 +298,8 @@ bool ParseALLData()
 			SHEET_CELL(totalSheet, r, nWuLiuGongSi, _data.strWuLiuGongSi);
 			SHEET_CELL(totalSheet, r, nWuLiuDanHao, _data.strWuLiuDanHao);
 			SHEET_CELL(totalSheet, r, nShouJianRenDiZhi, _data.strShouJianRenDiZhi);
-			_data.dZhongLiang = totalSheet->Cell(r, nZhongLiang)->GetDouble();
+			double dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
+ 			_data.strZhongLiang = CFuncCommon::Double2WString(dTemp+DOUBLE_PRECISION, 1);
 			SHEET_CELL(totalSheet, r, nFaHuoShijian, _data.strFaHuoShijian);
 			g_mapAllSalesInfo[_data.strHuoZhu].push_back(_data);
 			std::list<sSalesInfo>::iterator it = --g_mapAllSalesInfo[_data.strHuoZhu].end();
@@ -286,33 +307,8 @@ bool ParseALLData()
 		}
 	}
 
-		/*for(size_t r = 1; r < maxRows; ++r)
-		{
-			sYCExportData _data;
-			const wchar_t* _pStr = NULL;
-			BasicExcelCell* cell = totalSheet->Cell(r, colCompany);
-			_pStr = cell->GetWString();
-			if(_pStr)
-			{
-				if(wcscmp(_pStr, L"顺丰热敏") != 0)
-					continue;
-			}
-			cell = totalSheet->Cell(r, colNumber);
-			_pStr = cell->GetWString();
-			if(_pStr)
-				_data.number = _pStr;
-			cell = totalSheet->Cell(r, colWeight);
-			_data.weight = cell->GetDouble();
-			_data.weight += 0.05;
-			_data.row = r;
-			std::set<std::wstring>::iterator itSFHandled = setSFHandled.find(_data.number);
-			if(itSFHandled == setSFHandled.end())
-			{
-				mapYCExportData[_data.number] = _data;
-				setYCNeedHandle.insert(_data.number);
-			}
-		}*/
-	detailExcel.Load(strDetailFileName.c_str());
+	std::string _strDetailFileName = CFuncCommon::WString2String(strDetailFileName.c_str());
+	detailExcel.Load(_strDetailFileName.c_str());
 	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
 	if(detailSheet)
 	{
@@ -342,7 +338,7 @@ bool ParseALLData()
 		}
 		if(nHuoPinMingCheng == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nWuLiuDanHao == -1 || nSheng == -1)
 		{
-			THROW_ERROR("销售出库明细 有标题未找到");
+			THROW_ERROR(L"销售出库明细 有标题未找到");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
@@ -352,8 +348,8 @@ bool ParseALLData()
 			std::map< std::wstring, sSalesInfo* >::iterator it = g_mapTempSalesInfo.find(strWuLiuDanHao);
 			if(it == g_mapTempSalesInfo.end())
 			{
-				wchar_t szBuffer[128];
-				wprintf(szBuffer, "销售出库明细 未找到单号%s", strWuLiuDanHao.c_str());
+				wchar_t szBuffer[128] = {0};
+				wsprintfW(szBuffer, L"销售出库明细 未找到单号%s", strWuLiuDanHao.c_str());
 				THROW_ERROR(szBuffer);
 			}
 			double dZSL = detailSheet->Cell(r, nHuoPinZongShuLiang)->GetDouble();
@@ -372,3 +368,112 @@ bool ParseALLData()
 	g_mapTempSalesInfo.clear();
 	return true;
 }
+
+bool CreateHuoZhuFile()
+{
+	wstring folderPath = L"./Export_" + g_strYM;
+	if(0 != _waccess(folderPath.c_str(), 0))
+		_wmkdir(folderPath.c_str());
+	int nHuoZhuCnt = sizeof(g_arrHuoZhuName)/sizeof(const wchar_t*);
+	for(int i=0; i<nHuoZhuCnt; ++i)
+	{
+		wstring fileName = folderPath + L"/" + g_arrHuoZhuName[i] + L"_" + g_strYM + L"对账单.xls";
+		::DeleteFileW(fileName.c_str());
+	}
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itB = g_mapAllSalesInfo.begin();
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itE = g_mapAllSalesInfo.end();
+	while(itB != itE)
+	{
+		int i=0;
+		for(; i<nHuoZhuCnt; ++i)
+		{
+			if(wcscmp(itB->first.c_str(), g_arrHuoZhuName[i]) == 0)
+				break;
+		}
+		if(i == nHuoZhuCnt)
+		{
+			wcout << L"存在未处理的货主:" << itB->first << std::endl;
+			wcout << L"是否继续? y:继续 n:中止" << std::endl;
+			wstring _cin;
+			wcin >> _cin;
+			if(_cin != L"Y" && _cin != L"y")
+				return false;
+		}
+		++itB;
+	}
+	return true;
+}
+
+bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listInfo)
+{
+	if(listInfo.size() == 0)
+		return false;
+	excel.New(1);
+	int nRecordRowIndex = 1;
+	BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
+	if(sheet)
+	{
+		sheet->Cell(0, 0)->SetWString(L"收件人");
+		sheet->Cell(0, 1)->SetWString(L"收件人地址");
+		sheet->Cell(0, 2)->SetWString(L"省");
+		sheet->Cell(0, 3)->SetWString(L"物流公司");
+		sheet->Cell(0, 4)->SetWString(L"物流单号");
+		sheet->Cell(0, 5)->SetWString(L"重量");
+		sheet->Cell(0, 6)->SetWString(L"发货时间");
+		sheet->Cell(0, 7)->SetWString(L"货品总数量");
+		sheet->Cell(0, 8)->SetWString(L"货品明细");
+		std::list<sSalesInfo>::iterator itB = listInfo.begin();
+		std::list<sSalesInfo>::iterator itE = listInfo.end();
+		while(itB != itE)
+		{
+			sheet->Cell(nRecordRowIndex, 0)->SetWString(itB->strShouJianRen.c_str());
+			sheet->Cell(nRecordRowIndex, 1)->SetWString(itB->strShouJianRenDiZhi.c_str());
+			sheet->Cell(nRecordRowIndex, 2)->SetWString(itB->strSheng.c_str());
+			sheet->Cell(nRecordRowIndex, 3)->SetWString(itB->strWuLiuGongSi.c_str());
+			sheet->Cell(nRecordRowIndex, 4)->SetWString(itB->strWuLiuDanHao.c_str());
+			sheet->Cell(nRecordRowIndex, 5)->SetWString(itB->strZhongLiang.c_str());
+			sheet->Cell(nRecordRowIndex, 6)->SetWString(itB->strFaHuoShijian.c_str());
+			sheet->Cell(nRecordRowIndex, 7)->SetWString(itB->strHuoPinZongShuLiang.c_str());
+			sheet->Cell(nRecordRowIndex, 8)->SetWString(itB->strHuoPinMingXi.c_str());
+			nRecordRowIndex++;
+			itB++;
+		}
+		return true;
+	}
+	return false;
+}
+
+
+bool Handle_MoHeKeJi()
+{
+	BasicExcel excel;
+	if(!CreateExcel(excel, g_mapAllSalesInfo[L"魔合科技N"]))
+		return false;
+	wstring fileName = L"./Export_" + g_strYM + L"/" + L"魔合科技N_" + g_strYM + L"对账单.xls";
+	string _file = CFuncCommon::WString2String(fileName.c_str());
+	excel.SaveAs(_file.c_str());
+	return true;
+}
+
+bool Handle_YongChuangYaoHui()
+{
+	BasicExcel excel;
+	if(!CreateExcel(excel, g_mapAllSalesInfo[L"永创耀辉"]))
+		return false;
+	wstring fileName = L"./Export_" + g_strYM + L"/" + L"永创耀辉_" + g_strYM + L"对账单.xls";
+	string _file = CFuncCommon::WString2String(fileName.c_str());
+	excel.SaveAs(_file.c_str());
+	return true;
+}
+
+bool Handle_MiYaShiQi()
+{
+	BasicExcel excel;
+	if(!CreateExcel(excel, g_mapAllSalesInfo[L"弥雅食器"]))
+		return false;
+	wstring fileName = L"./Export_" + g_strYM + L"/" + L"弥雅食器_" + g_strYM + L"对账单.xls";
+	string _file = CFuncCommon::WString2String(fileName.c_str());
+	excel.SaveAs(_file.c_str());
+	return true;
+}
+

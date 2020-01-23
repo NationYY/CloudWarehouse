@@ -24,10 +24,10 @@ struct sSalesInfo
 	std::wstring strWuLiuDanHao;		//物流单号
 	std::wstring strSheng;				//省
 	std::wstring strShouJianRenDiZhi;	//收件人地址
-	double dZhongLiang;					//重量
-	std::wstring strFaHuoShijian;		//发货地址
+	std::wstring strZhongLiang;			//重量
+	std::wstring strFaHuoShijian;		//发货时间
 	std::wstring strHuoPinZongShuLiang;	//货品总数量
-	std::wstring strHuoPinMingXi;
+	std::wstring strHuoPinMingXi;		//货品明细
 };
 
 #define DOUBLE_PRECISION 0.00000001

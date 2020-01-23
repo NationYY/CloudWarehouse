@@ -21,5 +21,8 @@ public:
 	static char* GenUUID();
 	static time_t ToTime(const char *sz);
 	static int crc32(const unsigned char *buf, unsigned int size);
+
+	static std::string WString2String(const wchar_t* wchar);
+	static std::wstring String2WString(const char* cchar);
 };
 
