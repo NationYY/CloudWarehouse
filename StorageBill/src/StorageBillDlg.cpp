@@ -1,78 +1,267 @@
-// SFExpressReconciliation.cpp : 定义控制台应用程序的入口点。
+
+// StorageBillDlg.cpp : 实现文件
 //
 
 #include "stdafx.h"
-#include "typedefine.h"
-#include "BasicExcel.hpp"
+#include "StorageBill.h"
+#include "StorageBillDlg.h"
+#include "afxdialogex.h"
 #include "func_common.h"
 #include <stdio.h>
 #include <io.h>
 #include <direct.h>
 #include "shlwapi.h"
-using namespace YCompoundFiles;
-using namespace YExcel;
-#define THROW_ERROR(info) std::wcout<<info<<std::endl; system("pause"); return 0;
+#define THROW_ERROR(info) AddLog(info); return false;
 #define SHEET_CELL(sheet, r, c, strOut) _pStr = sheet->Cell(r, c)->GetWString();\
-	if(_pStr)\
-		strOut = _pStr;
-#define TOTAL_FILE_PATH L"./测试数据/销售出库单" + g_strYM + L".xls"
-#define DETAIL_FILE_PATH L"./测试数据/销售出库明细" + g_strYM + L".xls"
-#define SF_FILE_PATH L"./测试数据/顺丰账单" + g_strYM + L".xls"
-#define IN_STORAGE_PATH L"./测试数据/入库明细账" + g_strYM + L".xls"
+if(_pStr)\
+	strOut = _pStr;
+#define TOTAL_FILE_PATH L"./测试数据/销售出库单" + m_strYM + L".xls"
+#define DETAIL_FILE_PATH L"./测试数据/销售出库明细" + m_strYM + L".xls"
+#define SF_FILE_PATH L"./测试数据/顺丰账单" + m_strYM + L".xls"
+#define IN_STORAGE_PATH L"./测试数据/入库明细账" + m_strYM + L".xls"
 
 
-std::map< std::wstring, std::list<sSalesInfo> > g_mapAllSalesInfo;
-std::map< std::wstring, sSalesInfo* > g_mapTempSalesInfo;
-std::map<std::wstring, sSFAuthData> g_mapSFAuthData;
-std::map< std::wstring, std::set<std::wstring> > g_mapYCNeedSFHandle;
-std::map< std::wstring, std::map<std::wstring, sInStorageInfo> > g_mapInStorageInfo;
-BasicExcel g_sfExcel;
-BasicExcel g_recordExcel;
-size_t g_sfHandleCol = -1;
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号"};
 int g_arrRecordRowIndex[] ={0, 0};
-std::wstring g_strYM;
-const wchar_t* g_arrHuoZhuName[] = {L"魔合科技N", L"永创耀辉", L"弥雅食器"};
+const wchar_t* g_arrHuoZhuName[] ={L"魔合科技N", L"永创耀辉", L"弥雅食器"};
 
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
-bool ParseALLData();
-bool CreateHuoZhuFile();
-bool Handle_MoHeKeJi();
-bool Handle_YongChuangYaoHui();
-bool Handle_MiYaShiQi();
-bool LoadSFData();
-bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 
-int _tmain(int argc, _TCHAR* argv[])
+// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
+
+class CAboutDlg: public CDialogEx
 {
-	wcout.imbue(locale("chs"));
-	if(!ParseALLData())
-		return 0;
-	if(!CreateHuoZhuFile())
-		return 0;
-	Sleep(2000);
-	if(!LoadSFData())
-		return 0;
-	if(!Handle_MoHeKeJi())
-		return 0;
-	if(!Handle_YongChuangYaoHui())
-		return 0;
-	if(!Handle_MiYaShiQi())
-		return 0;
-	wstring filePath = L"./Export_" + g_strYM + L"/" + L"compare_record.xls";
-	string _filePath = CFuncCommon::WString2String(filePath.c_str());
-	g_recordExcel.SaveAs(_filePath.c_str());
-	g_sfExcel.Save();
-	std::cout<<"处理完成!"<<std::endl;
-	system("pause");
-	return 0;
+public:
+	CAboutDlg();
+
+	// 对话框数据
+	enum { IDD = IDD_ABOUTBOX };
+
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
+
+	// 实现
+protected:
+	DECLARE_MESSAGE_MAP()
+};
+
+CAboutDlg::CAboutDlg(): CDialogEx(CAboutDlg::IDD)
+{
 }
 
-bool ParseALLData()
+void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
-	std::cout<<"请输入对账年月:"<<std::endl;
-	std::wcin>>g_strYM;
+	CDialogEx::DoDataExchange(pDX);
+}
+
+BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+END_MESSAGE_MAP()
+
+
+// CStorageBillDlg 对话框
+
+
+
+CStorageBillDlg::CStorageBillDlg(CWnd* pParent /*=NULL*/)
+: CDialogEx(CStorageBillDlg::IDD, pParent),
+m_bExit(false), m_bRun(false), m_sfHandleCol(-1)
+{
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+}
+
+void CStorageBillDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LIST3, m_ctrlListLog);
+	DDX_Control(pDX, IDC_EDIT1, m_editYM);
+}
+
+BEGIN_MESSAGE_MAP(CStorageBillDlg, CDialogEx)
+	ON_WM_SYSCOMMAND()
+	ON_WM_PAINT()
+	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDOK, &CStorageBillDlg::OnBnClickedCreateBill)
+	ON_WM_TIMER()
+END_MESSAGE_MAP()
+
+
+// CStorageBillDlg 消息处理程序
+
+BOOL CStorageBillDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// 将“关于...”菜单项添加到系统菜单中。
+
+	// IDM_ABOUTBOX 必须在系统命令范围内。
+	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+	ASSERT(IDM_ABOUTBOX < 0xF000);
+
+	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	if(pSysMenu != NULL)
+	{
+		BOOL bNameValid;
+		CString strAboutMenu;
+		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
+		ASSERT(bNameValid);
+		if(!strAboutMenu.IsEmpty())
+		{
+			pSysMenu->AppendMenu(MF_SEPARATOR);
+			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+		}
+	}
+
+	// 设置此对话框的图标。  当应用程序主窗口不是对话框时，框架将自动
+	//  执行此操作
+	SetIcon(m_hIcon, TRUE);			// 设置大图标
+	SetIcon(m_hIcon, FALSE);		// 设置小图标
+
+	// TODO:  在此添加额外的初始化代码
+	m_logicThread = boost::thread(boost::bind(&CStorageBillDlg::_LogicThread, this));
+	SetTimer(0, 1, NULL);
+	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
+}
+
+void CStorageBillDlg::_LogicThread()
+{
+	while(!m_bExit)
+	{
+		if(m_bRun)
+		{
+			if(!ParseALLData())
+				goto __break_logic;
+			if(!CreateHuoZhuFile())
+				goto __break_logic;
+			Sleep(2000);
+			if(!LoadSFData())
+				goto __break_logic;
+			if(!Handle_MoHeKeJi())
+				goto __break_logic;
+			if(!Handle_YongChuangYaoHui())
+				goto __break_logic;
+			if(!Handle_MiYaShiQi())
+				goto __break_logic;
+			wstring filePath = L"./Export_" + m_strYM + L"/" + L"compare_record.xls";
+			string _filePath = CFuncCommon::WString2String(filePath.c_str());
+			m_recordExcel.SaveAs(_filePath.c_str());
+			m_sfExcel.Save();
+			AddLog(L"账单生成完成");
+		}
+	__break_logic:
+		m_bRun = false;
+		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+	}
+}
+
+void CStorageBillDlg::OnSysCommand(UINT nID, LPARAM lParam)
+{
+	if((nID & 0xFFF0) == IDM_ABOUTBOX)
+	{
+		CAboutDlg dlgAbout;
+		dlgAbout.DoModal();
+	}
+	else
+	{
+		CDialogEx::OnSysCommand(nID, lParam);
+	}
+}
+
+// 如果向对话框添加最小化按钮，则需要下面的代码
+//  来绘制该图标。  对于使用文档/视图模型的 MFC 应用程序，
+//  这将由框架自动完成。
+
+void CStorageBillDlg::OnPaint()
+{
+	if(IsIconic())
+	{
+		CPaintDC dc(this); // 用于绘制的设备上下文
+
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+
+		// 使图标在工作区矩形中居中
+		int cxIcon = GetSystemMetrics(SM_CXICON);
+		int cyIcon = GetSystemMetrics(SM_CYICON);
+		CRect rect;
+		GetClientRect(&rect);
+		int x = (rect.Width() - cxIcon + 1) / 2;
+		int y = (rect.Height() - cyIcon + 1) / 2;
+
+		// 绘制图标
+		dc.DrawIcon(x, y, m_hIcon);
+	}
+	else
+	{
+		CDialogEx::OnPaint();
+	}
+}
+
+//当用户拖动最小化窗口时系统调用此函数取得光标
+//显示。
+HCURSOR CStorageBillDlg::OnQueryDragIcon()
+{
+	return static_cast<HCURSOR>(m_hIcon);
+}
+
+
+void CStorageBillDlg::OnBnClickedCreateBill()
+{
+
+	CString strYM;
+	m_editYM.GetWindowText(strYM);
+	if(strYM == "")
+	{
+		MessageBox(L"未填写账单年月");
+		return;
+	}
+	m_bRun = true;
+	m_strYM = strYM.GetBuffer();
+	AddLog(L"开始生成账单信息");
+}
+
+void CStorageBillDlg::AddLog(std::wstring strLog)
+{
+	m_queueLog.push(strLog);
+}
+
+void CStorageBillDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	wstring strLog;
+	if(m_queueLog.pop(strLog))
+	{
+		m_ctrlListLog.InsertString(0, strLog.c_str());
+		SetHScroll();
+		if(strLog == L"账单生成完成")
+			MessageBox(L"账单生成完成");
+	}
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+void CStorageBillDlg::SetHScroll()
+{
+	CDC* dc = GetDC();
+	SIZE s;
+	int index;
+	CString str;
+	long temp;
+	for(index = 0; index< m_ctrlListLog.GetCount(); index++)
+	{
+		m_ctrlListLog.GetText(index, str);
+		s = dc->GetTextExtent(str, str.GetLength() + 1);
+
+		temp = (long)SendDlgItemMessage(IDC_LIST3, LB_GETHORIZONTALEXTENT, 0, 0);
+		if(s.cx > temp)
+			SendDlgItemMessage(IDC_LIST3, LB_SETHORIZONTALEXTENT, (WPARAM)s.cx, 0);
+	}
+	ReleaseDC(dc);
+}
+
+bool CStorageBillDlg::ParseALLData()
+{
 	std::wstring strTotalFileName = TOTAL_FILE_PATH;
 	std::wstring strDetailFileName = DETAIL_FILE_PATH;
 	std::wstring strInStorageFileName = IN_STORAGE_PATH;
@@ -130,12 +319,12 @@ bool ParseALLData()
 			double dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
 			dTemp += 0.05;
 			if(_data.strWuLiuGongSi == L"顺丰热敏")
-				g_mapYCNeedSFHandle[_data.strHuoZhu].insert(_data.strWuLiuDanHao);
+				m_mapYCNeedSFHandle[_data.strHuoZhu].insert(_data.strWuLiuDanHao);
 			_data.strZhongLiang = CFuncCommon::Double2WString(dTemp+DOUBLE_PRECISION, 2);
 			SHEET_CELL(totalSheet, r, nFaHuoShijian, _data.strFaHuoShijian);
-			g_mapAllSalesInfo[_data.strHuoZhu].push_back(_data);
-			std::list<sSalesInfo>::iterator it = --g_mapAllSalesInfo[_data.strHuoZhu].end();
-			g_mapTempSalesInfo[_data.strWuLiuDanHao] = &(*it);
+			m_mapAllSalesInfo[_data.strHuoZhu].push_back(_data);
+			std::list<sSalesInfo>::iterator it = --m_mapAllSalesInfo[_data.strHuoZhu].end();
+			m_mapTempSalesInfo[_data.strWuLiuDanHao] = &(*it);
 		}
 	}
 
@@ -177,10 +366,10 @@ bool ParseALLData()
 			std::wstring strWuLiuDanHao;
 			const wchar_t* _pStr = NULL;
 			SHEET_CELL(detailSheet, r, nWuLiuDanHao, strWuLiuDanHao);
-			std::map< std::wstring, sSalesInfo* >::iterator it = g_mapTempSalesInfo.find(strWuLiuDanHao);
-			if(it == g_mapTempSalesInfo.end())
+			std::map< std::wstring, sSalesInfo* >::iterator it = m_mapTempSalesInfo.find(strWuLiuDanHao);
+			if(it == m_mapTempSalesInfo.end())
 			{
-				wchar_t szBuffer[128] = {0};
+				wchar_t szBuffer[128] ={0};
 				wsprintfW(szBuffer, L"销售出库明细 未找到单号%s", strWuLiuDanHao.c_str());
 				THROW_ERROR(szBuffer);
 			}
@@ -197,7 +386,7 @@ bool ParseALLData()
 				it->second->strHuoPinMingXi = it->second->strHuoPinMingXi + L";" + strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
 		}
 	}
-	g_mapTempSalesInfo.clear();
+	m_mapTempSalesInfo.clear();
 
 	std::string _strInStorageFileName = CFuncCommon::WString2String(strInStorageFileName.c_str());
 	if(!inStorageExcel.Load(_strInStorageFileName.c_str()))
@@ -245,15 +434,15 @@ bool ParseALLData()
 			std::wstring strRuKuYuanYin;
 			SHEET_CELL(inStorageSheet, r, nRuKuYuanYin, strRuKuYuanYin);
 			if(strRuKuYuanYin != L"其它入库" && strRuKuYuanYin != L"采购入库")
-				continue;	
+				continue;
 			SHEET_CELL(inStorageSheet, r, nShangJiaBianMa, info.strShangJiaBianMa);
 			SHEET_CELL(inStorageSheet, r, nHuoPingBianMa, info.strHuoPinBianMa);
 			SHEET_CELL(inStorageSheet, r, nHuoPinMingCheng, info.strHuoPinMingCheng);
 			info.nCnt = inStorageSheet->Cell(r, nShuLiang)->GetInteger();
 			std::wstring strKey = info.strShangJiaBianMa+info.strHuoPinBianMa;
-			std::map< std::wstring, std::map<std::wstring, sInStorageInfo> >::iterator itHuoZhu = g_mapInStorageInfo.find(info.strHuoZhu);
-			if(itHuoZhu == g_mapInStorageInfo.end())
-				g_mapInStorageInfo[info.strHuoZhu][strKey] = info;
+			std::map< std::wstring, std::map<std::wstring, sInStorageInfo> >::iterator itHuoZhu = m_mapInStorageInfo.find(info.strHuoZhu);
+			if(itHuoZhu == m_mapInStorageInfo.end())
+				m_mapInStorageInfo[info.strHuoZhu][strKey] = info;
 			else
 			{
 				std::map<std::wstring, sInStorageInfo>::iterator itInfo = itHuoZhu->second.find(strKey);
@@ -267,21 +456,21 @@ bool ParseALLData()
 	return true;
 }
 
-bool CreateHuoZhuFile()
+bool CStorageBillDlg::CreateHuoZhuFile()
 {
-	wstring folderPath = L"./Export_" + g_strYM;
+	wstring folderPath = L"./Export_" + m_strYM;
 	if(0 != _waccess(folderPath.c_str(), 0))
 		_wmkdir(folderPath.c_str());
 	int nHuoZhuCnt = sizeof(g_arrHuoZhuName)/sizeof(const wchar_t*);
 	for(int i=0; i<nHuoZhuCnt; ++i)
 	{
-		wstring fileName = folderPath + L"/" + g_arrHuoZhuName[i] + L"_" + g_strYM + L"对账单.xls";
+		wstring fileName = folderPath + L"/" + g_arrHuoZhuName[i] + L"_" + m_strYM + L"对账单.xls";
 		::DeleteFileW(fileName.c_str());
 	}
-	wstring filePath = L"./Export_" + g_strYM + L"/" + L"compare_record.xls";
+	wstring filePath = L"./Export_" + m_strYM + L"/" + L"compare_record.xls";
 	::DeleteFileW(filePath.c_str());
-	std::map< std::wstring, std::list<sSalesInfo> >::iterator itB = g_mapAllSalesInfo.begin();
-	std::map< std::wstring, std::list<sSalesInfo> >::iterator itE = g_mapAllSalesInfo.end();
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itB = m_mapAllSalesInfo.begin();
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itE = m_mapAllSalesInfo.end();
 	while(itB != itE)
 	{
 		int i=0;
@@ -290,22 +479,20 @@ bool CreateHuoZhuFile()
 			if(wcscmp(itB->first.c_str(), g_arrHuoZhuName[i]) == 0)
 				break;
 		}
-		if(i == nHuoZhuCnt && itB->first != L"哈特能量")
+		if(i == nHuoZhuCnt)// && itB->first != L"哈特能量")
 		{
-			wcout << L"存在未处理的货主:" << itB->first << std::endl;
-			wcout << L"是否继续? y:继续 n:中止" << std::endl;
-			wstring _cin;
-			wcin >> _cin;
-			if(_cin != L"Y" && _cin != L"y")
+			CString szText;
+			szText.Format(L"存在未处理的货主:%s 是否继续?", itB->first.c_str());
+			if(MessageBox(szText, NULL, MB_YESNO) == IDNO)
 				return false;
 		}
 		++itB;
 	}
 
 
-	g_recordExcel.AddWorksheet(g_arrWorksheetName[0]);
-	g_recordExcel.AddWorksheet(g_arrWorksheetName[1]);
-	BasicExcelWorksheet* recordSheet = g_recordExcel.GetWorksheet(g_arrWorksheetName[0]);
+	m_recordExcel.AddWorksheet(g_arrWorksheetName[0]);
+	m_recordExcel.AddWorksheet(g_arrWorksheetName[1]);
+	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[0]);
 	if(recordSheet)
 	{
 		recordSheet->Cell(g_arrRecordRowIndex[0], 0)->SetWString(L"单号");
@@ -316,7 +503,7 @@ bool CreateHuoZhuFile()
 	return true;
 }
 
-bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo)
+bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo)
 {
 	if(listSalesInfo.size() == 0)
 		return false;
@@ -393,21 +580,21 @@ bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::m
 }
 
 
-bool Handle_MoHeKeJi()
+bool CStorageBillDlg::Handle_MoHeKeJi()
 {
 	BasicExcel excel;
-	if(!CreateExcel(excel, g_mapAllSalesInfo[L"魔合科技N"], g_mapInStorageInfo[L"魔合科技N"]))
+	if(!CreateExcel(excel, m_mapAllSalesInfo[L"魔合科技N"], m_mapInStorageInfo[L"魔合科技N"]))
 		return false;
-	wstring fileName = L"./Export_" + g_strYM + L"/" + L"魔合科技N_" + g_strYM + L"对账单.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"魔合科技N_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
-	CompareWithSFData(L"魔合科技N", g_mapAllSalesInfo[L"魔合科技N"]);
+	CompareWithSFData(L"魔合科技N", m_mapAllSalesInfo[L"魔合科技N"]);
 	//计算相关费用
 	//单独TH-043和单独TH-042按拆单价格
 	{
 		BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
 		if(sheet)
 		{
-			std::list<sSalesInfo>& listSales = g_mapAllSalesInfo[L"魔合科技N"];
+			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"魔合科技N"];
 			std::list<sSalesInfo>::iterator itB = listSales.begin();
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
@@ -425,28 +612,28 @@ bool Handle_MoHeKeJi()
 				++itB;
 			}
 		}
-		
+
 	}
-	
+
 	excel.SaveAs(_file.c_str());
 	return true;
 }
 
-bool Handle_YongChuangYaoHui()
+bool CStorageBillDlg::Handle_YongChuangYaoHui()
 {
 	BasicExcel excel;
-	if(!CreateExcel(excel, g_mapAllSalesInfo[L"永创耀辉"], g_mapInStorageInfo[L"永创耀辉N"]))
+	if(!CreateExcel(excel, m_mapAllSalesInfo[L"永创耀辉"], m_mapInStorageInfo[L"永创耀辉N"]))
 		return false;
-	wstring fileName = L"./Export_" + g_strYM + L"/" + L"永创耀辉_" + g_strYM + L"对账单.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"永创耀辉_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
-	CompareWithSFData(L"永创耀辉", g_mapAllSalesInfo[L"永创耀辉"]);
+	CompareWithSFData(L"永创耀辉", m_mapAllSalesInfo[L"永创耀辉"]);
 
 	//计算相关费用
 	{
 		BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
 		if(sheet)
 		{
-			std::list<sSalesInfo>& listSales = g_mapAllSalesInfo[L"永创耀辉"];
+			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"永创耀辉"];
 			std::list<sSalesInfo>::iterator itB = listSales.begin();
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
@@ -494,7 +681,7 @@ bool Handle_YongChuangYaoHui()
 					{
 						wchar_t szOut[120] ={0};
 						_swprintf(szOut, L"[未知的物流方式] 货主=%s 单号=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str());
-						wcout << szOut << std::endl;
+						AddLog(szOut);
 					}
 				}
 				sheet->Cell(itB->nRow, 12)->SetWString(L"1.1");
@@ -502,7 +689,7 @@ bool Handle_YongChuangYaoHui()
 				{
 					//sheet->Cell(itB->nRow, 13)->SetWString(L"1.1");
 				}
-				
+
 				++itB;
 			}
 		}
@@ -513,30 +700,30 @@ bool Handle_YongChuangYaoHui()
 	return true;
 }
 
-bool Handle_MiYaShiQi()
+bool CStorageBillDlg::Handle_MiYaShiQi()
 {
 	BasicExcel excel;
-	if(!CreateExcel(excel, g_mapAllSalesInfo[L"弥雅食器"], g_mapInStorageInfo[L"弥雅食器"]))
+	if(!CreateExcel(excel, m_mapAllSalesInfo[L"弥雅食器"], m_mapInStorageInfo[L"弥雅食器"]))
 		return false;
-	wstring fileName = L"./Export_" + g_strYM + L"/" + L"弥雅食器_" + g_strYM + L"对账单.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"弥雅食器_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
 	excel.SaveAs(_file.c_str());
-	CompareWithSFData(L"弥雅食器", g_mapAllSalesInfo[L"弥雅食器"]);
+	CompareWithSFData(L"弥雅食器", m_mapAllSalesInfo[L"弥雅食器"]);
 	return true;
 }
 
-bool LoadSFData()
+bool CStorageBillDlg::LoadSFData()
 {
 	std::wstring strSFFileName = SF_FILE_PATH;
 	std::string _strSFFileName = CFuncCommon::WString2String(strSFFileName.c_str());
-	g_sfExcel.Load(_strSFFileName.c_str());
-	BasicExcelWorksheet* sfSheet = g_sfExcel.GetWorksheet(L"Sheet0");
+	m_sfExcel.Load(_strSFFileName.c_str());
+	BasicExcelWorksheet* sfSheet = m_sfExcel.GetWorksheet(L"Sheet0");
 
 	if(sfSheet)
 	{
 		size_t maxRows = sfSheet->GetTotalRows();
 		size_t maxCols = sfSheet->GetTotalCols();
-		g_sfHandleCol = maxCols;
+		m_sfHandleCol = maxCols;
 		//load tile
 		int colNumber = -1;
 		int colWeight = -1;
@@ -555,7 +742,7 @@ bool LoadSFData()
 			else if(strTitle == L"对账结果")
 			{
 				bFix = true;
-				g_sfHandleCol = c;
+				m_sfHandleCol = c;
 			}
 		}
 		if(!bFix)
@@ -570,40 +757,40 @@ bool LoadSFData()
 			_data.row = r;
 			if(_data.vaServices == L"保价")
 			{
-				sfSheet->Cell(r, g_sfHandleCol)->SetWString(L"1");
+				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
 				continue;
 			}
-			_pStr = sfSheet->Cell(r, g_sfHandleCol)->GetWString();
+			_pStr = sfSheet->Cell(r, m_sfHandleCol)->GetWString();
 			if(_pStr)
 			{
 				if(wcscmp(_pStr, L"1") == 0)
 					_data.bHandle = true;
 			}
-			g_mapSFAuthData[_data.number] = _data;
+			m_mapSFAuthData[_data.number] = _data;
 		}
 	}
 	else
 	{
 		THROW_ERROR(L"读取顺丰账单失败");
 	}
-	g_sfExcel.Save();
+	m_sfExcel.Save();
 	return true;
 }
 
-bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo)
+bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo)
 {
-	BasicExcelWorksheet* recordSheet = g_recordExcel.GetWorksheet(g_arrWorksheetName[0]);
+	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[0]);
 	if(recordSheet == NULL)
 		return false;
-	BasicExcelWorksheet* sfSheet = g_sfExcel.GetWorksheet(L"Sheet0");
+	BasicExcelWorksheet* sfSheet = m_sfExcel.GetWorksheet(L"Sheet0");
 	if(sfSheet == NULL)
 		return false;
 	std::list<sSalesInfo>::iterator itYCBegin = listInfo.begin();
 	std::list<sSalesInfo>::iterator itYCEnd = listInfo.end();
 	while(itYCBegin != itYCEnd)
 	{
-		std::map<std::wstring, sSFAuthData>::iterator itSF = g_mapSFAuthData.find(itYCBegin->strWuLiuDanHao);
-		if(itSF != g_mapSFAuthData.end())
+		std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itYCBegin->strWuLiuDanHao);
+		if(itSF != m_mapSFAuthData.end())
 		{
 			if(!itSF->second.bHandle)
 			{
@@ -628,23 +815,23 @@ bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo)
 					recordSheet->Cell(g_arrRecordRowIndex[0], 1)->SetDouble(dSFWeight);
 					recordSheet->Cell(g_arrRecordRowIndex[0], 2)->SetDouble(finalWeight);
 					g_arrRecordRowIndex[0]++;
-					sfSheet->Cell(itSF->second.row, g_sfHandleCol)->SetWString(L"0");
+					sfSheet->Cell(itSF->second.row, m_sfHandleCol)->SetWString(L"0");
 				}
 				else
 				{
 					itSF->second.bHandle = true;
-					sfSheet->Cell(itSF->second.row, g_sfHandleCol)->SetWString(L"1");
+					sfSheet->Cell(itSF->second.row, m_sfHandleCol)->SetWString(L"1");
 				}
 			}
-			g_mapYCNeedSFHandle[strHuoZhu].erase(itYCBegin->strWuLiuDanHao);
+			m_mapYCNeedSFHandle[strHuoZhu].erase(itYCBegin->strWuLiuDanHao);
 		}
 		++itYCBegin;
 	}
 
 	{
-		BasicExcelWorksheet* recordSheet = g_recordExcel.GetWorksheet(g_arrWorksheetName[1]);
-		std::set<std::wstring>::iterator itB = g_mapYCNeedSFHandle[strHuoZhu].begin();
-		std::set<std::wstring>::iterator itE = g_mapYCNeedSFHandle[strHuoZhu].end();
+		BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[1]);
+		std::set<std::wstring>::iterator itB = m_mapYCNeedSFHandle[strHuoZhu].begin();
+		std::set<std::wstring>::iterator itE = m_mapYCNeedSFHandle[strHuoZhu].end();
 		while(itB != itE)
 		{
 			recordSheet->Cell(g_arrRecordRowIndex[1]++, 0)->SetWString(itB->c_str());
