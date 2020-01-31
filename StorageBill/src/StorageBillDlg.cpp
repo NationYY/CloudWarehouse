@@ -26,6 +26,10 @@ int g_arrRecordRowIndex[] ={0, 0};
 const wchar_t* g_arrHuoZhuName[] ={L"魔合科技N", L"永创耀辉", L"弥雅食器"};
 
 
+//魔合科技顺丰价格
+double g_moHeKeJiSFPrice[4][2] ={{11, 2.6}, {12, 4.5}, {16, 4.5}, {22, 7}};
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -86,6 +90,7 @@ BEGIN_MESSAGE_MAP(CStorageBillDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CStorageBillDlg::OnBnClickedCreateBill)
 	ON_WM_TIMER()
+	ON_LBN_DBLCLK(IDC_LIST3, &CStorageBillDlg::OnLbnDblclkLogList)
 END_MESSAGE_MAP()
 
 
@@ -670,17 +675,18 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 				{
 					if(itB->strWuLiuGongSi == L"顺丰热敏")
 					{
+						double money = GetSFPrice(nWeight, itB->strSheng, g_moHeKeJiSFPrice);
+						sheet->Cell(itB->nRow, 10)->SetWString(CFuncCommon::Double2WString(money+DOUBLE_PRECISION, 1).c_str());
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
-					{
-					}
+						sheet->Cell(itB->nRow, 10)->SetWString(L"3.5");
 					else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
 					{
 					}
 					else
 					{
 						wchar_t szOut[120] ={0};
-						_swprintf(szOut, L"[未知的物流方式] 货主=%s 单号=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str());
+						_swprintf(szOut, L"[未知的物流方式] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
 						AddLog(szOut);
 					}
 				}
@@ -840,4 +846,56 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 	}
 
 	return true;
+}
+
+void CStorageBillDlg::OnLbnDblclkLogList()
+{
+	int nSel = m_ctrlListLog.GetCurSel();
+	if(nSel != -1)
+	{
+		CString info;
+		m_ctrlListLog.GetText(nSel, info);
+		if(OpenClipboard())
+		{
+			std::string _info = CFuncCommon::WString2String(info.GetBuffer());
+			HGLOBAL clipbuffer;
+			char* buffer;
+			EmptyClipboard();
+			clipbuffer = GlobalAlloc(GMEM_DDESHARE, _info.size()+1);
+			buffer = (char*)GlobalLock(clipbuffer);
+			strcpy(buffer, _info.c_str());
+			GlobalUnlock(clipbuffer);
+			SetClipboardData(CF_TEXT, clipbuffer);
+			CloseClipboard();
+		}
+	}
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, double price[][2])
+{
+	double* _price = NULL;
+	if(strSheng == L"四川省" || strSheng == L"重庆")
+		_price = price[0];
+	else if(strSheng == L"贵州省" || strSheng == L"湖北省" || strSheng == L"陕西省" || strSheng == L"云南省")
+		_price = price[1];
+	else if(strSheng == L"安徽省" || strSheng == L"北京" || strSheng == L"福建省" || strSheng == L"甘肃省" || strSheng == L"广东省" || strSheng == L"广西壮族自治区" || strSheng == L"海南省" || strSheng == L"河北省" || strSheng == L"河南省" || strSheng == L"湖南省" || strSheng == L"江苏省" || strSheng == L"江西省" || strSheng == L"宁夏回族自治区" || strSheng == L"青海省" || strSheng == L"山东省" || strSheng == L"山西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"浙江省")
+		_price = price[2];
+	else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区")
+		_price = price[3];
+	else
+	{
+		wchar_t szBuffer[128] ={0};
+		wsprintfW(szBuffer, L"未知省份 %s", strSheng.c_str());
+		THROW_ERROR(szBuffer);
+	}
+
+	if(nWeight>0 && nWeight<=3)
+		return _price[0];
+	else if(nWeight > 3)
+	{
+		return _price[0] + _price[1]*(nWeight-3);
+	}
+	return 0.0;
 }

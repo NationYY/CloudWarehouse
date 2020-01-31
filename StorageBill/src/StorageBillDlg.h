@@ -45,6 +45,7 @@ private:
 	bool LoadSFData();
 	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
+	double GetSFPrice(int nWeight, wstring strSheng, double price[][2]);
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
 private:
@@ -65,4 +66,5 @@ public:
 	CListBox m_ctrlListLog;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	CEdit m_editYM;
+	afx_msg void OnLbnDblclkLogList();
 };
