@@ -322,7 +322,8 @@ bool CStorageBillDlg::ParseALLData()
 			SHEET_CELL(totalSheet, r, nWuLiuDanHao, _data.strWuLiuDanHao);
 			SHEET_CELL(totalSheet, r, nShouJianRenDiZhi, _data.strShouJianRenDiZhi);
 			double dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
-			dTemp += 0.05;
+			if(dTemp > 0.001)
+				dTemp += 0.05;
 			if(_data.strWuLiuGongSi == L"À≥∑·»»√Ù")
 				m_mapYCNeedSFHandle[_data.strHuoZhu].insert(_data.strWuLiuDanHao);
 			_data.strZhongLiang = CFuncCommon::Double2WString(dTemp+DOUBLE_PRECISION, 2);
