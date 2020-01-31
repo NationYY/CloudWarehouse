@@ -43,9 +43,10 @@ struct sSalesInfo
 	std::wstring strFaHuoShijian;		//发货时间
 	std::wstring strHuoPinZongShuLiang;	//货品总数量
 	std::wstring strHuoPinMingXi;		//货品明细
+	std::wstring strYuanShiDanHao;		//原始单号
 	int nRow;							//在输出表中的行数
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
-		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0)
+		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L"")
 	{
 	}
 };

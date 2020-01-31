@@ -99,7 +99,7 @@ std::wstring CFuncCommon::Double2WString(double value, int decimal)
 	if(decimal > 0)
 	{
 		szBuff[strlen(szBuff)-1] = '\0';
-		int nPos = strlen(szBuff)-1;
+		/*int nPos = strlen(szBuff)-1;
 		while(szBuff[nPos] == '0')
 		{
 			if(szBuff[nPos-1] == '.')
@@ -111,7 +111,7 @@ std::wstring CFuncCommon::Double2WString(double value, int decimal)
 				szBuff[nPos] = '\0';
 				break;
 			}
-		}
+		}*/
 	}
 	std::wstring retValue = String2WString(szBuff);
 	return retValue;
