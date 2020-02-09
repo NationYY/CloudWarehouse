@@ -58,6 +58,7 @@ private:
 	std::map<std::wstring, sSFAuthData> m_mapSFAuthData;
 	std::map< std::wstring, std::set<std::wstring> > m_mapYCNeedSFHandle;
 	std::map< std::wstring, std::map<std::wstring, sInStorageInfo> > m_mapInStorageInfo;
+	std::set<std::wstring> m_setSFZhongLiangYiChang;
 	BasicExcel m_sfExcel;
 	BasicExcel m_recordExcel;
 	size_t m_sfHandleCol;

@@ -21,8 +21,8 @@ if(_pStr)\
 #define IN_STORAGE_PATH L"./系统数据/"+m_strYM+L"/入库明细账.xls"
 
 
-const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号"};
-int g_arrRecordRowIndex[] ={0, 0};
+const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常"};
+int g_arrRecordRowIndex[] ={0, 0, 0};
 const wchar_t* g_arrHuoZhuName[] ={L"魔合科技N", L"永创耀辉", L"弥雅食器"};
 
 
@@ -534,6 +534,7 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 
 	m_recordExcel.AddWorksheet(g_arrWorksheetName[0]);
 	m_recordExcel.AddWorksheet(g_arrWorksheetName[1]);
+	m_recordExcel.AddWorksheet(g_arrWorksheetName[2]);
 	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[0]);
 	if(recordSheet)
 	{
@@ -725,13 +726,30 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					{
 						double money = GetSFPrice(nWeight, itB->strSheng, g_yongChuangYaoHuiSFPrice);
 						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
-						if(itSF != m_mapSFAuthData.end() && itSF->second.backPay != L"")
+						if(itSF != m_mapSFAuthData.end())
 						{
-							double backPay = _wtof(itSF->second.backPay.c_str());
-							money += backPay;
-							strBeiZhu = strBeiZhu + L"转寄退回";
+							if(itSF->second.backPay != L"")
+							{
+								double backPay = _wtof(itSF->second.backPay.c_str());
+								money += backPay;
+								strBeiZhu = strBeiZhu + L"转寄退回";
+							}
+							double needPay = _wtof(itSF->second.needPay.c_str());
+							if(needPay > money)
+							{
+								std::set<std::wstring>::iterator it = m_setSFZhongLiangYiChang.find(itB->strWuLiuDanHao.c_str());
+								if(it == m_setSFZhongLiangYiChang.end())
+								{
+									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[2]);
+									recordSheet->Cell(g_arrRecordRowIndex[2], 0)->SetWString(itB->strWuLiuDanHao.c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[2], 1)->SetWString(itB->strHuoZhu.c_str());
+									g_arrRecordRowIndex[2]++;
+								}
+							}
 						}
 						sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money+DOUBLE_PRECISION, 1).c_str());
+
+
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
 						sheet->Cell(itB->nRow, 11)->SetWString(L"3.5");
@@ -826,6 +844,7 @@ bool CStorageBillDlg::LoadSFData()
 			SHEET_CELL(sfSheet, r, colNumber, _data.number);
 			SHEET_CELL(sfSheet, r, colWeight, _data.weight);
 			SHEET_CELL(sfSheet, r, colVAServices, _data.vaServices);
+			SHEET_CELL(sfSheet, r, colNeedPay, _data.needPay);
 			_data.row = r;
 			if(_data.vaServices == L"保价")
 			{
@@ -837,7 +856,7 @@ bool CStorageBillDlg::LoadSFData()
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())
 				{
-					SHEET_CELL(sfSheet, r, colNeedPay, it->second.backPay);
+					it->second.backPay = _data.needPay;
 				}
 				else
 				{
@@ -912,6 +931,7 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 					recordSheet->Cell(g_arrRecordRowIndex[0], 3)->SetDouble(finalWeight);
 					g_arrRecordRowIndex[0]++;
 					sfSheet->Cell(itSF->second.row, m_sfHandleCol)->SetWString(L"0");
+					m_setSFZhongLiangYiChang.insert(itSF->first.c_str());
 				}
 				else
 				{
@@ -930,7 +950,9 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 		std::set<std::wstring>::iterator itE = m_mapYCNeedSFHandle[strHuoZhu].end();
 		while(itB != itE)
 		{
-			recordSheet->Cell(g_arrRecordRowIndex[1]++, 0)->SetWString(itB->c_str());
+			recordSheet->Cell(g_arrRecordRowIndex[1], 0)->SetWString(itB->c_str());
+			recordSheet->Cell(g_arrRecordRowIndex[1], 1)->SetWString(strHuoZhu.c_str());
+			g_arrRecordRowIndex[1]++;
 			++itB;
 		}
 	}
