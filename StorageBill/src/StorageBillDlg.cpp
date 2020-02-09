@@ -540,6 +540,7 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 		recordSheet->Cell(g_arrRecordRowIndex[0], 0)->SetWString(L"单号");
 		recordSheet->Cell(g_arrRecordRowIndex[0], 1)->SetWString(L"顺丰重量");
 		recordSheet->Cell(g_arrRecordRowIndex[0], 2)->SetWString(L"云仓重量");
+		recordSheet->Cell(g_arrRecordRowIndex[0], 3)->SetWString(L"云仓计费重量");
 		g_arrRecordRowIndex[0]++;
 	}
 	return true;
@@ -907,7 +908,8 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 				{
 					recordSheet->Cell(g_arrRecordRowIndex[0], 0)->SetWString(itSF->first.c_str());
 					recordSheet->Cell(g_arrRecordRowIndex[0], 1)->SetDouble(dSFWeight);
-					recordSheet->Cell(g_arrRecordRowIndex[0], 2)->SetDouble(finalWeight);
+					recordSheet->Cell(g_arrRecordRowIndex[0], 2)->SetWString(itYCBegin->strZhongLiang.c_str());
+					recordSheet->Cell(g_arrRecordRowIndex[0], 3)->SetDouble(finalWeight);
 					g_arrRecordRowIndex[0]++;
 					sfSheet->Cell(itSF->second.row, m_sfHandleCol)->SetWString(L"0");
 				}
