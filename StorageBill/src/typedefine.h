@@ -8,6 +8,7 @@ struct sSFAuthData
 	wstring number;
 	wstring weight;
 	wstring vaServices;
+	wstring backPay;
 	bool bHandle;
 	int row;
 	sSFAuthData():
@@ -15,6 +16,7 @@ struct sSFAuthData
 		weight(L""),
 		vaServices(L""),
 		bHandle(false),
+		backPay(L""),
 		row(-1)
 	{
 	}

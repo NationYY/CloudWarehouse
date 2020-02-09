@@ -15,10 +15,10 @@
 #define SHEET_CELL(sheet, r, c, strOut) _pStr = sheet->Cell(r, c)->GetWString();\
 if(_pStr)\
 	strOut = _pStr;
-#define TOTAL_FILE_PATH L"./测试数据/销售出库单" + m_strYM + L".xls"
-#define DETAIL_FILE_PATH L"./测试数据/销售出库明细" + m_strYM + L".xls"
-#define SF_FILE_PATH L"./测试数据/顺丰账单" + m_strYM + L".xls"
-#define IN_STORAGE_PATH L"./测试数据/入库明细账" + m_strYM + L".xls"
+#define TOTAL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库单.xls"
+#define DETAIL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库明细.xls"
+#define SF_FILE_PATH L"./系统数据/"+m_strYM+L"/顺丰账单.xls"
+#define IN_STORAGE_PATH L"./系统数据/"+m_strYM+L"/入库明细账.xls"
 
 
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号"};
@@ -27,8 +27,9 @@ const wchar_t* g_arrHuoZhuName[] ={L"魔合科技N", L"永创耀辉", L"弥雅食器"};
 
 
 //魔合科技顺丰价格
-double g_moHeKeJiSFPrice[4][2] ={{11, 2.6}, {12, 4.5}, {16, 4.5}, {22, 7}};
-
+double g_moHeKeJiSFPrice[4][2] ={{13, 3.5}, {15, 5}, {19, 5}, {27, 8}};
+//永创耀辉顺丰价格
+double g_yongChuangYaoHuiSFPrice[4][2] ={{11, 2.6}, {12, 4.5}, {16, 4.5}, {22, 7}};
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -128,6 +129,16 @@ BOOL CStorageBillDlg::OnInitDialog()
 	// TODO:  在此添加额外的初始化代码
 	m_logicThread = boost::thread(boost::bind(&CStorageBillDlg::_LogicThread, this));
 	SetTimer(0, 1, NULL);
+	time_t tNow = time(NULL);
+	tm* pTM = localtime(&tNow);
+	CString ym;
+	if(pTM->tm_mon+1 == 1)
+		ym.Format(L"%d12", pTM->tm_year+1900-1);
+	else
+		ym.Format(L"%d%02d", pTM->tm_year+1900, pTM->tm_mon);
+	m_editYM.SetWindowText(ym.GetBuffer());
+
+		
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -350,7 +361,7 @@ bool CStorageBillDlg::ParseALLData()
 		int nHuoPinShuLiang = -1;
 		int nWuLiuDanHao = -1;
 		int nSheng = -1;
-
+		int nShengShiQu = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
 			BasicExcelCell* cell = detailSheet->Cell(0, c);
@@ -365,8 +376,11 @@ bool CStorageBillDlg::ParseALLData()
 				nWuLiuDanHao = c;
 			else if(strTitle == L"省")
 				nSheng = c;
+			else if(strTitle == L"省市区")
+				nShengShiQu = c;
+			
 		}
-		if(nHuoPinMingCheng == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nWuLiuDanHao == -1 || nSheng == -1)
+		if(nHuoPinMingCheng == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nWuLiuDanHao == -1 || nSheng == -1 || nShengShiQu == -1)
 		{
 			THROW_ERROR(L"销售出库明细 有标题未找到");
 		}
@@ -385,6 +399,25 @@ bool CStorageBillDlg::ParseALLData()
 			double dZSL = detailSheet->Cell(r, nHuoPinZongShuLiang)->GetDouble();
 			it->second->strHuoPinZongShuLiang = CFuncCommon::Double2WString(dZSL+DOUBLE_PRECISION, 0);
 			SHEET_CELL(detailSheet, r, nSheng, it->second->strSheng);
+			if(it->second->strSheng == L"")
+			{
+				wstring strShengShiQu = L"";
+				SHEET_CELL(detailSheet, r, nShengShiQu, strShengShiQu);
+				if(strShengShiQu.find(L"广西区省") != wstring::npos)
+				{
+					it->second->strSheng = L"广西壮族自治区";		
+				}
+				else if(strShengShiQu.find(L"宁夏区省") != wstring::npos)
+				{
+					it->second->strSheng = L"宁夏回族自治区";		
+				}
+				else
+				{
+					wchar_t szBuffer[128] = { 0 };
+					wsprintfW(szBuffer, L"销售出库明细 未识别省市区 %s", strShengShiQu.c_str());
+					THROW_ERROR(szBuffer);
+				}
+			}
 			std::wstring strHuoPinMingCheng;
 			SHEET_CELL(detailSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
 			double dSL = detailSheet->Cell(r, nHuoPinShuLiang)->GetDouble();
@@ -488,7 +521,7 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 			if(wcscmp(itB->first.c_str(), g_arrHuoZhuName[i]) == 0)
 				break;
 		}
-		if(i == nHuoZhuCnt)// && itB->first != L"哈特能量")
+		if(i == nHuoZhuCnt && itB->first != L"哈特能量")
 		{
 			CString szText;
 			szText.Format(L"存在未处理的货主:%s 是否继续?", itB->first.c_str());
@@ -536,7 +569,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 		sheet->Cell(0, 12)->SetWString(L"耗材费");
 		sheet->Cell(0, 13)->SetWString(L"操作费");
 		sheet->Cell(0, 14)->SetWString(L"增值费用");
-
+		sheet->Cell(0, 15)->SetWString(L"备注");
 		std::list<sSalesInfo>::iterator itB = listSalesInfo.begin();
 		std::list<sSalesInfo>::iterator itE = listSalesInfo.end();
 		while(itB != itE)
@@ -653,6 +686,8 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 				//sheet->Cell(0, 12)->SetWString(L"耗材费");
 				//sheet->Cell(0, 13)->SetWString(L"操作费");
 				//sheet->Cell(0, 14)->SetWString(L"增值费用");
+				//sheet->Cell(0, 15)->SetWString(L"备注");
+				wstring strBeiZhu = L"";
 				int nWeight = 0;
 				wchar_t decimal1 = itB->strZhongLiang.at(itB->strZhongLiang.size()-1);
 				wchar_t decimal2 = itB->strZhongLiang.at(itB->strZhongLiang.size()-2);
@@ -687,13 +722,21 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 				{
 					if(itB->strWuLiuGongSi == L"顺丰热敏")
 					{
-						double money = GetSFPrice(nWeight, itB->strSheng, g_moHeKeJiSFPrice);
+						double money = GetSFPrice(nWeight, itB->strSheng, g_yongChuangYaoHuiSFPrice);
+						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
+						if(itSF != m_mapSFAuthData.end() && itSF->second.backPay != L"")
+						{
+							double backPay = _wtof(itSF->second.backPay.c_str());
+							money += backPay;
+							strBeiZhu = strBeiZhu + L"转寄退回";
+						}
 						sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money+DOUBLE_PRECISION, 1).c_str());
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
 						sheet->Cell(itB->nRow, 11)->SetWString(L"3.5");
 					else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
 					{
+
 					}
 					else
 					{
@@ -714,7 +757,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							sheet->Cell(itB->nRow, 14)->SetWString(L"0.3");
 					}
 				}
-
+				sheet->Cell(itB->nRow, 15)->SetWString(strBeiZhu.c_str());
 				++itB;
 			}
 		}
@@ -753,6 +796,7 @@ bool CStorageBillDlg::LoadSFData()
 		int colNumber = -1;
 		int colWeight = -1;
 		int colVAServices = -1;
+		int colNeedPay = -1;
 		bool bFix = false;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
@@ -764,6 +808,8 @@ bool CStorageBillDlg::LoadSFData()
 				colWeight = c;
 			else if(strTitle == L"增值费用")
 				colVAServices = c;
+			else if(strTitle == L"应付金额")
+				colNeedPay = c;
 			else if(strTitle == L"对账结果")
 			{
 				bFix = true;
@@ -782,6 +828,22 @@ bool CStorageBillDlg::LoadSFData()
 			_data.row = r;
 			if(_data.vaServices == L"保价")
 			{
+				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
+				continue;
+			}
+			if(_data.vaServices == L"转寄退回")
+			{
+				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
+				if(it != m_mapSFAuthData.end())
+				{
+					SHEET_CELL(sfSheet, r, colNeedPay, it->second.backPay);
+				}
+				else
+				{
+					wchar_t szBuffer[128] = { 0 };
+					wsprintfW(szBuffer, L"顺丰转寄退回 未找到相应单号 %s", _data.number.c_str());
+					THROW_ERROR(szBuffer);
+				}
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
 				continue;
 			}
@@ -834,6 +896,13 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 					finalWeight = nWeight + 0.5;
 				else
 					finalWeight = dYCWeight;
+				if(finalWeight > DOUBLE_PRECISION && finalWeight < 1)
+					finalWeight = 1;
+				else if(finalWeight - 0.0 < DOUBLE_PRECISION)
+				{
+					finalWeight = dSFWeight;
+					itYCBegin->strZhongLiang = CFuncCommon::Double2WString(finalWeight+DOUBLE_PRECISION, 2);
+				}
 				if(finalWeight < dSFWeight)
 				{
 					recordSheet->Cell(g_arrRecordRowIndex[0], 0)->SetWString(itSF->first.c_str());
@@ -901,7 +970,7 @@ double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, double price[]
 		_price = price[1];
 	else if(strSheng == L"安徽省" || strSheng == L"北京" || strSheng == L"福建省" || strSheng == L"甘肃省" || strSheng == L"广东省" || strSheng == L"广西壮族自治区" || strSheng == L"海南省" || strSheng == L"河北省" || strSheng == L"河南省" || strSheng == L"湖南省" || strSheng == L"江苏省" || strSheng == L"江西省" || strSheng == L"宁夏回族自治区" || strSheng == L"青海省" || strSheng == L"山东省" || strSheng == L"山西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"浙江省")
 		_price = price[2];
-	else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区")
+	else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区" || strSheng == L"西藏自治区")
 		_price = price[3];
 	else
 	{
