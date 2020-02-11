@@ -1,5 +1,5 @@
-
-// StorageBillDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿
+// StorageBillDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -15,20 +15,20 @@
 #define SHEET_CELL(sheet, r, c, strOut) _pStr = sheet->Cell(r, c)->GetWString();\
 if(_pStr)\
 	strOut = _pStr;
-#define TOTAL_FILE_PATH L"./ÏµÍ³Êı¾İ/"+m_strYM+L"/ÏúÊÛ³ö¿âµ¥.xls"
-#define DETAIL_FILE_PATH L"./ÏµÍ³Êı¾İ/"+m_strYM+L"/ÏúÊÛ³ö¿âÃ÷Ï¸.xls"
-#define SF_FILE_PATH L"./ÏµÍ³Êı¾İ/"+m_strYM+L"/Ë³·áÕËµ¥.xls"
-#define IN_STORAGE_PATH L"./ÏµÍ³Êı¾İ/"+m_strYM+L"/Èë¿âÃ÷Ï¸ÕË.xls"
+#define TOTAL_FILE_PATH L"./ç³»ç»Ÿæ•°æ®/"+m_strYM+L"/é”€å”®å‡ºåº“å•.xls"
+#define DETAIL_FILE_PATH L"./ç³»ç»Ÿæ•°æ®/"+m_strYM+L"/é”€å”®å‡ºåº“æ˜ç»†.xls"
+#define SF_FILE_PATH L"./ç³»ç»Ÿæ•°æ®/"+m_strYM+L"/é¡ºä¸°è´¦å•.xls"
+#define IN_STORAGE_PATH L"./ç³»ç»Ÿæ•°æ®/"+m_strYM+L"/å…¥åº“æ˜ç»†è´¦.xls"
 
 
-const wchar_t* g_arrWorksheetName[] ={L"Ë³·áÖØÁ¿²îÒì¶©µ¥", L"Ë³·áÔÆ²ÖÎ´´¦Àíµ¥ºÅ", L"Ë³·á¼Û¸ñÒì³£"};
+const wchar_t* g_arrWorksheetName[] ={L"é¡ºä¸°é‡é‡å·®å¼‚è®¢å•", L"é¡ºä¸°äº‘ä»“æœªå¤„ç†å•å·", L"é¡ºä¸°ä»·æ ¼å¼‚å¸¸"};
 int g_arrRecordRowIndex[] ={0, 0, 0};
-const wchar_t* g_arrHuoZhuName[] ={L"Ä§ºÏ¿Æ¼¼N", L"ÓÀ´´Ò«»Ô", L"ÃÖÑÅÊ³Æ÷"};
+const wchar_t* g_arrHuoZhuName[] ={L"é­”åˆç§‘æŠ€N", L"æ°¸åˆ›è€€è¾‰", L"å¼¥é›…é£Ÿå™¨"};
 
 
-//Ä§ºÏ¿Æ¼¼Ë³·á¼Û¸ñ
+//é­”åˆç§‘æŠ€é¡ºä¸°ä»·æ ¼
 double g_moHeKeJiSFPrice[4][2] ={{13, 3.5}, {15, 5}, {19, 5}, {27, 8}};
-//ÓÀ´´Ò«»ÔË³·á¼Û¸ñ
+//æ°¸åˆ›è€€è¾‰é¡ºä¸°ä»·æ ¼
 double g_yongChuangYaoHuiSFPrice[4][2] ={{11, 2.6}, {12, 4.5}, {16, 4.5}, {22, 7}};
 
 #ifdef _DEBUG
@@ -36,20 +36,20 @@ double g_yongChuangYaoHuiSFPrice[4][2] ={{11, 2.6}, {12, 4.5}, {16, 4.5}, {22, 7
 #endif
 
 
-// ÓÃÓÚÓ¦ÓÃ³ÌĞò¡°¹ØÓÚ¡±²Ëµ¥ÏîµÄ CAboutDlg ¶Ô»°¿ò
+// ç”¨äºåº”ç”¨ç¨‹åºâ€œå…³äºâ€èœå•é¡¹çš„ CAboutDlg å¯¹è¯æ¡†
 
 class CAboutDlg: public CDialogEx
 {
 public:
 	CAboutDlg();
 
-	// ¶Ô»°¿òÊı¾İ
+	// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_ABOUTBOX };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
-	// ÊµÏÖ
+	// å®ç°
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -67,7 +67,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CStorageBillDlg ¶Ô»°¿ò
+// CStorageBillDlg å¯¹è¯æ¡†
 
 
 
@@ -95,15 +95,15 @@ BEGIN_MESSAGE_MAP(CStorageBillDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CStorageBillDlg ÏûÏ¢´¦Àí³ÌĞò
+// CStorageBillDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL CStorageBillDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ½«¡°¹ØÓÚ...¡±²Ëµ¥ÏîÌí¼Óµ½ÏµÍ³²Ëµ¥ÖĞ¡£
+	// å°†â€œå…³äº...â€èœå•é¡¹æ·»åŠ åˆ°ç³»ç»Ÿèœå•ä¸­ã€‚
 
-	// IDM_ABOUTBOX ±ØĞëÔÚÏµÍ³ÃüÁî·¶Î§ÄÚ¡£
+	// IDM_ABOUTBOX å¿…é¡»åœ¨ç³»ç»Ÿå‘½ä»¤èŒƒå›´å†…ã€‚
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -121,12 +121,12 @@ BOOL CStorageBillDlg::OnInitDialog()
 		}
 	}
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£  µ±Ó¦ÓÃ³ÌĞòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ĞĞ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃĞ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€‚  å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æ¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½œ
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ‡
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ‡
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–ä»£ç 
 	m_logicThread = boost::thread(boost::bind(&CStorageBillDlg::_LogicThread, this));
 	SetTimer(0, 1, NULL);
 	time_t tNow = time(NULL);
@@ -139,7 +139,7 @@ BOOL CStorageBillDlg::OnInitDialog()
 	m_editYM.SetWindowText(ym.GetBuffer());
 
 		
-	return TRUE;  // ³ı·Ç½«½¹µãÉèÖÃµ½¿Ø¼ş£¬·ñÔò·µ»Ø TRUE
+	return TRUE;  // é™¤éå°†ç„¦ç‚¹è®¾ç½®åˆ°æ§ä»¶ï¼Œå¦åˆ™è¿”å› TRUE
 }
 
 void CStorageBillDlg::_LogicThread()
@@ -165,7 +165,7 @@ void CStorageBillDlg::_LogicThread()
 			string _filePath = CFuncCommon::WString2String(filePath.c_str());
 			m_recordExcel.SaveAs(_filePath.c_str());
 			m_sfExcel.Save();
-			AddLog(L"ÕËµ¥Éú³ÉÍê³É");
+			AddLog(L"è´¦å•ç”Ÿæˆå®Œæˆ");
 		}
 	__break_logic:
 		m_bRun = false;
@@ -186,19 +186,19 @@ void CStorageBillDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// Èç¹ûÏò¶Ô»°¿òÌí¼Ó×îĞ¡»¯°´Å¥£¬ÔòĞèÒªÏÂÃæµÄ´úÂë
-//  À´»æÖÆ¸ÃÍ¼±ê¡£  ¶ÔÓÚÊ¹ÓÃÎÄµµ/ÊÓÍ¼Ä£ĞÍµÄ MFC Ó¦ÓÃ³ÌĞò£¬
-//  Õâ½«ÓÉ¿ò¼Ü×Ô¶¯Íê³É¡£
+// å¦‚æœå‘å¯¹è¯æ¡†æ·»åŠ æœ€å°åŒ–æŒ‰é’®ï¼Œåˆ™éœ€è¦ä¸‹é¢çš„ä»£ç 
+//  æ¥ç»˜åˆ¶è¯¥å›¾æ ‡ã€‚  å¯¹äºä½¿ç”¨æ–‡æ¡£/è§†å›¾æ¨¡å‹çš„ MFC åº”ç”¨ç¨‹åºï¼Œ
+//  è¿™å°†ç”±æ¡†æ¶è‡ªåŠ¨å®Œæˆã€‚
 
 void CStorageBillDlg::OnPaint()
 {
 	if(IsIconic())
 	{
-		CPaintDC dc(this); // ÓÃÓÚ»æÖÆµÄÉè±¸ÉÏÏÂÎÄ
+		CPaintDC dc(this); // ç”¨äºç»˜åˆ¶çš„è®¾å¤‡ä¸Šä¸‹æ–‡
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Ê¹Í¼±êÔÚ¹¤×÷Çø¾ØĞÎÖĞ¾ÓÖĞ
+		// ä½¿å›¾æ ‡åœ¨å·¥ä½œåŒºçŸ©å½¢ä¸­å±…ä¸­
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -206,7 +206,7 @@ void CStorageBillDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// »æÖÆÍ¼±ê
+		// ç»˜åˆ¶å›¾æ ‡
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -215,8 +215,8 @@ void CStorageBillDlg::OnPaint()
 	}
 }
 
-//µ±ÓÃ»§ÍÏ¶¯×îĞ¡»¯´°¿ÚÊ±ÏµÍ³µ÷ÓÃ´Ëº¯ÊıÈ¡µÃ¹â±ê
-//ÏÔÊ¾¡£
+//å½“ç”¨æˆ·æ‹–åŠ¨æœ€å°åŒ–çª—å£æ—¶ç³»ç»Ÿè°ƒç”¨æ­¤å‡½æ•°å–å¾—å…‰æ ‡
+//æ˜¾ç¤ºã€‚
 HCURSOR CStorageBillDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -230,12 +230,12 @@ void CStorageBillDlg::OnBnClickedCreateBill()
 	m_editYM.GetWindowText(strYM);
 	if(strYM == "")
 	{
-		MessageBox(L"Î´ÌîĞ´ÕËµ¥ÄêÔÂ");
+		MessageBox(L"æœªå¡«å†™è´¦å•å¹´æœˆ");
 		return;
 	}
 	m_bRun = true;
 	m_strYM = strYM.GetBuffer();
-	AddLog(L"¿ªÊ¼Éú³ÉÕËµ¥ĞÅÏ¢");
+	AddLog(L"å¼€å§‹ç”Ÿæˆè´¦å•ä¿¡æ¯");
 }
 
 void CStorageBillDlg::AddLog(std::wstring strLog)
@@ -245,14 +245,14 @@ void CStorageBillDlg::AddLog(std::wstring strLog)
 
 void CStorageBillDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	wstring strLog;
 	if(m_queueLog.pop(strLog))
 	{
 		m_ctrlListLog.InsertString(0, strLog.c_str());
 		SetHScroll();
-		if(strLog == L"ÕËµ¥Éú³ÉÍê³É")
-			MessageBox(L"ÕËµ¥Éú³ÉÍê³É");
+		if(strLog == L"è´¦å•ç”Ÿæˆå®Œæˆ")
+			MessageBox(L"è´¦å•ç”Ÿæˆå®Œæˆ");
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -304,26 +304,26 @@ bool CStorageBillDlg::ParseALLData()
 		{
 			BasicExcelCell* cell = totalSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
-			if(strTitle == L"»õÖ÷")
+			if(strTitle == L"è´§ä¸»")
 				nHuoZhu = c;
-			else if(strTitle == L"ÊÕ¼şÈË")
+			else if(strTitle == L"æ”¶ä»¶äºº")
 				nShouJianRen = c;
-			else if(strTitle == L"ÎïÁ÷¹«Ë¾")
+			else if(strTitle == L"ç‰©æµå…¬å¸")
 				nWuLiuGongSi = c;
-			else if(strTitle == L"ÎïÁ÷µ¥ºÅ")
+			else if(strTitle == L"ç‰©æµå•å·")
 				nWuLiuDanHao = c;
-			else if(strTitle == L"ÊÕ¼şÈËµØÖ·")
+			else if(strTitle == L"æ”¶ä»¶äººåœ°å€")
 				nShouJianRenDiZhi = c;
-			else if(strTitle == L"Êµ¼ÊÖØÁ¿")
+			else if(strTitle == L"å®é™…é‡é‡")
 				nZhongLiang = c;
-			else if(strTitle == L"·¢»õÊ±¼ä")
+			else if(strTitle == L"å‘è´§æ—¶é—´")
 				nFaHuoShijian = c;
-			else if(strTitle == L"Ô­Ê¼µ¥ºÅ")
+			else if(strTitle == L"åŸå§‹å•å·")
 				nYuanShiDanHao = c;
 		}
 		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1 || nYuanShiDanHao == -1)
 		{
-			THROW_ERROR(L"ÏúÊÛ³ö¿âµ¥ ÓĞ±êÌâÎ´ÕÒµ½");
+			THROW_ERROR(L"é”€å”®å‡ºåº“å• æœ‰æ ‡é¢˜æœªæ‰¾åˆ°");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
@@ -338,7 +338,7 @@ bool CStorageBillDlg::ParseALLData()
 			double dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
 			if(dTemp > 0.001)
 				dTemp += 0.05;
-			if(_data.strWuLiuGongSi == L"Ë³·áÈÈÃô")
+			if(_data.strWuLiuGongSi == L"é¡ºä¸°çƒ­æ•")
 				m_mapYCNeedSFHandle[_data.strHuoZhu].insert(_data.strWuLiuDanHao);
 			_data.strZhongLiang = CFuncCommon::Double2WString(dTemp+DOUBLE_PRECISION, 2);
 			SHEET_CELL(totalSheet, r, nFaHuoShijian, _data.strFaHuoShijian);
@@ -366,23 +366,23 @@ bool CStorageBillDlg::ParseALLData()
 		{
 			BasicExcelCell* cell = detailSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
-			if(strTitle == L"»õÆ·Ãû³Æ")
+			if(strTitle == L"è´§å“åç§°")
 				nHuoPinMingCheng = c;
-			else if(strTitle == L"»õÆ·×ÜÊıÁ¿")
+			else if(strTitle == L"è´§å“æ€»æ•°é‡")
 				nHuoPinZongShuLiang = c;
-			else if(strTitle == L"»õÆ·ÊıÁ¿")
+			else if(strTitle == L"è´§å“æ•°é‡")
 				nHuoPinShuLiang = c;
-			else if(strTitle == L"ÎïÁ÷±àºÅ")
+			else if(strTitle == L"ç‰©æµç¼–å·")
 				nWuLiuDanHao = c;
-			else if(strTitle == L"Ê¡")
+			else if(strTitle == L"çœ")
 				nSheng = c;
-			else if(strTitle == L"Ê¡ÊĞÇø")
+			else if(strTitle == L"çœå¸‚åŒº")
 				nShengShiQu = c;
 			
 		}
 		if(nHuoPinMingCheng == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nWuLiuDanHao == -1 || nSheng == -1 || nShengShiQu == -1)
 		{
-			THROW_ERROR(L"ÏúÊÛ³ö¿âÃ÷Ï¸ ÓĞ±êÌâÎ´ÕÒµ½");
+			THROW_ERROR(L"é”€å”®å‡ºåº“æ˜ç»† æœ‰æ ‡é¢˜æœªæ‰¾åˆ°");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
@@ -393,7 +393,7 @@ bool CStorageBillDlg::ParseALLData()
 			if(it == m_mapTempSalesInfo.end())
 			{
 				wchar_t szBuffer[128] ={0};
-				wsprintfW(szBuffer, L"ÏúÊÛ³ö¿âÃ÷Ï¸ Î´ÕÒµ½µ¥ºÅ%s", strWuLiuDanHao.c_str());
+				wsprintfW(szBuffer, L"é”€å”®å‡ºåº“æ˜ç»† æœªæ‰¾åˆ°å•å·%s", strWuLiuDanHao.c_str());
 				THROW_ERROR(szBuffer);
 			}
 			double dZSL = detailSheet->Cell(r, nHuoPinZongShuLiang)->GetDouble();
@@ -403,18 +403,18 @@ bool CStorageBillDlg::ParseALLData()
 			{
 				wstring strShengShiQu = L"";
 				SHEET_CELL(detailSheet, r, nShengShiQu, strShengShiQu);
-				if(strShengShiQu.find(L"¹ãÎ÷ÇøÊ¡") != wstring::npos)
+				if(strShengShiQu.find(L"å¹¿è¥¿åŒºçœ") != wstring::npos)
 				{
-					it->second->strSheng = L"¹ãÎ÷×³×å×ÔÖÎÇø";		
+					it->second->strSheng = L"å¹¿è¥¿å£®æ—è‡ªæ²»åŒº";		
 				}
-				else if(strShengShiQu.find(L"ÄşÏÄÇøÊ¡") != wstring::npos)
+				else if(strShengShiQu.find(L"å®å¤åŒºçœ") != wstring::npos)
 				{
-					it->second->strSheng = L"ÄşÏÄ»Ø×å×ÔÖÎÇø";		
+					it->second->strSheng = L"å®å¤å›æ—è‡ªæ²»åŒº";		
 				}
 				else
 				{
 					wchar_t szBuffer[128] = { 0 };
-					wsprintfW(szBuffer, L"ÏúÊÛ³ö¿âÃ÷Ï¸ Î´Ê¶±ğÊ¡ÊĞÇø %s", strShengShiQu.c_str());
+					wsprintfW(szBuffer, L"é”€å”®å‡ºåº“æ˜ç»† æœªè¯†åˆ«çœå¸‚åŒº %s", strShengShiQu.c_str());
 					THROW_ERROR(szBuffer);
 				}
 			}
@@ -426,6 +426,16 @@ bool CStorageBillDlg::ParseALLData()
 				it->second->strHuoPinMingXi = strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
 			else
 				it->second->strHuoPinMingXi = it->second->strHuoPinMingXi + L";" + strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
+			if(strHuoPinMingCheng == L"äº”ç²®æ¶²ä¹™äº¥çŒªå¹´çºªå¿µé…’52%500mL")
+				it->second->nBaoJiaJinE += 900*_wtoi(strHuoPinShuLiang.c_str());
+			else if(strHuoPinMingCheng == L"äº”ç²®æ¶²52åº¦å›â€¢åºšå­é¼ å¹´çºªå¿µé…’500ml*2")
+				it->second->nBaoJiaJinE += 900*_wtoi(strHuoPinShuLiang.c_str());
+			else if(strHuoPinMingCheng == L"äº”ç²®æ¶²52åº¦å›â€¢ä¹™äº¥çŒªå¹´çºªå¿µé…’500ml*4")
+				it->second->nBaoJiaJinE += 800*_wtoi(strHuoPinShuLiang.c_str());
+			else if(strHuoPinMingCheng == L"äº”ç²®æ¶²52åº¦å›â€¢ä¹™äº¥çŒªå¹´çºªå¿µé…’500ml*2")
+				it->second->nBaoJiaJinE += 900*_wtoi(strHuoPinShuLiang.c_str());
+			else if(strHuoPinMingCheng == L"éƒ.é’èŠ±éƒï¼ˆ20ï¼‰é…±é¦™å‹53åº¦ç™½é…’500ml")
+				it->second->nBaoJiaJinE += 900 * _wtoi(strHuoPinShuLiang.c_str());
 		}
 	}
 	m_mapTempSalesInfo.clear();
@@ -433,7 +443,7 @@ bool CStorageBillDlg::ParseALLData()
 	std::string _strInStorageFileName = CFuncCommon::WString2String(strInStorageFileName.c_str());
 	if(!inStorageExcel.Load(_strInStorageFileName.c_str()))
 	{
-		THROW_ERROR(L"Èë¿âÃ÷Ï¸ÕË ¼ÓÔØÊ§°Ü");
+		THROW_ERROR(L"å…¥åº“æ˜ç»†è´¦ åŠ è½½å¤±è´¥");
 	}
 	BasicExcelWorksheet* inStorageSheet = inStorageExcel.GetWorksheet(L"Sheet1");
 	if(inStorageSheet)
@@ -451,22 +461,22 @@ bool CStorageBillDlg::ParseALLData()
 		{
 			BasicExcelCell* cell = inStorageSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
-			if(strTitle == L"»õÖ÷")
+			if(strTitle == L"è´§ä¸»")
 				nHuoZhu = c;
-			else if(strTitle == L"Èë¿âÔ­Òò")
+			else if(strTitle == L"å…¥åº“åŸå› ")
 				nRuKuYuanYin = c;
-			else if(strTitle == L"ÉÌ¼Ò±àÂë")
+			else if(strTitle == L"å•†å®¶ç¼–ç ")
 				nShangJiaBianMa = c;
-			else if(strTitle == L"»õÆ·±àºÅ")
+			else if(strTitle == L"è´§å“ç¼–å·")
 				nHuoPingBianMa = c;
-			else if(strTitle == L"»õÆ·Ãû³Æ")
+			else if(strTitle == L"è´§å“åç§°")
 				nHuoPinMingCheng = c;
-			else if(strTitle == L"ÊıÁ¿")
+			else if(strTitle == L"æ•°é‡")
 				nShuLiang = c;
 		}
 		if(nHuoZhu == -1 || nRuKuYuanYin == -1 || nShangJiaBianMa == -1 || nHuoPingBianMa == -1 || nHuoPinMingCheng == -1 || nShuLiang == -1)
 		{
-			THROW_ERROR(L"Èë¿âÃ÷Ï¸ÕË ÓĞ±êÌâÎ´ÕÒµ½");
+			THROW_ERROR(L"å…¥åº“æ˜ç»†è´¦ æœ‰æ ‡é¢˜æœªæ‰¾åˆ°");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
@@ -475,7 +485,7 @@ bool CStorageBillDlg::ParseALLData()
 			SHEET_CELL(inStorageSheet, r, nHuoZhu, info.strHuoZhu);
 			std::wstring strRuKuYuanYin;
 			SHEET_CELL(inStorageSheet, r, nRuKuYuanYin, strRuKuYuanYin);
-			if(strRuKuYuanYin != L"ÆäËüÈë¿â" && strRuKuYuanYin != L"²É¹ºÈë¿â")
+			if(strRuKuYuanYin != L"å…¶å®ƒå…¥åº“" && strRuKuYuanYin != L"é‡‡è´­å…¥åº“")
 				continue;
 			SHEET_CELL(inStorageSheet, r, nShangJiaBianMa, info.strShangJiaBianMa);
 			SHEET_CELL(inStorageSheet, r, nHuoPingBianMa, info.strHuoPinBianMa);
@@ -506,7 +516,7 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 	int nHuoZhuCnt = sizeof(g_arrHuoZhuName)/sizeof(const wchar_t*);
 	for(int i=0; i<nHuoZhuCnt; ++i)
 	{
-		wstring fileName = folderPath + L"/" + g_arrHuoZhuName[i] + L"_" + m_strYM + L"¶ÔÕËµ¥.xls";
+		wstring fileName = folderPath + L"/" + g_arrHuoZhuName[i] + L"_" + m_strYM + L"å¯¹è´¦å•.xls";
 		::DeleteFileW(fileName.c_str());
 	}
 	wstring filePath = L"./Export_" + m_strYM + L"/" + L"compare_record.xls";
@@ -521,10 +531,10 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 			if(wcscmp(itB->first.c_str(), g_arrHuoZhuName[i]) == 0)
 				break;
 		}
-		if(i == nHuoZhuCnt && itB->first != L"¹şÌØÄÜÁ¿")
+		if(i == nHuoZhuCnt && itB->first != L"å“ˆç‰¹èƒ½é‡")
 		{
 			CString szText;
-			szText.Format(L"´æÔÚÎ´´¦ÀíµÄ»õÖ÷:%s ÊÇ·ñ¼ÌĞø?", itB->first.c_str());
+			szText.Format(L"å­˜åœ¨æœªå¤„ç†çš„è´§ä¸»:%s æ˜¯å¦ç»§ç»­?", itB->first.c_str());
 			if(MessageBox(szText, NULL, MB_YESNO) == IDNO)
 				return false;
 		}
@@ -538,10 +548,10 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[0]);
 	if(recordSheet)
 	{
-		recordSheet->Cell(g_arrRecordRowIndex[0], 0)->SetWString(L"µ¥ºÅ");
-		recordSheet->Cell(g_arrRecordRowIndex[0], 1)->SetWString(L"Ë³·áÖØÁ¿");
-		recordSheet->Cell(g_arrRecordRowIndex[0], 2)->SetWString(L"ÔÆ²ÖÖØÁ¿");
-		recordSheet->Cell(g_arrRecordRowIndex[0], 3)->SetWString(L"ÔÆ²Ö¼Æ·ÑÖØÁ¿");
+		recordSheet->Cell(g_arrRecordRowIndex[0], 0)->SetWString(L"å•å·");
+		recordSheet->Cell(g_arrRecordRowIndex[0], 1)->SetWString(L"é¡ºä¸°é‡é‡");
+		recordSheet->Cell(g_arrRecordRowIndex[0], 2)->SetWString(L"äº‘ä»“é‡é‡");
+		recordSheet->Cell(g_arrRecordRowIndex[0], 3)->SetWString(L"äº‘ä»“è®¡è´¹é‡é‡");
 		g_arrRecordRowIndex[0]++;
 	}
 	return true;
@@ -556,22 +566,22 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 	BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
 	if(sheet)
 	{
-		sheet->Cell(0, 0)->SetWString(L"ÊÕ¼şÈË");
-		sheet->Cell(0, 1)->SetWString(L"ÊÕ¼şÈËµØÖ·");
-		sheet->Cell(0, 2)->SetWString(L"Ê¡");
-		sheet->Cell(0, 3)->SetWString(L"ÎïÁ÷¹«Ë¾");
-		sheet->Cell(0, 4)->SetWString(L"ÎïÁ÷µ¥ºÅ");
-		sheet->Cell(0, 5)->SetWString(L"Ô­Ê¼µ¥ºÅ");
-		sheet->Cell(0, 6)->SetWString(L"ÖØÁ¿");
-		sheet->Cell(0, 7)->SetWString(L"·¢»õÊ±¼ä");
-		sheet->Cell(0, 8)->SetWString(L"»õÆ·×ÜÊıÁ¿");
-		sheet->Cell(0, 9)->SetWString(L"»õÆ·Ã÷Ï¸");
-		sheet->Cell(0, 10)->SetWString(L"¼Æ·ÑÖØÁ¿");
-		sheet->Cell(0, 11)->SetWString(L"ÎïÁ÷·Ñ");
-		sheet->Cell(0, 12)->SetWString(L"ºÄ²Ä·Ñ");
-		sheet->Cell(0, 13)->SetWString(L"²Ù×÷·Ñ");
-		sheet->Cell(0, 14)->SetWString(L"ÔöÖµ·ÑÓÃ");
-		sheet->Cell(0, 15)->SetWString(L"±¸×¢");
+		sheet->Cell(0, 0)->SetWString(L"æ”¶ä»¶äºº");
+		sheet->Cell(0, 1)->SetWString(L"æ”¶ä»¶äººåœ°å€");
+		sheet->Cell(0, 2)->SetWString(L"çœ");
+		sheet->Cell(0, 3)->SetWString(L"ç‰©æµå…¬å¸");
+		sheet->Cell(0, 4)->SetWString(L"ç‰©æµå•å·");
+		sheet->Cell(0, 5)->SetWString(L"åŸå§‹å•å·");
+		sheet->Cell(0, 6)->SetWString(L"é‡é‡");
+		sheet->Cell(0, 7)->SetWString(L"å‘è´§æ—¶é—´");
+		sheet->Cell(0, 8)->SetWString(L"è´§å“æ€»æ•°é‡");
+		sheet->Cell(0, 9)->SetWString(L"è´§å“æ˜ç»†");
+		sheet->Cell(0, 10)->SetWString(L"è®¡è´¹é‡é‡");
+		sheet->Cell(0, 11)->SetWString(L"ç‰©æµè´¹");
+		sheet->Cell(0, 12)->SetWString(L"è€—æè´¹");
+		sheet->Cell(0, 13)->SetWString(L"æ“ä½œè´¹");
+		sheet->Cell(0, 14)->SetWString(L"å¢å€¼è´¹ç”¨");
+		sheet->Cell(0, 15)->SetWString(L"å¤‡æ³¨");
 		std::list<sSalesInfo>::iterator itB = listSalesInfo.begin();
 		std::list<sSalesInfo>::iterator itE = listSalesInfo.end();
 		while(itB != itE)
@@ -587,7 +597,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 			sheet->Cell(nRecordRowIndex, 7)->SetWString(itB->strFaHuoShijian.c_str());
 			sheet->Cell(nRecordRowIndex, 8)->SetWString(itB->strHuoPinZongShuLiang.c_str());
 			sheet->Cell(nRecordRowIndex, 9)->SetWString(itB->strHuoPinMingXi.c_str());
-			//´ı¼ÆËã
+			//å¾…è®¡ç®—
 			sheet->Cell(nRecordRowIndex, 10)->SetWString(L"0");
 			sheet->Cell(nRecordRowIndex, 11)->SetWString(L"0");
 			sheet->Cell(nRecordRowIndex, 12)->SetWString(L"0");
@@ -601,11 +611,11 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 	sheet = excel.GetWorksheet("Sheet2");
 	if(sheet)
 	{
-		sheet->Cell(0, 0)->SetWString(L"ÉÌ¼Ò±àÂë");
-		sheet->Cell(0, 1)->SetWString(L"»õÆ·±àºÅ");
-		sheet->Cell(0, 2)->SetWString(L"»õÆ·Ãû³Æ");
-		sheet->Cell(0, 3)->SetWString(L"Èë¿âÊıÁ¿");
-		sheet->Cell(0, 4)->SetWString(L"Èë¿â·ÑÓÃ");
+		sheet->Cell(0, 0)->SetWString(L"å•†å®¶ç¼–ç ");
+		sheet->Cell(0, 1)->SetWString(L"è´§å“ç¼–å·");
+		sheet->Cell(0, 2)->SetWString(L"è´§å“åç§°");
+		sheet->Cell(0, 3)->SetWString(L"å…¥åº“æ•°é‡");
+		sheet->Cell(0, 4)->SetWString(L"å…¥åº“è´¹ç”¨");
 
 		std::map<std::wstring, sInStorageInfo>::iterator itB = mapInStorageInfo.begin();
 		std::map<std::wstring, sInStorageInfo>::iterator itE = mapInStorageInfo.end();
@@ -616,7 +626,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 			sheet->Cell(nRecordRowIndex, 1)->SetWString(itB->second.strHuoPinBianMa.c_str());
 			sheet->Cell(nRecordRowIndex, 2)->SetWString(itB->second.strHuoPinMingCheng.c_str());
 			sheet->Cell(nRecordRowIndex, 3)->SetInteger(itB->second.nCnt);
-			//´ı¼ÆËã
+			//å¾…è®¡ç®—
 			sheet->Cell(nRecordRowIndex, 4)->SetWString(L"0");
 			nRecordRowIndex++;
 			itB++;
@@ -629,27 +639,27 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 bool CStorageBillDlg::Handle_MoHeKeJi()
 {
 	BasicExcel excel;
-	if(!CreateExcel(excel, m_mapAllSalesInfo[L"Ä§ºÏ¿Æ¼¼N"], m_mapInStorageInfo[L"Ä§ºÏ¿Æ¼¼N"]))
+	if(!CreateExcel(excel, m_mapAllSalesInfo[L"é­”åˆç§‘æŠ€N"], m_mapInStorageInfo[L"é­”åˆç§‘æŠ€N"]))
 		return false;
-	wstring fileName = L"./Export_" + m_strYM + L"/" + L"Ä§ºÏ¿Æ¼¼N_" + m_strYM + L"¶ÔÕËµ¥.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"é­”åˆç§‘æŠ€N_" + m_strYM + L"å¯¹è´¦å•.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
-	CompareWithSFData(L"Ä§ºÏ¿Æ¼¼N", m_mapAllSalesInfo[L"Ä§ºÏ¿Æ¼¼N"]);
-	//¼ÆËãÏà¹Ø·ÑÓÃ
-	//µ¥¶ÀTH-043ºÍµ¥¶ÀTH-042°´²ğµ¥¼Û¸ñ
+	CompareWithSFData(L"é­”åˆç§‘æŠ€N", m_mapAllSalesInfo[L"é­”åˆç§‘æŠ€N"]);
+	//è®¡ç®—ç›¸å…³è´¹ç”¨
+	//å•ç‹¬TH-043å’Œå•ç‹¬TH-042æŒ‰æ‹†å•ä»·æ ¼
 	{
 		BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
 		if(sheet)
 		{
-			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"Ä§ºÏ¿Æ¼¼N"];
+			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"é­”åˆç§‘æŠ€N"];
 			std::list<sSalesInfo>::iterator itB = listSales.begin();
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
 			{
-				//sheet->Cell(0, 10)->SetWString(L"¼Æ·ÑÖØÁ¿");
-				//sheet->Cell(0, 11)->SetWString(L"´ò°ü·Ñ");
-				//sheet->Cell(0, 12)->SetWString(L"ºÄ²Ä·Ñ");
-				//sheet->Cell(0, 13)->SetWString(L"²Ù×÷·Ñ");
-				//sheet->Cell(0, 14)->SetWString(L"ÔöÖµ·ÑÓÃ");
+				//sheet->Cell(0, 10)->SetWString(L"è®¡è´¹é‡é‡");
+				//sheet->Cell(0, 11)->SetWString(L"æ‰“åŒ…è´¹");
+				//sheet->Cell(0, 12)->SetWString(L"è€—æè´¹");
+				//sheet->Cell(0, 13)->SetWString(L"æ“ä½œè´¹");
+				//sheet->Cell(0, 14)->SetWString(L"å¢å€¼è´¹ç”¨");
 				wchar_t decimal = itB->strZhongLiang.at(itB->strZhongLiang.size()-1);
 				if(decimal != L'0')
 				{
@@ -668,27 +678,27 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 bool CStorageBillDlg::Handle_YongChuangYaoHui()
 {
 	BasicExcel excel;
-	if(!CreateExcel(excel, m_mapAllSalesInfo[L"ÓÀ´´Ò«»Ô"], m_mapInStorageInfo[L"ÓÀ´´Ò«»ÔN"]))
+	if(!CreateExcel(excel, m_mapAllSalesInfo[L"æ°¸åˆ›è€€è¾‰"], m_mapInStorageInfo[L"æ°¸åˆ›è€€è¾‰N"]))
 		return false;
-	wstring fileName = L"./Export_" + m_strYM + L"/" + L"ÓÀ´´Ò«»Ô_" + m_strYM + L"¶ÔÕËµ¥.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"æ°¸åˆ›è€€è¾‰_" + m_strYM + L"å¯¹è´¦å•.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
-	CompareWithSFData(L"ÓÀ´´Ò«»Ô", m_mapAllSalesInfo[L"ÓÀ´´Ò«»Ô"]);
+	CompareWithSFData(L"æ°¸åˆ›è€€è¾‰", m_mapAllSalesInfo[L"æ°¸åˆ›è€€è¾‰"]);
 
-	//¼ÆËãÏà¹Ø·ÑÓÃ
+	//è®¡ç®—ç›¸å…³è´¹ç”¨
 	{
 		BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
 		if(sheet)
 		{
-			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"ÓÀ´´Ò«»Ô"];
+			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"æ°¸åˆ›è€€è¾‰"];
 			std::list<sSalesInfo>::iterator itB = listSales.begin();
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
 			{
-				//sheet->Cell(0, 11)->SetWString(L"ÎïÁ÷·Ñ");
-				//sheet->Cell(0, 12)->SetWString(L"ºÄ²Ä·Ñ");
-				//sheet->Cell(0, 13)->SetWString(L"²Ù×÷·Ñ");
-				//sheet->Cell(0, 14)->SetWString(L"ÔöÖµ·ÑÓÃ");
-				//sheet->Cell(0, 15)->SetWString(L"±¸×¢");
+				//sheet->Cell(0, 11)->SetWString(L"ç‰©æµè´¹");
+				//sheet->Cell(0, 12)->SetWString(L"è€—æè´¹");
+				//sheet->Cell(0, 13)->SetWString(L"æ“ä½œè´¹");
+				//sheet->Cell(0, 14)->SetWString(L"å¢å€¼è´¹ç”¨");
+				//sheet->Cell(0, 15)->SetWString(L"å¤‡æ³¨");
 				wstring strBeiZhu = L"";
 				int nWeight = 0;
 				wchar_t decimal1 = itB->strZhongLiang.at(itB->strZhongLiang.size()-1);
@@ -720,9 +730,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
 				}
-				//¼ÆËãÎïÁ÷·Ñ
+				//è®¡ç®—ç‰©æµè´¹
 				{
-					if(itB->strWuLiuGongSi == L"Ë³·áÈÈÃô")
+					if(itB->strWuLiuGongSi == L"é¡ºä¸°çƒ­æ•")
 					{
 						double money = GetSFPrice(nWeight, itB->strSheng, g_yongChuangYaoHuiSFPrice);
 						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
@@ -732,7 +742,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							{
 								double backPay = _wtof(itSF->second.backPay.c_str());
 								money += backPay;
-								strBeiZhu = strBeiZhu + L"×ª¼ÄÍË»Ø";
+								strBeiZhu = strBeiZhu + L"è½¬å¯„é€€å›";
 							}
 							double needPay = _wtof(itSF->second.needPay.c_str());
 							if(needPay > money)
@@ -747,33 +757,58 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 								}
 							}
 						}
+						if(itB->nBaoJiaJinE != 0)
+						{
+							if(itB->nBaoJiaJinE > 1000)
+								money += int(itB->nBaoJiaJinE*0.002);
+							else
+								money += 2;
+							if(strBeiZhu == L"")
+								strBeiZhu = strBeiZhu + L"ä¿ä»·";
+							else
+								strBeiZhu = strBeiZhu + L" | ä¿ä»·";
+						}
 						sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money+DOUBLE_PRECISION, 1).c_str());
 
 
 					}
-					else if(itB->strWuLiuGongSi == L"°ÙÊÀ¿ìÔË")
+					else if(itB->strWuLiuGongSi == L"ç™¾ä¸–å¿«è¿")
 						sheet->Cell(itB->nRow, 11)->SetWString(L"3.5");
-					else if(itB->strWuLiuGongSi == L"°ÙÊÀÏßÏÂ(·Ö²¦)")
+					else if(itB->strWuLiuGongSi == L"ç™¾ä¸–çº¿ä¸‹(åˆ†æ‹¨)")
 					{
-
+						double money = 0;
+						if(nWeight > 0)
+						{
+							if(nWeight > 3)
+								money = 1.3 + (nWeight - 3)*0.8;
+							else
+								money = 1.3;
+							sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+						}
 					}
 					else
 					{
 						wchar_t szOut[120] ={0};
-						_swprintf(szOut, L"[Î´ÖªµÄÎïÁ÷·½Ê½] »õÖ÷=%s µ¥ºÅ=%s ÎïÁ÷¹«Ë¾=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
+						_swprintf(szOut, L"[æœªçŸ¥çš„ç‰©æµæ–¹å¼] è´§ä¸»=%s å•å·=%s ç‰©æµå…¬å¸=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
 						AddLog(szOut);
 					}
 				}
 				sheet->Cell(itB->nRow, 13)->SetWString(L"1.1");
-				//¼ÆËãÔöÖµ·ÑÓÃ
+				//è®¡ç®—å¢å€¼è´¹ç”¨
 				{
-					//ÔÆ¼¯Ìù±ê·Ñ
+					//äº‘é›†è´´æ ‡è´¹
 					if(itB->strYuanShiDanHao.size() >= 2)
 					{
 						wchar_t char1 = itB->strYuanShiDanHao.at(0);
 						wchar_t char2 = itB->strYuanShiDanHao.at(1);
 						if(char1 == L'S' && char2 == L'O')
+						{
 							sheet->Cell(itB->nRow, 14)->SetWString(L"0.3");
+							if(strBeiZhu == L"")
+								strBeiZhu = strBeiZhu + L"è´´æ ‡";
+							else
+								strBeiZhu = strBeiZhu + L" | è´´æ ‡";
+						}
 					}
 				}
 				sheet->Cell(itB->nRow, 15)->SetWString(strBeiZhu.c_str());
@@ -790,12 +825,12 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 bool CStorageBillDlg::Handle_MiYaShiQi()
 {
 	BasicExcel excel;
-	if(!CreateExcel(excel, m_mapAllSalesInfo[L"ÃÖÑÅÊ³Æ÷"], m_mapInStorageInfo[L"ÃÖÑÅÊ³Æ÷"]))
+	if(!CreateExcel(excel, m_mapAllSalesInfo[L"å¼¥é›…é£Ÿå™¨"], m_mapInStorageInfo[L"å¼¥é›…é£Ÿå™¨"]))
 		return false;
-	wstring fileName = L"./Export_" + m_strYM + L"/" + L"ÃÖÑÅÊ³Æ÷_" + m_strYM + L"¶ÔÕËµ¥.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"å¼¥é›…é£Ÿå™¨_" + m_strYM + L"å¯¹è´¦å•.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
 	excel.SaveAs(_file.c_str());
-	CompareWithSFData(L"ÃÖÑÅÊ³Æ÷", m_mapAllSalesInfo[L"ÃÖÑÅÊ³Æ÷"]);
+	CompareWithSFData(L"å¼¥é›…é£Ÿå™¨", m_mapAllSalesInfo[L"å¼¥é›…é£Ÿå™¨"]);
 	return true;
 }
 
@@ -821,22 +856,22 @@ bool CStorageBillDlg::LoadSFData()
 		{
 			BasicExcelCell* cell = sfSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
-			if(strTitle == L"ÔËµ¥ºÅÂë")
+			if(strTitle == L"è¿å•å·ç ")
 				colNumber = c;
-			else if(strTitle == L"¼Æ·ÑÖØÁ¿")
+			else if(strTitle == L"è®¡è´¹é‡é‡")
 				colWeight = c;
-			else if(strTitle == L"ÔöÖµ·ÑÓÃ")
+			else if(strTitle == L"å¢å€¼è´¹ç”¨")
 				colVAServices = c;
-			else if(strTitle == L"Ó¦¸¶½ğ¶î")
+			else if(strTitle == L"åº”ä»˜é‡‘é¢")
 				colNeedPay = c;
-			else if(strTitle == L"¶ÔÕË½á¹û")
+			else if(strTitle == L"å¯¹è´¦ç»“æœ")
 			{
 				bFix = true;
 				m_sfHandleCol = c;
 			}
 		}
 		if(!bFix)
-			sfSheet->Cell(0, maxCols)->SetWString(L"¶ÔÕË½á¹û");
+			sfSheet->Cell(0, maxCols)->SetWString(L"å¯¹è´¦ç»“æœ");
 		for(size_t r = 1; r < maxRows; ++r)
 		{
 			sSFAuthData _data;
@@ -846,12 +881,12 @@ bool CStorageBillDlg::LoadSFData()
 			SHEET_CELL(sfSheet, r, colVAServices, _data.vaServices);
 			SHEET_CELL(sfSheet, r, colNeedPay, _data.needPay);
 			_data.row = r;
-			if(_data.vaServices == L"±£¼Û")
+			if(_data.vaServices == L"ä¿ä»·")
 			{
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
 				continue;
 			}
-			if(_data.vaServices == L"×ª¼ÄÍË»Ø")
+			if(_data.vaServices == L"è½¬å¯„é€€å›")
 			{
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())
@@ -861,7 +896,7 @@ bool CStorageBillDlg::LoadSFData()
 				else
 				{
 					wchar_t szBuffer[128] = { 0 };
-					wsprintfW(szBuffer, L"Ë³·á×ª¼ÄÍË»Ø Î´ÕÒµ½ÏàÓ¦µ¥ºÅ %s", _data.number.c_str());
+					wsprintfW(szBuffer, L"é¡ºä¸°è½¬å¯„é€€å› æœªæ‰¾åˆ°ç›¸åº”å•å· %s", _data.number.c_str());
 					THROW_ERROR(szBuffer);
 				}
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
@@ -878,7 +913,7 @@ bool CStorageBillDlg::LoadSFData()
 	}
 	else
 	{
-		THROW_ERROR(L"¶ÁÈ¡Ë³·áÕËµ¥Ê§°Ü");
+		THROW_ERROR(L"è¯»å–é¡ºä¸°è´¦å•å¤±è´¥");
 	}
 	m_sfExcel.Save();
 	return true;
@@ -899,7 +934,7 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 		std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itYCBegin->strWuLiuDanHao);
 		if(itSF != m_mapSFAuthData.end())
 		{
-			if(!itSF->second.bHandle)
+			//if(!itSF->second.bHandle)
 			{
 				wistringstream iss1(itSF->second.weight.c_str());
 				wistringstream iss2(itYCBegin->strZhongLiang.c_str());
@@ -981,25 +1016,25 @@ void CStorageBillDlg::OnLbnDblclkLogList()
 			CloseClipboard();
 		}
 	}
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 }
 
 
 double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, double price[][2])
 {
 	double* _price = NULL;
-	if(strSheng == L"ËÄ´¨Ê¡" || strSheng == L"ÖØÇì")
+	if(strSheng == L"å››å·çœ" || strSheng == L"é‡åº†")
 		_price = price[0];
-	else if(strSheng == L"¹óÖİÊ¡" || strSheng == L"ºş±±Ê¡" || strSheng == L"ÉÂÎ÷Ê¡" || strSheng == L"ÔÆÄÏÊ¡")
+	else if(strSheng == L"è´µå·çœ" || strSheng == L"æ¹–åŒ—çœ" || strSheng == L"é™•è¥¿çœ" || strSheng == L"äº‘å—çœ")
 		_price = price[1];
-	else if(strSheng == L"°²»ÕÊ¡" || strSheng == L"±±¾©" || strSheng == L"¸£½¨Ê¡" || strSheng == L"¸ÊËàÊ¡" || strSheng == L"¹ã¶«Ê¡" || strSheng == L"¹ãÎ÷×³×å×ÔÖÎÇø" || strSheng == L"º£ÄÏÊ¡" || strSheng == L"ºÓ±±Ê¡" || strSheng == L"ºÓÄÏÊ¡" || strSheng == L"ºşÄÏÊ¡" || strSheng == L"½­ËÕÊ¡" || strSheng == L"½­Î÷Ê¡" || strSheng == L"ÄşÏÄ»Ø×å×ÔÖÎÇø" || strSheng == L"Çàº£Ê¡" || strSheng == L"É½¶«Ê¡" || strSheng == L"É½Î÷Ê¡" || strSheng == L"ÉÏº£" || strSheng == L"Ìì½ò" || strSheng == L"Õã½­Ê¡")
+	else if(strSheng == L"å®‰å¾½çœ" || strSheng == L"åŒ—äº¬" || strSheng == L"ç¦å»ºçœ" || strSheng == L"ç”˜è‚ƒçœ" || strSheng == L"å¹¿ä¸œçœ" || strSheng == L"å¹¿è¥¿å£®æ—è‡ªæ²»åŒº" || strSheng == L"æµ·å—çœ" || strSheng == L"æ²³åŒ—çœ" || strSheng == L"æ²³å—çœ" || strSheng == L"æ¹–å—çœ" || strSheng == L"æ±Ÿè‹çœ" || strSheng == L"æ±Ÿè¥¿çœ" || strSheng == L"å®å¤å›æ—è‡ªæ²»åŒº" || strSheng == L"é’æµ·çœ" || strSheng == L"å±±ä¸œçœ" || strSheng == L"å±±è¥¿çœ" || strSheng == L"ä¸Šæµ·" || strSheng == L"å¤©æ´¥" || strSheng == L"æµ™æ±Ÿçœ")
 		_price = price[2];
-	else if(strSheng == L"ºÚÁú½­Ê¡" || strSheng == L"¼ªÁÖÊ¡" || strSheng == L"ÁÉÄşÊ¡" || strSheng == L"ÄÚÃÉ¹Å×ÔÖÎÇø" || strSheng == L"ĞÂ½®Î¬Îá¶û×ÔÖÎÇø" || strSheng == L"Î÷²Ø×ÔÖÎÇø")
+	else if(strSheng == L"é»‘é¾™æ±Ÿçœ" || strSheng == L"å‰æ—çœ" || strSheng == L"è¾½å®çœ" || strSheng == L"å†…è’™å¤è‡ªæ²»åŒº" || strSheng == L"æ–°ç–†ç»´å¾å°”è‡ªæ²»åŒº" || strSheng == L"è¥¿è—è‡ªæ²»åŒº")
 		_price = price[3];
 	else
 	{
 		wchar_t szBuffer[128] ={0};
-		wsprintfW(szBuffer, L"Î´ÖªÊ¡·İ %s", strSheng.c_str());
+		wsprintfW(szBuffer, L"æœªçŸ¥çœä»½ %s", strSheng.c_str());
 		THROW_ERROR(szBuffer);
 	}
 

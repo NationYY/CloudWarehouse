@@ -49,8 +49,9 @@ struct sSalesInfo
 	std::wstring strHuoPinMingXi;		//货品明细
 	std::wstring strYuanShiDanHao;		//原始单号
 	int nRow;							//在输出表中的行数
+	int nBaoJiaJinE;					//保价金额
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
-		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L"")
+		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), nBaoJiaJinE(0)
 	{
 	}
 };
