@@ -730,6 +730,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
 				}
+				double dZengZhi = 0;
 				//计算物流费
 				{
 					if(itB->strWuLiuGongSi == L"顺丰热敏")
@@ -760,9 +761,10 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						if(itB->nBaoJiaJinE != 0)
 						{
 							if(itB->nBaoJiaJinE > 1000)
-								money += int(itB->nBaoJiaJinE*0.002);
+								dZengZhi += int(itB->nBaoJiaJinE*0.002);
 							else
-								money += 2;
+								dZengZhi += 2;
+
 							if(strBeiZhu == L"")
 								strBeiZhu = strBeiZhu + L"保价";
 							else
@@ -803,13 +805,15 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						wchar_t char2 = itB->strYuanShiDanHao.at(1);
 						if(char1 == L'S' && char2 == L'O')
 						{
-							sheet->Cell(itB->nRow, 14)->SetWString(L"0.3");
+							dZengZhi += 0.3;
 							if(strBeiZhu == L"")
 								strBeiZhu = strBeiZhu + L"贴标";
 							else
 								strBeiZhu = strBeiZhu + L" | 贴标";
 						}
 					}
+					if(dZengZhi > 0)
+						sheet->Cell(itB->nRow, 14)->SetWString(CFuncCommon::Double2WString(dZengZhi+DOUBLE_PRECISION,1).c_str());
 				}
 				sheet->Cell(itB->nRow, 15)->SetWString(strBeiZhu.c_str());
 				++itB;
