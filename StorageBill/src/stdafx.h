@@ -42,6 +42,7 @@
 #include <sstream>
 #include "shlwapi.h"
 #include <map>
+#include "typedefine.h"
 
 
 

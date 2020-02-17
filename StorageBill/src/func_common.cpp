@@ -389,3 +389,137 @@ std::wstring CFuncCommon::String2WString(const char* cchar)
 	delete [] _wchar;
 	return value;
 }
+
+bool CFuncCommon::ParseKeyWStringInt(std::wstring src, map_key_wstring_val_int &out, const wchar_t* splitChar, const wchar_t* assignChar)
+{
+	if(src.size() == 0)
+		return false;
+	vec_wvals pairs;
+	parse_pairs(src, pairs, splitChar);
+	map_key_wstring_val_int key_val;
+	for(vec_wvals::iterator it = pairs.begin(); it != pairs.end(); ++it)
+	{
+		key_val.clear();
+		parse_key_val(*it, key_val, assignChar);
+		for(map_key_wstring_val_int::iterator itkey = key_val.begin(); itkey != key_val.end(); ++itkey)
+		{
+			out[itkey->first] = itkey->second;
+		}
+	}
+	return true;
+}
+
+bool CFuncCommon::parse_pairs(std::wstring src, vec_wvals &out, const wchar_t * de /* = ";" */)
+{
+	out.clear();
+	if(src.size() == 0)
+		return false;
+	split(src.c_str(), de, out);
+	if(!out.size())
+		return false;
+	return true;
+}
+
+bool CFuncCommon::parse_key_val(std::wstring src, map_key_wstring_val_int &out, const wchar_t* assignChar)
+{
+	if(src.size() == 0)
+		return false;
+	split_wstr_vec items;
+	split(src.c_str(), assignChar, items);
+	if(!items.size())
+		return false;
+
+	bool bkey = true;
+
+	std::wstring key = L"";
+	for(split_wstr_vec::iterator it = items.begin(); it != items.end(); ++it)
+	{
+		if(bkey)
+			key = it->c_str();
+		else
+			out[key] = _wtoi(it->c_str());
+
+		bkey = !bkey;
+	}
+	if(!out.size())
+		return false;
+	return true;
+}
+
+typedef string::size_type(wstring::*find_t)(const wstring& delim, wstring::size_type offset) const;
+void CFuncCommon::split(const wstring& s, const wstring& match, split_wstr_vec& out, bool removeEmpty, bool fullMatch)
+{
+	struct splite_wstr_inf
+	{
+		int start_index;
+		int len;
+	};
+
+	const int MAX_SPLITE_STR_CNT = 4096;
+	splite_wstr_inf ret_str_list[MAX_SPLITE_STR_CNT];
+
+	int str_index = 0;
+
+	wstring::size_type start = 0,           // starting position for searches
+		skip = 1;            // positions to skip after a match
+	find_t pfind = &wstring::find_first_of; // search algorithm for matches
+
+	if(fullMatch)
+	{
+		// use the whole match string as a key
+		// instead of individual characters
+		// skip might be 0. see search loop comments
+		skip = match.length();
+		pfind = &wstring::find;
+	}
+
+	while(start != wstring::npos)
+	{
+		// get a complete range [start..end)
+		string::size_type end = (s.*pfind)(match, start);
+
+		// null strings always match in string::find, but
+		// a skip of 0 causes infinite loops. pretend that
+		// no tokens were found and extract the whole string
+		if(skip == 0) end = wstring::npos;
+
+		splite_wstr_inf& si = ret_str_list[str_index];
+		si.start_index = start;
+		si.len = end - start;
+
+		//string token = s.substr(start, end - start); 
+		//if(!(removeEmpty && token.empty()))
+
+		if(!(removeEmpty && ((s[si.start_index] == '\0'))))
+		{
+			// extract the token and add it to the out list
+			//out.push_back(token);
+			splite_wstr_inf& si = ret_str_list[str_index++];
+			si.start_index = start;
+			si.len = end - start;
+
+			if(str_index > MAX_SPLITE_STR_CNT)
+			{
+				int a = 0;
+				int i = 1 / a;
+				// 				const char* tr = "split too many item.";
+				// 				throw exception(tr);
+			}
+		}
+
+		// start the next range
+		if((start = end) != wstring::npos) start += skip;
+	}
+
+	if(str_index > 0)
+	{
+		out.resize(str_index);
+		const wchar_t *source = s.c_str();
+		for(int i = 0; i < str_index; ++i)
+		{
+			splite_wstr_inf& si = ret_str_list[i];
+			int len = si.len > 0 ? si.len : s.length() - si.start_index;
+			out[i].assign(source + si.start_index, len);
+		}
+	}
+}

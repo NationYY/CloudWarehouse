@@ -24,5 +24,11 @@ public:
 
 	static std::string WString2String(const wchar_t* wchar);
 	static std::wstring String2WString(const char* cchar);
+
+	static bool ParseKeyWStringInt(std::wstring src, map_key_wstring_val_int &out, const wchar_t* splitChar = L";", const wchar_t* assignChar = L"@");
+private:
+	static bool parse_pairs(std::wstring src, vec_wvals &out, const wchar_t * de = L";");
+	static bool parse_key_val(std::wstring src, map_key_wstring_val_int &out, const wchar_t* assignChar = L"@");
+	static void split(const std::wstring& s, const std::wstring& match, split_wstr_vec& out, bool removeEmpty = true, bool fullMatch = false);
 };
 
