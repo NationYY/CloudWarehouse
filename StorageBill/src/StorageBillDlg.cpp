@@ -667,9 +667,13 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 {
 	if(listSalesInfo.size() == 0)
 		return false;
-	excel.New(2);
 	int nRecordRowIndex = 1;
-	BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
+	excel.AddWorksheet(L"订单费用");
+	excel.AddWorksheet(L"入库费用");
+	excel.AddWorksheet(L"仓租费用");
+	excel.AddWorksheet(L"其他费用");
+	excel.AddWorksheet(L"合计");
+	BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
 	if(sheet)
 	{
 		sheet->Cell(0, 0)->SetWString(L"收件人");
@@ -714,7 +718,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 		}
 	}
 	nRecordRowIndex = 1;
-	sheet = excel.GetWorksheet("Sheet2");
+	sheet = excel.GetWorksheet(L"入库费用");
 	if(sheet)
 	{
 		sheet->Cell(0, 0)->SetWString(L"商家编码");
@@ -753,7 +757,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 	//计算相关费用
 	//单独TH-043和单独TH-042按拆单价格
 	{
-		BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
+		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
 		if(sheet)
 		{
 			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"魔合科技N"];
@@ -829,7 +833,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 						if(itB->nBaoJiaJinE != 0)
 						{
 							if(itB->nBaoJiaJinE > 1000)
-								dZengZhi += int(itB->nBaoJiaJinE*0.002);
+								dZengZhi += int(itB->nBaoJiaJinE*0.005);
 							else
 								dZengZhi += 2;
 
@@ -893,7 +897,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 bool CStorageBillDlg::Handle_YongChuangYaoHui()
 {
 	BasicExcel excel;
-	if(!CreateExcel(excel, m_mapAllSalesInfo[L"永创耀辉"], m_mapInStorageInfo[L"永创耀辉N"]))
+	if(!CreateExcel(excel, m_mapAllSalesInfo[L"永创耀辉"], m_mapInStorageInfo[L"永创耀辉"]))
 		return false;
 	wstring fileName = L"./Export_" + m_strYM + L"/" + L"永创耀辉_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
@@ -901,7 +905,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 
 	//计算相关费用
 	{
-		BasicExcelWorksheet* sheet = excel.GetWorksheet("Sheet1");
+		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
 		if(sheet)
 		{
 			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"永创耀辉"];
@@ -976,7 +980,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						if(itB->nBaoJiaJinE != 0)
 						{
 							if(itB->nBaoJiaJinE > 1000)
-								dZengZhi += int(itB->nBaoJiaJinE*0.002);
+								dZengZhi += int(itB->nBaoJiaJinE*0.005);
 							else
 								dZengZhi += 2;
 
