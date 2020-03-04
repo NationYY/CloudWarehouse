@@ -50,8 +50,9 @@ struct sSalesInfo
 	std::wstring strYuanShiDanHao;		//原始单号
 	int nRow;							//在输出表中的行数
 	int nBaoJiaJinE;					//保价金额
+	bool bChaiFen;						//是否是拆分订单
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
-		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), nBaoJiaJinE(0)
+		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), nBaoJiaJinE(0), bChaiFen(true)
 	{
 	}
 };
@@ -68,6 +69,16 @@ struct sInStorageInfo
 	{
 	}
 };
+
+struct sExpressPriceInfo
+{
+	int nMinZL;			//最小重量 大于等于
+	int nMaxZL;			//最大重量 小于
+	int nFirstZL;		//首重
+	double dFirstPrice;	//首重费用
+	double dXZPrice;	//续重费用
+};
+
 #define DOUBLE_PRECISION 0.00000001
 typedef std::map<std::wstring, int> map_key_wstring_val_int;
 typedef std::vector<std::wstring> vec_wvals;

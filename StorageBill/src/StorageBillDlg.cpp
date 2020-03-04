@@ -26,11 +26,112 @@ int g_arrRecordRowIndex[] ={0, 0, 0};
 const wchar_t* g_arrHuoZhuName[] ={L"魔合科技N", L"永创耀辉", L"弥雅食器"};
 
 
-//魔合科技顺丰价格
-double g_moHeKeJiSFPrice[4][2] ={{13, 3.5}, {15, 5}, {19, 5}, {27, 8}};
-//永创耀辉顺丰价格
-double g_yongChuangYaoHuiSFPrice[4][2] ={{11, 2.6}, {12, 4.5}, {16, 4.5}, {22, 7}};
+//------------------------------------顺丰价格--------------------------------------//
+//魔合科技															//
+double g_moHeKeJiSFPrice[4][2] ={{13, 3.5}, {15, 5}, {19, 5}, {27, 8}};				//
+//永创耀辉																	//
+double g_yongChuangYaoHuiSFPrice[4][2] ={{11, 2.6}, {12, 4.5}, {16, 4.5}, {22, 7}};	//
+//----------------------------------------------------------------------------------//
 
+//------------------------------------快递价格--------------------------------------//
+//魔合科技
+std::map< std::wstring, std::list<sExpressPriceInfo> > g_moHeKeJiBSPrice;
+void PrepareExpressPrice()
+{
+	//魔合百世
+	{
+		//0-3公斤 一口价
+		g_moHeKeJiBSPrice[L"四川省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"重庆"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"云南省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"贵州省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"陕西省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"江苏省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"浙江省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"上海"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"安徽省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"河南省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"湖北省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"福建省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"北京"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"天津"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"广东省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"广西壮族自治区"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"河北省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"湖南省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"江西省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"山西省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"山东省"].push_back({ 0, 3, 3, 3.5, 0 });
+		g_moHeKeJiBSPrice[L"甘肃省"].push_back({ 0, 3, 3, 4, 0 });
+		g_moHeKeJiBSPrice[L"宁夏回族自治区"].push_back({ 0, 3, 3, 4, 0 });
+		g_moHeKeJiBSPrice[L"青海省"].push_back({ 0, 3, 3, 4, 0 });
+		g_moHeKeJiBSPrice[L"黑龙江省"].push_back({ 0, 3, 3, 3.8, 0 });
+		g_moHeKeJiBSPrice[L"吉林省"].push_back({ 0, 3, 3, 3.8, 0 });
+		g_moHeKeJiBSPrice[L"辽宁省"].push_back({ 0, 3, 3, 3.8, 0 });
+		//3-10公斤 首重 续重
+		g_moHeKeJiBSPrice[L"四川省"].push_back({ 3, 10, 3, 3.5, 1.7 });
+		g_moHeKeJiBSPrice[L"重庆"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"云南省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"贵州省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"陕西省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"江苏省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"浙江省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"上海"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"安徽省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"河南省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"湖北省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"福建省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"北京"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"天津"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"广东省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"广西壮族自治区"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"河北省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"湖南省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"江西省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"山西省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"山东省"].push_back({ 3, 10, 3, 3.5, 1.8 });
+		g_moHeKeJiBSPrice[L"甘肃省"].push_back({ 3, 10, 3, 4, 2.2 });
+		g_moHeKeJiBSPrice[L"宁夏回族自治区"].push_back({ 3, 10, 3, 4, 2.2 });
+		g_moHeKeJiBSPrice[L"青海省"].push_back({ 3, 10, 3, 4, 2.2 });
+		g_moHeKeJiBSPrice[L"黑龙江省"].push_back({ 3, 10, 3, 3.8, 2 });
+		g_moHeKeJiBSPrice[L"吉林省"].push_back({ 3, 10, 3, 3.8, 2 });
+		g_moHeKeJiBSPrice[L"辽宁省"].push_back({ 3, 10, 3, 3.8, 2 });
+		//10公斤以上 首重 续重
+		g_moHeKeJiBSPrice[L"四川省"].push_back({ 10, 0, 1, 4.5, 1.8 });
+		g_moHeKeJiBSPrice[L"重庆"].push_back({ 10, 0, 1, 4.5, 2 });
+		g_moHeKeJiBSPrice[L"云南省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"贵州省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"陕西省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"江苏省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"浙江省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"上海"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"安徽省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"河南省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"湖北省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"福建省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"北京"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"天津"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"广东省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"广西壮族自治区"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"河北省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"湖南省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"江西省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"山西省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"山东省"].push_back({ 10, 0, 1, 4.5, 3.5 });
+		g_moHeKeJiBSPrice[L"甘肃省"].push_back({ 10, 0, 1, 4.5, 5.5 });
+		g_moHeKeJiBSPrice[L"宁夏回族自治区"].push_back({ 10, 0, 1, 4.5, 5.5 });
+		g_moHeKeJiBSPrice[L"青海省"].push_back({ 10, 0, 1, 4.5, 5.5 });
+		g_moHeKeJiBSPrice[L"黑龙江省"].push_back({ 10, 0, 1, 4.5, 6.5 });
+		g_moHeKeJiBSPrice[L"吉林省"].push_back({ 10, 0, 1, 4.5, 6.5 });
+		g_moHeKeJiBSPrice[L"辽宁省"].push_back({ 10, 0, 1, 4.5, 6.5 });
+		///////////////////
+		g_moHeKeJiBSPrice[L"内蒙古自治区"].push_back({ 0, 0, 1, 7.5, 4.5 });
+		g_moHeKeJiBSPrice[L"海南省"].push_back({ 0, 0, 1, 7.5, 4 });
+		g_moHeKeJiBSPrice[L"新疆维吾尔自治区"].push_back({ 0, 0, 1, 13, 11 });
+		g_moHeKeJiBSPrice[L"西藏自治区"].push_back({ 0, 0, 1, 13, 11 });
+	}
+}
+//----------------------------------------------------------------------------------//
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -137,7 +238,7 @@ BOOL CStorageBillDlg::OnInitDialog()
 	else
 		ym.Format(L"%d%02d", pTM->tm_year+1900, pTM->tm_mon);
 	m_editYM.SetWindowText(ym.GetBuffer());
-
+	PrepareExpressPrice();
 		
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -335,6 +436,8 @@ bool CStorageBillDlg::ParseALLData()
 			SHEET_CELL(totalSheet, r, nWuLiuDanHao, _data.strWuLiuDanHao);
 			SHEET_CELL(totalSheet, r, nShouJianRenDiZhi, _data.strShouJianRenDiZhi);
 			SHEET_CELL(totalSheet, r, nYuanShiDanHao, _data.strYuanShiDanHao);
+			if(_data.strYuanShiDanHao != L"")
+				_data.bChaiFen = false;
 			double dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
 			if(dTemp > 0.001)
 				dTemp += 0.05;
@@ -426,6 +529,9 @@ bool CStorageBillDlg::ParseALLData()
 				it->second->strHuoPinMingXi = strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
 			else
 				it->second->strHuoPinMingXi = it->second->strHuoPinMingXi + L";" + strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
+			
+			if(strHuoPinMingCheng != L"杏汁180ml*1罐" && strHuoPinMingCheng != L"番茄汁180ml*1罐")
+				it->second->bChaiFen = false;
 			if(strHuoPinMingCheng == L"五粮液乙亥猪年纪念酒52%500mL")
 				it->second->nBaoJiaJinE += 900*_wtoi(strHuoPinShuLiang.c_str());
 			else if(strHuoPinMingCheng == L"五粮液52度囍•庚子鼠年纪念酒500ml*2")
@@ -656,14 +762,123 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 			while(itB != itE)
 			{
 				//sheet->Cell(0, 10)->SetWString(L"计费重量");
-				//sheet->Cell(0, 11)->SetWString(L"打包费");
+				//sheet->Cell(0, 11)->SetWString(L"物流费");
 				//sheet->Cell(0, 12)->SetWString(L"耗材费");
 				//sheet->Cell(0, 13)->SetWString(L"操作费");
 				//sheet->Cell(0, 14)->SetWString(L"增值费用");
-				wchar_t decimal = itB->strZhongLiang.at(itB->strZhongLiang.size()-1);
-				if(decimal != L'0')
+				//sheet->Cell(0, 15)->SetWString(L"备注");
+				wstring strBeiZhu = L"";
+				int nWeight = 0;
+				wchar_t decimal1 = itB->strZhongLiang.at(itB->strZhongLiang.size() - 1);
+				wchar_t decimal2 = itB->strZhongLiang.at(itB->strZhongLiang.size() - 2);
+				if(decimal1 != L'0' || decimal2 != L'0')
 				{
+					double nZhongLiang = _wtof(itB->strZhongLiang.c_str());
+					nZhongLiang += 1;
+					nZhongLiang += DOUBLE_PRECISION;
+					nWeight = int(nZhongLiang);
+					if(nWeight < 3)
+						nWeight = 3;
+					wchar_t szWeight[10] = { 0 };
+					_itow_s(nWeight, szWeight, 10);
+					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+				}
+				else
+				{
+					if(itB->strZhongLiang == L"0.00")
+						nWeight = 0;
+					else
+					{
+						nWeight = _wtoi(itB->strZhongLiang.c_str());
+						if(nWeight < 3)
+							nWeight = 3;
+					}
 
+					wchar_t szWeight[10] = { 0 };
+					_itow_s(nWeight, szWeight, 10);
+					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+				}
+				double dZengZhi = 0;
+				//计算物流费
+				{
+					if(itB->strWuLiuGongSi == L"顺丰热敏")
+					{
+						double money = GetSFPrice(nWeight, itB->strSheng, g_moHeKeJiSFPrice);
+						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
+						if(itSF != m_mapSFAuthData.end())
+						{
+							if(itSF->second.backPay != L"")
+							{
+								double backPay = _wtof(itSF->second.backPay.c_str());
+								money += backPay;
+								strBeiZhu = strBeiZhu + L"转寄退回";
+							}
+							double needPay = _wtof(itSF->second.needPay.c_str());
+							if(needPay > money)
+							{
+								std::set<std::wstring>::iterator it = m_setSFZhongLiangYiChang.find(itB->strWuLiuDanHao.c_str());
+								if(it == m_setSFZhongLiangYiChang.end())
+								{
+									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[2]);
+									recordSheet->Cell(g_arrRecordRowIndex[2], 0)->SetWString(itB->strWuLiuDanHao.c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[2], 1)->SetWString(itB->strHuoZhu.c_str());
+									g_arrRecordRowIndex[2]++;
+								}
+							}
+						}
+						if(itB->nBaoJiaJinE != 0)
+						{
+							if(itB->nBaoJiaJinE > 1000)
+								dZengZhi += int(itB->nBaoJiaJinE*0.002);
+							else
+								dZengZhi += 2;
+
+							if(strBeiZhu == L"")
+								strBeiZhu = strBeiZhu + L"保价";
+							else
+								strBeiZhu = strBeiZhu + L" | 保价";
+						}
+						sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+
+
+					}
+					else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
+					{
+						double money = 0;
+						if(nWeight > 0)
+						{
+							double money = GetBSPrice(nWeight, itB->strSheng, g_moHeKeJiBSPrice);
+							sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+						}
+					}
+					else
+					{
+						wchar_t szOut[120] = { 0 };
+						_swprintf(szOut, L"[未知的物流方式] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
+						AddLog(szOut);
+					}
+				}
+				//打包费用
+				{
+					//如果是拆分的订单
+					double _price = 0.0;
+					int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+					if(itB->bChaiFen)
+					{
+						if(nZSL > 6)
+							_price = 0.5+(nZSL-6)*0.1;
+						else
+							_price = 0.5;
+						
+					}
+					else
+					{
+						if(nZSL > 8)
+							_price = 0.6 + (nZSL - 8)*0.1;
+						else
+							_price = 0.6;
+					}
+					sheet->Cell(itB->nRow, 13)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
 				}
 				++itB;
 			}
@@ -1038,7 +1253,7 @@ double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, double price[]
 	else
 	{
 		wchar_t szBuffer[128] ={0};
-		wsprintfW(szBuffer, L"未知省份 %s", strSheng.c_str());
+		wsprintfW(szBuffer, L"顺丰 未知省份 %s", strSheng.c_str());
 		THROW_ERROR(szBuffer);
 	}
 
@@ -1047,6 +1262,37 @@ double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, double price[]
 	else if(nWeight > 3)
 	{
 		return _price[0] + _price[1]*(nWeight-3);
+	}
+	return 0.0;
+}
+
+double CStorageBillDlg::GetBSPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice)
+{
+	std::map< std::wstring, std::list<sExpressPriceInfo> >::iterator it = mapPrice.find(strSheng);
+	if(it != mapPrice.end())
+	{
+		std::list<sExpressPriceInfo>::iterator itB = it->second.begin();
+		std::list<sExpressPriceInfo>::iterator itE = it->second.end();
+		while(itB != itE)
+		{
+			if(nWeight > itB->nMinZL && (nWeight <= itB->nMaxZL || itB->nMaxZL == 0))
+			{
+				if(nWeight <= itB->nFirstZL)
+					return itB->dFirstPrice;
+				else
+					return itB->dFirstPrice + (nWeight-itB->nFirstZL)*itB->dXZPrice;
+			}
+			++itB;
+		}
+		wchar_t szBuffer[128] = { 0 };
+		wsprintfW(szBuffer, L"百世快递 重量不含有对应价格区间 %s %d", strSheng.c_str(), nWeight);
+		THROW_ERROR(szBuffer);
+	}
+	else
+	{
+		wchar_t szBuffer[128] = { 0 };
+		wsprintfW(szBuffer, L"百世快递 未知省份 %s", strSheng.c_str());
+		THROW_ERROR(szBuffer);
 	}
 	return 0.0;
 }
