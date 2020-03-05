@@ -533,15 +533,45 @@ bool CStorageBillDlg::ParseALLData()
 			if(strHuoPinMingCheng != L"杏汁180ml*1罐" && strHuoPinMingCheng != L"番茄汁180ml*1罐")
 				it->second->bChaiFen = false;
 			if(strHuoPinMingCheng == L"五粮液乙亥猪年纪念酒52%500mL")
-				it->second->nBaoJiaJinE += 900*_wtoi(strHuoPinShuLiang.c_str());
+			{
+				int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
+				if(nBjsl >= 6)
+					it->second->nBaoJiaJinE += 5000;
+				else
+					it->second->nBaoJiaJinE += 900*nBjsl;
+			}
 			else if(strHuoPinMingCheng == L"五粮液52度囍•庚子鼠年纪念酒500ml*2")
-				it->second->nBaoJiaJinE += 900*_wtoi(strHuoPinShuLiang.c_str());
+			{
+				int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
+				if(nBjsl >= 6)
+					it->second->nBaoJiaJinE += 5000;
+				else
+					it->second->nBaoJiaJinE += 900 * nBjsl;
+			}
 			else if(strHuoPinMingCheng == L"五粮液52度囍•乙亥猪年纪念酒500ml*4")
-				it->second->nBaoJiaJinE += 800*_wtoi(strHuoPinShuLiang.c_str());
+			{
+				int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
+				if(nBjsl >= 6)
+					it->second->nBaoJiaJinE += 5000;
+				else
+					it->second->nBaoJiaJinE += 800 * nBjsl;
+			}
 			else if(strHuoPinMingCheng == L"五粮液52度囍•乙亥猪年纪念酒500ml*2")
-				it->second->nBaoJiaJinE += 900*_wtoi(strHuoPinShuLiang.c_str());
+			{
+				int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
+				if(nBjsl >= 6)
+					it->second->nBaoJiaJinE += 5000;
+				else
+					it->second->nBaoJiaJinE += 900 * nBjsl;
+			}
 			else if(strHuoPinMingCheng == L"郎.青花郎（20）酱香型53度白酒500ml")
-				it->second->nBaoJiaJinE += 900 * _wtoi(strHuoPinShuLiang.c_str());
+			{
+				int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
+				if(nBjsl >= 6)
+					it->second->nBaoJiaJinE += 5000;
+				else
+					it->second->nBaoJiaJinE += 900 * nBjsl;
+			}
 		}
 	}
 	m_mapTempSalesInfo.clear();
