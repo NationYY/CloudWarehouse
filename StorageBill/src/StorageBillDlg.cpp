@@ -572,6 +572,14 @@ bool CStorageBillDlg::ParseALLData()
 				else
 					it->second->nBaoJiaJinE += 900 * nBjsl;
 			}
+			else if(strHuoPinMingCheng == L"53度贵州茅台酒蓝")
+			{
+				it->second->nBaoJiaJinE += 3000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"贵州茅台酒（青印）53度500ml")
+			{
+				it->second->nBaoJiaJinE += 2500 * nBjsl;
+			}
 		}
 	}
 	m_mapTempSalesInfo.clear();
