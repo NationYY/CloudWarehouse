@@ -42,6 +42,7 @@ private:
 	bool Handle_MoHeKeJi();
 	bool Handle_YongChuangYaoHui();
 	bool Handle_MiYaShiQi();
+	bool Handle_TaiFuShangMao();
 	bool LoadSFData();
 	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
@@ -53,6 +54,7 @@ private:
 	boost::thread m_logicThread;
 	bool m_bExit;
 	bool m_bRun;
+	bool m_bSF;
 	thread_safe_queue<std::wstring> m_queueLog;
 	std::map< std::wstring, std::list<sSalesInfo> > m_mapAllSalesInfo;
 	std::map< std::wstring, sSalesInfo* > m_mapTempSalesInfo;
@@ -69,4 +71,5 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	CEdit m_editYM;
 	afx_msg void OnLbnDblclkLogList();
+	CButton m_checkSF;
 };
