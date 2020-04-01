@@ -48,6 +48,9 @@
     <ClInclude Include="..\src\func_common.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\expressPrice.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="StorageBill.rc">
@@ -79,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="..\src\func_common.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\expressPrice.cpp">
+      <Filter>头文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

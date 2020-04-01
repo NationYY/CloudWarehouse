@@ -110,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BasicExcel\BasicExcel.hpp" />
+    <ClInclude Include="..\src\expressPrice.h" />
     <ClInclude Include="..\src\func_common.h" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\StorageBill.h" />
@@ -130,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\BasicExcel\BasicExcel.cpp" />
+    <ClCompile Include="..\src\expressPrice.cpp" />
     <ClCompile Include="..\src\func_common.cpp" />
     <ClCompile Include="..\src\stdafx.cpp" />
     <ClCompile Include="..\src\StorageBill.cpp" />

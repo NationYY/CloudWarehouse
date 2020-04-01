@@ -11,6 +11,7 @@
 #include <io.h>
 #include <direct.h>
 #include "shlwapi.h"
+#include "expressPrice.h"
 #define THROW_ERROR(info) AddLog(info); return false;
 #define SHEET_CELL(sheet, r, c, strOut) _pStr = sheet->Cell(r, c)->GetWString();\
 if(_pStr)\
@@ -307,6 +308,7 @@ bool CStorageBillDlg::ParseALLData()
 		int nZhongLiang = -1;
 		int nFaHuoShijian = -1;
 		int nYuanShiDanHao = -1;
+		int nDianPu = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
 			BasicExcelCell* cell = totalSheet->Cell(0, c);
@@ -327,8 +329,11 @@ bool CStorageBillDlg::ParseALLData()
 				nFaHuoShijian = c;
 			else if(strTitle == L"原始单号")
 				nYuanShiDanHao = c;
+			else if(strTitle == L"店铺")
+				nDianPu = c;
+			
 		}
-		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1 || nYuanShiDanHao == -1)
+		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1 || nYuanShiDanHao == -1 || nDianPu == -1)
 		{
 			THROW_ERROR(L"销售出库单 有标题未找到");
 		}
@@ -342,6 +347,7 @@ bool CStorageBillDlg::ParseALLData()
 			SHEET_CELL(totalSheet, r, nWuLiuDanHao, _data.strWuLiuDanHao);
 			SHEET_CELL(totalSheet, r, nShouJianRenDiZhi, _data.strShouJianRenDiZhi);
 			SHEET_CELL(totalSheet, r, nYuanShiDanHao, _data.strYuanShiDanHao);
+			SHEET_CELL(totalSheet, r, nDianPu, _data.strDianPu);
 			if(_data.strYuanShiDanHao != L"")
 				_data.bChaiFen = false;
 			double dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
@@ -640,43 +646,45 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 	BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
 	if(sheet)
 	{
-		sheet->Cell(0, 0)->SetWString(L"收件人");
-		sheet->Cell(0, 1)->SetWString(L"收件人地址");
-		sheet->Cell(0, 2)->SetWString(L"省");
-		sheet->Cell(0, 3)->SetWString(L"物流公司");
-		sheet->Cell(0, 4)->SetWString(L"物流单号");
-		sheet->Cell(0, 5)->SetWString(L"原始单号");
-		sheet->Cell(0, 6)->SetWString(L"重量");
-		sheet->Cell(0, 7)->SetWString(L"发货时间");
-		sheet->Cell(0, 8)->SetWString(L"货品总数量");
-		sheet->Cell(0, 9)->SetWString(L"货品明细");
-		sheet->Cell(0, 10)->SetWString(L"计费重量");
-		sheet->Cell(0, 11)->SetWString(L"物流费");
-		sheet->Cell(0, 12)->SetWString(L"耗材费");
-		sheet->Cell(0, 13)->SetWString(L"操作费");
-		sheet->Cell(0, 14)->SetWString(L"增值费用");
-		sheet->Cell(0, 15)->SetWString(L"备注");
+		sheet->Cell(0, eET_ShouJianRen)->SetWString(L"收件人");
+		sheet->Cell(0, eET_ShouJianRenDiZhi)->SetWString(L"收件人地址");
+		sheet->Cell(0, eET_Sheng)->SetWString(L"省");
+		sheet->Cell(0, eET_WuLiuGongSi)->SetWString(L"物流公司");
+		sheet->Cell(0, eET_WuLiuDanHao)->SetWString(L"物流单号");
+		sheet->Cell(0, eET_YuanShiDanHao)->SetWString(L"原始单号");
+		sheet->Cell(0, eET_DianPu)->SetWString(L"店铺");
+		sheet->Cell(0, eET_ZhongLiang)->SetWString(L"重量");
+		sheet->Cell(0, eET_FaHuoShiJian)->SetWString(L"发货时间");
+		sheet->Cell(0, eET_HuoPinZongShuLiang)->SetWString(L"货品总数量");
+		sheet->Cell(0, eET_HuoPinMingXi)->SetWString(L"货品明细");
+		sheet->Cell(0, eET_JiFeiZhongLiang)->SetWString(L"计费重量");
+		sheet->Cell(0, eET_WuLiuFei)->SetWString(L"物流费");
+		sheet->Cell(0, eET_HaoCaiFei)->SetWString(L"耗材费");
+		sheet->Cell(0, eET_CaoZuoFei)->SetWString(L"操作费");
+		sheet->Cell(0, eET_ZengZhiFeiYong)->SetWString(L"增值费用");
+		sheet->Cell(0, eET_BeiZhu)->SetWString(L"备注");
 		std::list<sSalesInfo>::iterator itB = listSalesInfo.begin();
 		std::list<sSalesInfo>::iterator itE = listSalesInfo.end();
 		while(itB != itE)
 		{
 			itB->nRow = nRecordRowIndex;
-			sheet->Cell(nRecordRowIndex, 0)->SetWString(itB->strShouJianRen.c_str());
-			sheet->Cell(nRecordRowIndex, 1)->SetWString(itB->strShouJianRenDiZhi.c_str());
-			sheet->Cell(nRecordRowIndex, 2)->SetWString(itB->strSheng.c_str());
-			sheet->Cell(nRecordRowIndex, 3)->SetWString(itB->strWuLiuGongSi.c_str());
-			sheet->Cell(nRecordRowIndex, 4)->SetWString(itB->strWuLiuDanHao.c_str());
-			sheet->Cell(nRecordRowIndex, 5)->SetWString(itB->strYuanShiDanHao.c_str());
-			sheet->Cell(nRecordRowIndex, 6)->SetWString(itB->strZhongLiang.c_str());
-			sheet->Cell(nRecordRowIndex, 7)->SetWString(itB->strFaHuoShijian.c_str());
-			sheet->Cell(nRecordRowIndex, 8)->SetWString(itB->strHuoPinZongShuLiang.c_str());
-			sheet->Cell(nRecordRowIndex, 9)->SetWString(itB->strHuoPinMingXi.c_str());
+			sheet->Cell(nRecordRowIndex, eET_ShouJianRen)->SetWString(itB->strShouJianRen.c_str());
+			sheet->Cell(nRecordRowIndex, eET_ShouJianRenDiZhi)->SetWString(itB->strShouJianRenDiZhi.c_str());
+			sheet->Cell(nRecordRowIndex, eET_Sheng)->SetWString(itB->strSheng.c_str());
+			sheet->Cell(nRecordRowIndex, eET_WuLiuGongSi)->SetWString(itB->strWuLiuGongSi.c_str());
+			sheet->Cell(nRecordRowIndex, eET_WuLiuDanHao)->SetWString(itB->strWuLiuDanHao.c_str());
+			sheet->Cell(nRecordRowIndex, eET_YuanShiDanHao)->SetWString(itB->strYuanShiDanHao.c_str());
+			sheet->Cell(nRecordRowIndex, eET_DianPu)->SetWString(itB->strDianPu.c_str());
+			sheet->Cell(nRecordRowIndex, eET_ZhongLiang)->SetWString(itB->strZhongLiang.c_str());
+			sheet->Cell(nRecordRowIndex, eET_FaHuoShiJian)->SetWString(itB->strFaHuoShijian.c_str());
+			sheet->Cell(nRecordRowIndex, eET_HuoPinZongShuLiang)->SetWString(itB->strHuoPinZongShuLiang.c_str());
+			sheet->Cell(nRecordRowIndex, eET_HuoPinMingXi)->SetWString(itB->strHuoPinMingXi.c_str());
 			//待计算
-			sheet->Cell(nRecordRowIndex, 10)->SetWString(L"0");
-			sheet->Cell(nRecordRowIndex, 11)->SetWString(L"0");
-			sheet->Cell(nRecordRowIndex, 12)->SetWString(L"0");
-			sheet->Cell(nRecordRowIndex, 13)->SetWString(L"0");
-			sheet->Cell(nRecordRowIndex, 14)->SetWString(L"0");
+			sheet->Cell(nRecordRowIndex, eET_JiFeiZhongLiang)->SetWString(L"0");
+			sheet->Cell(nRecordRowIndex, eET_WuLiuFei)->SetWString(L"0");
+			sheet->Cell(nRecordRowIndex, eET_HaoCaiFei)->SetWString(L"0");
+			sheet->Cell(nRecordRowIndex, eET_CaoZuoFei)->SetWString(L"0");
+			sheet->Cell(nRecordRowIndex, eET_ZengZhiFeiYong)->SetWString(L"0");
 			nRecordRowIndex++;
 			itB++;
 		}
@@ -729,12 +737,6 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
 			{
-				//sheet->Cell(0, 10)->SetWString(L"计费重量");
-				//sheet->Cell(0, 11)->SetWString(L"物流费");
-				//sheet->Cell(0, 12)->SetWString(L"耗材费");
-				//sheet->Cell(0, 13)->SetWString(L"操作费");
-				//sheet->Cell(0, 14)->SetWString(L"增值费用");
-				//sheet->Cell(0, 15)->SetWString(L"备注");
 				wstring strBeiZhu = L"";
 				int nWeight = 0;
 				wchar_t decimal1 = itB->strZhongLiang.at(itB->strZhongLiang.size() - 1);
@@ -749,7 +751,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 						nWeight = 3;
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
-					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
 				else
 				{
@@ -764,7 +766,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
-					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
 				double dZengZhi = 0;
 				//计算物流费
@@ -806,7 +808,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 							else
 								strBeiZhu = strBeiZhu + L" | 保价";
 						}
-						sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 
 
 					}
@@ -816,7 +818,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 						if(nWeight > 0)
 						{
 							double money = GetBSPrice(nWeight, itB->strSheng, g_moHeKeJiBSPrice);
-							sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
 					else
@@ -846,7 +848,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 						else
 							_price = 0.6;
 					}
-					sheet->Cell(itB->nRow, 13)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
+					sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
 				}
 				++itB;
 			}
@@ -860,6 +862,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 
 bool CStorageBillDlg::Handle_TaiFuShangMao()
 {
+
 	BasicExcel excel;
 	if(!CreateExcel(excel, m_mapAllSalesInfo[L"泰福商贸"], m_mapInStorageInfo[L"泰福商贸"]))
 		return false;
@@ -876,12 +879,6 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
 			{
-				//sheet->Cell(0, 10)->SetWString(L"计费重量");
-				//sheet->Cell(0, 11)->SetWString(L"物流费");
-				//sheet->Cell(0, 12)->SetWString(L"耗材费");
-				//sheet->Cell(0, 13)->SetWString(L"操作费");
-				//sheet->Cell(0, 14)->SetWString(L"增值费用");
-				//sheet->Cell(0, 15)->SetWString(L"备注");
 				wstring strBeiZhu = L"";
 				int nWeight = 0;
 				wchar_t decimal1 = itB->strZhongLiang.at(itB->strZhongLiang.size() - 1);
@@ -896,7 +893,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 						nWeight = 3;
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
-					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
 				else
 				{
@@ -911,7 +908,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
-					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
 				double dZengZhi = 0;
 				//计算物流费
@@ -953,7 +950,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 							else
 								strBeiZhu = strBeiZhu + L" | 保价";
 						}
-						sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 
 
 					}
@@ -963,7 +960,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 						if(nWeight > 0)
 						{
 							double money = GetBSPrice(nWeight, itB->strSheng, g_taiFuShangMaoBSPrice);
-							sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
 					else
@@ -976,7 +973,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 				//打包费用
 				{
 					double _price = 0.8;
-					sheet->Cell(itB->nRow, 13)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
+					sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
 				}
 				++itB;
 			}
@@ -1007,11 +1004,6 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
 			{
-				//sheet->Cell(0, 11)->SetWString(L"物流费");
-				//sheet->Cell(0, 12)->SetWString(L"耗材费");
-				//sheet->Cell(0, 13)->SetWString(L"操作费");
-				//sheet->Cell(0, 14)->SetWString(L"增值费用");
-				//sheet->Cell(0, 15)->SetWString(L"备注");
 				wstring strBeiZhu = L"";
 				int nWeight = 0;
 				wchar_t decimal1 = itB->strZhongLiang.at(itB->strZhongLiang.size()-1);
@@ -1026,7 +1018,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						nWeight = 3;
 					wchar_t szWeight[10] ={0};
 					_itow_s(nWeight, szWeight, 10);
-					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
 				else
 				{
@@ -1041,7 +1033,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					
 					wchar_t szWeight[10] ={0};
 					_itow_s(nWeight, szWeight, 10);
-					sheet->Cell(itB->nRow, 10)->SetWString(szWeight);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
 				double dZengZhi = 0;
 				//计算物流费
@@ -1083,14 +1075,14 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							else
 								strBeiZhu = strBeiZhu + L" | 保价";
 						}
-						sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money+DOUBLE_PRECISION, 1).c_str());
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money+DOUBLE_PRECISION, 1).c_str());
 
 
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
-						sheet->Cell(itB->nRow, 11)->SetWString(L"3.5");
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"3.5");
 					else if(itB->strWuLiuGongSi == L"中通快运")
-						sheet->Cell(itB->nRow, 11)->SetWString(L"3.5");
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"3.5");
 					else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
 					{
 						double money = 0;
@@ -1100,7 +1092,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 								money = 1.3 + (nWeight - 3)*0.8;
 							else
 								money = 1.3;
-							sheet->Cell(itB->nRow, 11)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
 					else
@@ -1110,7 +1102,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						AddLog(szOut);
 					}
 				}
-				sheet->Cell(itB->nRow, 13)->SetWString(L"1.1");
+				sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(L"1.1");
 				//计算增值费用
 				{
 					//云集贴标费
@@ -1128,9 +1120,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						}
 					}
 					if(dZengZhi > 0)
-						sheet->Cell(itB->nRow, 14)->SetWString(CFuncCommon::Double2WString(dZengZhi+DOUBLE_PRECISION,1).c_str());
+						sheet->Cell(itB->nRow, eET_ZengZhiFeiYong)->SetWString(CFuncCommon::Double2WString(dZengZhi+DOUBLE_PRECISION,1).c_str());
 				}
-				sheet->Cell(itB->nRow, 15)->SetWString(strBeiZhu.c_str());
+				sheet->Cell(itB->nRow, eET_BeiZhu)->SetWString(strBeiZhu.c_str());
 				++itB;
 			}
 		}
