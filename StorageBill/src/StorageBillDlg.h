@@ -44,6 +44,7 @@ private:
 	bool Handle_MiYaShiQi();
 	bool Handle_TaiFuShangMao();
 	bool LoadSFData();
+	bool LoadBSData();
 	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
 	double GetSFPrice(int nWeight, wstring strSheng, double price[][2]);
@@ -55,14 +56,17 @@ private:
 	bool m_bExit;
 	bool m_bRun;
 	bool m_bSF;
+	bool m_bBS;
 	thread_safe_queue<std::wstring> m_queueLog;
 	std::map< std::wstring, std::list<sSalesInfo> > m_mapAllSalesInfo;
 	std::map< std::wstring, sSalesInfo* > m_mapTempSalesInfo;
 	std::map<std::wstring, sSFAuthData> m_mapSFAuthData;
+	std::map<std::wstring, sBSAuthData> m_mapBSAuthData;
 	std::map< std::wstring, std::set<std::wstring> > m_mapYCNeedSFHandle;
 	std::map< std::wstring, std::map<std::wstring, sInStorageInfo> > m_mapInStorageInfo;
 	std::set<std::wstring> m_setSFZhongLiangYiChang;
 	BasicExcel m_sfExcel;
+	BasicExcel m_bsExcel;
 	BasicExcel m_recordExcel;
 	size_t m_sfHandleCol;
 	std::wstring m_strYM;
@@ -72,4 +76,5 @@ public:
 	CEdit m_editYM;
 	afx_msg void OnLbnDblclkLogList();
 	CButton m_checkSF;
+	CButton m_checkBS;
 };

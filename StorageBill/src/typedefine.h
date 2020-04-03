@@ -10,6 +10,7 @@ struct sSFAuthData
 	wstring vaServices;
 	wstring needPay;
 	wstring backPay;
+	wstring bjPay;
 	bool bHandle;
 	int row;
 	sSFAuthData():
@@ -19,6 +20,30 @@ struct sSFAuthData
 		bHandle(false),
 		backPay(L""),
 		needPay(L""),
+		bjPay(L""),
+		row(-1)
+	{
+	}
+};
+
+struct sBSAuthData
+{
+	wstring number;
+	double weight;
+	double needPay1;
+	double needPay2;
+	double needPay3;
+	double needPay4;
+	double needPay5;
+	int row;
+	sBSAuthData() :
+		number(L""),
+		weight(0.0),
+		needPay1(0.0),
+		needPay2(0.0),
+		needPay3(0.0),
+		needPay4(0.0),
+		needPay5(0.0),
 		row(-1)
 	{
 	}
@@ -96,6 +121,7 @@ enum eExportTitle
 	eET_HuoPinMingXi,
 	eET_JiFeiZhongLiang,
 	eET_WuLiuFei,
+	eET_WuLiuChengBen,
 	eET_HaoCaiFei,
 	eET_CaoZuoFei,
 	eET_ZengZhiFeiYong,
