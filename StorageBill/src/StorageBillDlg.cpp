@@ -1207,8 +1207,16 @@ bool CStorageBillDlg::LoadBSData()
 	std::wstring strBSFileName = BS_FILE_PATH;
 	std::string _strBSFileName = CFuncCommon::WString2String(strBSFileName.c_str());
 	m_bsExcel.Load(_strBSFileName.c_str());
-	BasicExcelWorksheet* bsSheet = m_bsExcel.GetWorksheet(L"Sheet");
-
+	BasicExcelWorksheet* bsSheet = NULL;
+	BasicExcelWorksheet* bsTempSheet = m_bsExcel.GetWorksheet(L"Sheet");
+	if(bsTempSheet)
+		bsSheet = bsTempSheet;
+	else
+	{
+		bsTempSheet = m_bsExcel.GetWorksheet(L"Sheet1");
+		if(bsTempSheet)
+			bsSheet = bsTempSheet;
+	}
 	if(bsSheet)
 	{
 		size_t maxRows = bsSheet->GetTotalRows();
