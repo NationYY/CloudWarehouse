@@ -715,14 +715,25 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 			}
 			else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
 			{
-				std::map<std::wstring, sBSAuthData>::iterator it = m_mapBSAuthData.find(itB->strWuLiuDanHao);
-				if(it != m_mapBSAuthData.end())
-					sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetDouble(it->second.needPay1 + it->second.needPay2 + it->second.needPay3 + it->second.needPay4 + it->second.needPay5);
-				else
+				if(itB->strHuoZhu == L"魔合科技N" || itB->strHuoZhu == L"泰福商贸")
 				{
-					wchar_t szBuffer[128] = { 0 };
-					wsprintfW(szBuffer, L"未找到百世成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
-					AddLog(szBuffer);
+					wistringstream iss(itB->strZhongLiang.c_str());
+					double dWeight;
+					iss >> dWeight;
+					if(dWeight <= 3)
+						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetDouble(3.2);
+					else
+					{
+						std::map<std::wstring, sBSAuthData>::iterator it = m_mapBSAuthData.find(itB->strWuLiuDanHao);
+						if(it != m_mapBSAuthData.end())
+							sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetDouble(it->second.needPay1 + it->second.needPay2 + it->second.needPay3 + it->second.needPay4 + it->second.needPay5);
+						else
+						{
+							wchar_t szBuffer[128] = { 0 };
+							wsprintfW(szBuffer, L"未找到百世成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
+							AddLog(szBuffer);
+						}
+					}
 				}
 			}
 			else
