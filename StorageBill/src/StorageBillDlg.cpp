@@ -729,7 +729,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 					{
 						std::map<std::wstring, sBSAuthData>::iterator it = m_mapBSAuthData.find(itB->strWuLiuDanHao);
 						if(it != m_mapBSAuthData.end())
-							sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetDouble(it->second.needPay1 + it->second.needPay2 + it->second.needPay3 + it->second.needPay4 + it->second.needPay5);
+							sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetDouble(it->second.needPay1 + it->second.needPay2 + it->second.needPay3 + it->second.needPay4 + it->second.needPay5 + 1.37);
 						else
 						{
 							wchar_t szBuffer[128] = { 0 };
