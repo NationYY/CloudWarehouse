@@ -654,7 +654,7 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo)
 {
 	if(listSalesInfo.size() == 0)
-		return false;
+		return true;
 	int nRecordRowIndex = 1;
 	excel.AddWorksheet(L"订单费用");
 	excel.AddWorksheet(L"入库费用");
@@ -703,19 +703,22 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 			sheet->Cell(nRecordRowIndex, eET_WuLiuFei)->SetWString(L"0");
 			if(itB->strWuLiuGongSi == L"顺丰热敏")
 			{
-				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(itB->strWuLiuDanHao);
-				if(it != m_mapSFAuthData.end())
-					sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(it->second.needPay.c_str());
-				else
+				if(m_bSF)
 				{
-					wchar_t szBuffer[128] = { 0 };
-					wsprintfW(szBuffer, L"未找到顺丰成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
-					AddLog(szBuffer);
+					std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(itB->strWuLiuDanHao);
+					if(it != m_mapSFAuthData.end())
+						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(it->second.needPay.c_str());
+					else
+					{
+						wchar_t szBuffer[128] = { 0 };
+						wsprintfW(szBuffer, L"未找到顺丰成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
+						AddLog(szBuffer);
+					}
 				}
 			}
 			else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
 			{
-				if(itB->strHuoZhu == L"魔合科技N" || itB->strHuoZhu == L"泰福商贸")
+				if(m_bBS && (itB->strHuoZhu == L"魔合科技N" || itB->strHuoZhu == L"泰福商贸"))
 				{
 					wistringstream iss(itB->strZhongLiang.c_str());
 					double dWeight;
