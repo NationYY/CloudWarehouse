@@ -26,8 +26,8 @@ if(_pStr)\
 #define BS_FILE_PATH L"./系统数据/"+m_strYM+L"/百世账单.xls"
 
 
-const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常"};
-int g_arrRecordRowIndex[] ={0, 0, 0};
+const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世重量差异订单"};
+int g_arrRecordRowIndex[] ={0, 0, 0, 0};
 const wchar_t* g_arrHuoZhuName[] ={L"魔合科技N", L"永创耀辉", L"弥雅食器", L"泰福商贸"};
 
 
@@ -630,6 +630,7 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 	m_recordExcel.AddWorksheet(g_arrWorksheetName[0]);
 	m_recordExcel.AddWorksheet(g_arrWorksheetName[1]);
 	m_recordExcel.AddWorksheet(g_arrWorksheetName[2]);
+	m_recordExcel.AddWorksheet(g_arrWorksheetName[3]);
 	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[0]);
 	if(recordSheet)
 	{
@@ -638,6 +639,14 @@ bool CStorageBillDlg::CreateHuoZhuFile()
 		recordSheet->Cell(g_arrRecordRowIndex[0], 2)->SetWString(L"云仓重量");
 		recordSheet->Cell(g_arrRecordRowIndex[0], 3)->SetWString(L"云仓计费重量");
 		g_arrRecordRowIndex[0]++;
+	}
+	recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[3]);
+	if(recordSheet)
+	{
+		recordSheet->Cell(g_arrRecordRowIndex[3], 0)->SetWString(L"单号");
+		recordSheet->Cell(g_arrRecordRowIndex[3], 1)->SetWString(L"百世重量");
+		recordSheet->Cell(g_arrRecordRowIndex[3], 2)->SetWString(L"云仓重量");
+		g_arrRecordRowIndex[3]++;
 	}
 	return true;
 }
@@ -704,6 +713,18 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 					AddLog(szBuffer);
 				}
 			}
+			else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
+			{
+				std::map<std::wstring, sBSAuthData>::iterator it = m_mapBSAuthData.find(itB->strWuLiuDanHao);
+				if(it != m_mapBSAuthData.end())
+					sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetDouble(it->second.needPay1 + it->second.needPay2 + it->second.needPay3 + it->second.needPay4 + it->second.needPay5);
+				else
+				{
+					wchar_t szBuffer[128] = { 0 };
+					wsprintfW(szBuffer, L"未找到百世成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
+					AddLog(szBuffer);
+				}
+			}
 			else
 				sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(L"0");
 			sheet->Cell(nRecordRowIndex, eET_HaoCaiFei)->SetWString(L"0");
@@ -750,6 +771,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 	wstring fileName = L"./Export_" + m_strYM + L"/" + L"魔合科技N_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
 	CompareWithSFData(L"魔合科技N", m_mapAllSalesInfo[L"魔合科技N"]);
+	CompareWithBSData(L"魔合科技N", m_mapAllSalesInfo[L"魔合科技N"]);
 	//计算相关费用
 	//单独TH-043和单独TH-042按拆单价格
 	{
@@ -1243,7 +1265,6 @@ bool CStorageBillDlg::LoadBSData()
 	{
 		THROW_ERROR(L"读取百世账单失败");
 	}
-	m_bsExcel.Save();
 	return true;
 }
 
@@ -1371,6 +1392,11 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 	std::list<sSalesInfo>::iterator itYCEnd = listInfo.end();
 	while(itYCBegin != itYCEnd)
 	{
+		if(itYCBegin->strWuLiuGongSi != L"顺丰热敏")
+		{
+			++itYCBegin;
+			continue;
+		}
 		std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itYCBegin->strWuLiuDanHao);
 		if(itSF != m_mapSFAuthData.end())
 		{
@@ -1432,6 +1458,44 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 		}
 	}
 
+	return true;
+}
+
+bool CStorageBillDlg::CompareWithBSData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo)
+{
+	if(!m_bBS)
+		return true;
+	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[3]);
+	if(recordSheet == NULL)
+		return false;
+	std::list<sSalesInfo>::iterator itYCBegin = listInfo.begin();
+	std::list<sSalesInfo>::iterator itYCEnd = listInfo.end();
+	while(itYCBegin != itYCEnd)
+	{
+		if(itYCBegin->strWuLiuGongSi != L"百世线下(分拨)")
+		{
+			++itYCBegin;
+			continue;
+		}
+		std::map<std::wstring, sBSAuthData>::iterator itBS = m_mapBSAuthData.find(itYCBegin->strWuLiuDanHao);
+		if(itBS != m_mapBSAuthData.end())
+		{
+			wistringstream iss(itYCBegin->strZhongLiang.c_str());
+			double dBSWeight = itBS->second.weight;
+			double dYCWeight;
+			iss >> dYCWeight;
+			int nYCWeight = (int)ceil(dYCWeight);
+			int nBSWeight = (int)ceil(dBSWeight);
+			if(dBSWeight > dYCWeight && nBSWeight > nYCWeight)
+			{
+				recordSheet->Cell(g_arrRecordRowIndex[3], 0)->SetWString(itBS->first.c_str());
+				recordSheet->Cell(g_arrRecordRowIndex[3], 1)->SetDouble(dBSWeight);
+				recordSheet->Cell(g_arrRecordRowIndex[3], 2)->SetWString(itYCBegin->strZhongLiang.c_str());
+				g_arrRecordRowIndex[3]++;
+			}
+		}
+		++itYCBegin;
+	}
 	return true;
 }
 
