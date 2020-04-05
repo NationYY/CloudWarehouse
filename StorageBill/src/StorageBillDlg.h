@@ -67,7 +67,6 @@ private:
 	std::map< std::wstring, std::map<std::wstring, sInStorageInfo> > m_mapInStorageInfo;
 	std::set<std::wstring> m_setSFZhongLiangYiChang;
 	BasicExcel m_sfExcel;
-	BasicExcel m_bsExcel;
 	BasicExcel m_recordExcel;
 	size_t m_sfHandleCol;
 	std::wstring m_strYM;

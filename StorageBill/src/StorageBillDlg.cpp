@@ -23,7 +23,6 @@ if(_pStr)\
 #define DETAIL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库明细.xls"
 #define SF_FILE_PATH L"./系统数据/"+m_strYM+L"/顺丰账单.xls"
 #define IN_STORAGE_PATH L"./系统数据/"+m_strYM+L"/入库明细账.xls"
-#define BS_FILE_PATH L"./系统数据/"+m_strYM+L"/百世账单.xls"
 
 
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世重量差异订单"};
@@ -302,7 +301,10 @@ bool CStorageBillDlg::ParseALLData()
 	BasicExcel inStorageExcel;
 	BasicExcel detailExcel;
 	std::string _strTotalFileName = CFuncCommon::WString2String(strTotalFileName.c_str());
-	totalExcel.Load(_strTotalFileName.c_str());
+	if(!totalExcel.Load(_strTotalFileName.c_str()))
+	{
+		THROW_ERROR(L"销售出库单 加载失败");
+	}
 	BasicExcelWorksheet* totalSheet = totalExcel.GetWorksheet(L"Sheet1");
 	if(totalSheet)
 	{
@@ -370,10 +372,18 @@ bool CStorageBillDlg::ParseALLData()
 			std::list<sSalesInfo>::iterator it = --m_mapAllSalesInfo[_data.strHuoZhu].end();
 			m_mapTempSalesInfo[_data.strWuLiuDanHao] = &(*it);
 		}
+		AddLog(L"读取销售出库单成功");
+	}
+	else
+	{
+		THROW_ERROR(L"销售出库单 加载失败");
 	}
 
 	std::string _strDetailFileName = CFuncCommon::WString2String(strDetailFileName.c_str());
-	detailExcel.Load(_strDetailFileName.c_str());
+	if(!detailExcel.Load(_strDetailFileName.c_str()))
+	{
+		THROW_ERROR(L"销售出库明细 加载失败");
+	}
 	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
 	if(detailSheet)
 	{
@@ -522,6 +532,7 @@ bool CStorageBillDlg::ParseALLData()
 				it->second->nBaoJiaJinE += 1000 * nBjsl;
 			}
 		}
+		AddLog(L"读取销售出库明细成功");
 	}
 	m_mapTempSalesInfo.clear();
 
@@ -589,6 +600,11 @@ bool CStorageBillDlg::ParseALLData()
 					itInfo->second.nCnt += info.nCnt;
 			}
 		}
+		AddLog(L"读取入库明细账成功");
+	}
+	else
+	{
+		THROW_ERROR(L"入库明细账 加载失败");
 	}
 	return true;
 }
@@ -917,6 +933,7 @@ bool CStorageBillDlg::Handle_MoHeKeJi()
 	}
 
 	excel.SaveAs(_file.c_str());
+	AddLog(L"魔合科技账单生成成功");
 	return true;
 }
 
@@ -1042,6 +1059,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 	}
 
 	excel.SaveAs(_file.c_str());
+	AddLog(L"泰福商贸账单生成成功");
 	return true;
 }
 
@@ -1198,7 +1216,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 
 	}
 	excel.SaveAs(_file.c_str());
-
+	AddLog(L"永创耀辉账单生成成功");
 	return true;
 }
 
@@ -1211,6 +1229,7 @@ bool CStorageBillDlg::Handle_MiYaShiQi()
 	string _file = CFuncCommon::WString2String(fileName.c_str());
 	excel.SaveAs(_file.c_str());
 	CompareWithSFData(L"弥雅食器", m_mapAllSalesInfo[L"弥雅食器"]);
+	AddLog(L"弥雅食器账单生成成功");
 	return true;
 }
 
@@ -1218,74 +1237,97 @@ bool CStorageBillDlg::LoadBSData()
 {
 	if(!m_bBS)
 		return true;
-	std::wstring strBSFileName = BS_FILE_PATH;
-	std::string _strBSFileName = CFuncCommon::WString2String(strBSFileName.c_str());
-	m_bsExcel.Load(_strBSFileName.c_str());
-	BasicExcelWorksheet* bsSheet = NULL;
-	BasicExcelWorksheet* bsTempSheet = m_bsExcel.GetWorksheet(L"Sheet");
-	if(bsTempSheet)
-		bsSheet = bsTempSheet;
-	else
+	std::set<std::wstring> setFiles;
+	CFuncCommon::GetAllWFileInDirectory(L"./系统数据/百世账单", setFiles);
+	if(setFiles.size() == 0)
 	{
-		bsTempSheet = m_bsExcel.GetWorksheet(L"Sheet1");
+		THROW_ERROR(L"百世账单 未找到");
+	}
+	std::set<std::wstring>::iterator itB = setFiles.begin();
+	std::set<std::wstring>::iterator itE = setFiles.end();
+	while(itB != itE)
+	{
+		std::wstring strBSFileName = L"./系统数据/百世账单/" + *itB;
+		std::string _strBSFileName = CFuncCommon::WString2String(strBSFileName.c_str());
+		BasicExcel bsExcel;
+		bsExcel.Load(_strBSFileName.c_str());
+		BasicExcelWorksheet* bsSheet = NULL;
+		BasicExcelWorksheet* bsTempSheet = bsExcel.GetWorksheet(L"Sheet");
 		if(bsTempSheet)
 			bsSheet = bsTempSheet;
-	}
-	if(bsSheet)
-	{
-		size_t maxRows = bsSheet->GetTotalRows();
-		size_t maxCols = bsSheet->GetTotalCols();
-		m_sfHandleCol = maxCols;
-		//load tile
-		int colNumber = -1;
-		int colWeight = -1;
-		int needPay1 = -1;
-		int needPay2 = -1;
-		int needPay3 = -1;
-		int needPay4 = -1;
-		int needPay5 = -1;
-		for(size_t c = 0; c < maxCols; ++c)
+		else
 		{
-			BasicExcelCell* cell = bsSheet->Cell(0, c);
-			std::wstring strTitle = cell->GetWString();
-			if(strTitle == L"运单编号")
-				colNumber = c;
-			else if(strTitle == L"总部计费重量")
-				colWeight = c;
-			else if(strTitle == L"总部收中转费")
-				needPay1 = c;
-			else if(strTitle == L"总部收有偿派费")
-				needPay2 = c;
-			else if(strTitle == L"总部收计重费")
-				needPay3 = c;
-			else if(strTitle == L"总部收扫描费")
-				needPay4 = c;
-			else if(strTitle == L"总部收寄件派费")
-				needPay5 = c;
+			bsTempSheet = bsExcel.GetWorksheet(L"Sheet1");
+			if(bsTempSheet)
+				bsSheet = bsTempSheet;
 		}
-		if(colNumber == -1 || colWeight == -1 || needPay1 == -1 || needPay2 == -1 || needPay3 == -1 || needPay4 == -1 || needPay5 == -1)
+		if(bsSheet)
 		{
-			THROW_ERROR(L"百世账单 有标题未找到");
-		}
+			size_t maxRows = bsSheet->GetTotalRows();
+			size_t maxCols = bsSheet->GetTotalCols();
+			m_sfHandleCol = maxCols;
+			//load tile
+			int colNumber = -1;
+			int colWeight = -1;
+			int needPay1 = -1;
+			int needPay2 = -1;
+			int needPay3 = -1;
+			int needPay4 = -1;
+			int needPay5 = -1;
+			for(size_t c = 0; c < maxCols; ++c)
+			{
+				BasicExcelCell* cell = bsSheet->Cell(0, c);
+				std::wstring strTitle = cell->GetWString();
+				if(strTitle == L"运单编号")
+					colNumber = c;
+				else if(strTitle == L"总部计费重量" || strTitle == L"重量")
+					colWeight = c;
+				else if(strTitle == L"总部收中转费" || strTitle == L"中转费")
+					needPay1 = c;
+				else if(strTitle == L"总部收有偿派费")
+					needPay2 = c;
+				else if(strTitle == L"总部收计重费" || strTitle == L"计重费")
+					needPay3 = c;
+				else if(strTitle == L"总部收扫描费" || strTitle == L"扫描费")
+					needPay4 = c;
+				else if(strTitle == L"总部收寄件派费" || strTitle == L"寄件派费")
+					needPay5 = c;
+			}
+			if(colNumber == -1 || colWeight == -1 || needPay1 == -1 || needPay3 == -1 || needPay4 == -1 || needPay5 == -1)
+			{
+				wchar_t szBuffer[128] = { 0 };
+				wsprintfW(szBuffer, L"百世账单有标题未找到 文件名=%s", (*itB).c_str());
+				THROW_ERROR(szBuffer);
+			}
 
-		for(size_t r = 1; r < maxRows; ++r)
-		{
-			sBSAuthData _data;
-			const wchar_t* _pStr = NULL;
-			SHEET_CELL_STRING(bsSheet, r, colNumber, _data.number);
-			SHEET_CELL_DOUBLE(bsSheet, r, colWeight, _data.weight);
-			SHEET_CELL_DOUBLE(bsSheet, r, needPay1, _data.needPay1);
-			SHEET_CELL_DOUBLE(bsSheet, r, needPay2, _data.needPay2);
-			SHEET_CELL_DOUBLE(bsSheet, r, needPay3, _data.needPay3);
-			SHEET_CELL_DOUBLE(bsSheet, r, needPay4, _data.needPay4);
-			SHEET_CELL_DOUBLE(bsSheet, r, needPay5, _data.needPay5);
-			_data.row = r;
-			m_mapBSAuthData[_data.number] = _data;
+			for(size_t r = 1; r < maxRows; ++r)
+			{
+				sBSAuthData _data;
+				const wchar_t* _pStr = NULL;
+				SHEET_CELL_STRING(bsSheet, r, colNumber, _data.number);
+				SHEET_CELL_DOUBLE(bsSheet, r, colWeight, _data.weight);
+				SHEET_CELL_DOUBLE(bsSheet, r, needPay1, _data.needPay1);
+				if(needPay2 != -1)
+				{
+					SHEET_CELL_DOUBLE(bsSheet, r, needPay2, _data.needPay2);
+				}
+				SHEET_CELL_DOUBLE(bsSheet, r, needPay3, _data.needPay3);
+				SHEET_CELL_DOUBLE(bsSheet, r, needPay4, _data.needPay4);
+				SHEET_CELL_DOUBLE(bsSheet, r, needPay5, _data.needPay5);
+				_data.row = r;
+				m_mapBSAuthData[_data.number] = _data;
+			}
+			wchar_t szBuffer[128] = { 0 };
+			wsprintfW(szBuffer, L"读取百世账单成功 文件名=%s", (*itB).c_str());
+			AddLog(szBuffer);
 		}
-	}
-	else
-	{
-		THROW_ERROR(L"读取百世账单失败");
+		else
+		{
+			wchar_t szBuffer[128] = { 0 };
+			wsprintfW(szBuffer, L"读取百世账单失败 文件名=%s", (*itB).c_str());
+			THROW_ERROR(szBuffer);
+		}
+		++itB;
 	}
 	return true;
 }
@@ -1391,6 +1433,7 @@ bool CStorageBillDlg::LoadSFData()
 			}
 			m_mapSFAuthData[_data.number] = _data;
 		}
+		AddLog(L"读取顺丰账单成功");
 	}
 	else
 	{

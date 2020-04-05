@@ -215,6 +215,37 @@ void CFuncCommon::GetAllFileInDirectory(const char* szPath, std::set<std::string
 	_findclose(handle);    // 关闭搜索句柄
 }
 
+void CFuncCommon::GetAllWFileInDirectory(const wchar_t* szPath, std::set<std::wstring>& setFiles)
+{
+	wchar_t dirNew[200];
+	wcscpy(dirNew, szPath);
+	wcscat(dirNew, L"\\*.*");    // 在目录后面加上"\\*.*"进行第一次搜索
+
+	intptr_t handle;
+	_wfinddata_t findData;
+
+	handle = _wfindfirst(dirNew, &findData);
+	if(handle == -1)        // 检查是否成功
+		return;
+	do
+	{
+		if(findData.attrib & _A_SUBDIR)
+		{
+			if(wcscmp(findData.name, L".") == 0 || wcscmp(findData.name, L"..") == 0)
+				continue;
+			wcscpy(dirNew, szPath);
+			wcscat(dirNew, L"\\");
+			wcscat(dirNew, findData.name);
+
+			GetAllWFileInDirectory(dirNew, setFiles);
+		}
+		else
+			setFiles.insert(findData.name);
+	} while(_wfindnext(handle, &findData) == 0);
+
+	_findclose(handle);    // 关闭搜索句柄
+}
+
 std::string CFuncCommon::LocaltimeToISO8601(time_t time)
 {
 	//tm* pTM = localtime(&time);

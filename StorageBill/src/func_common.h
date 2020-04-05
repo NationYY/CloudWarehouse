@@ -16,6 +16,7 @@ public:
 	static std::string FormatDateStr(__int64 time);
 	static std::string FormatTimeStr(__int64 time);
 	static void GetAllFileInDirectory(const char* szPath, std::set<std::string>& setFiles);
+	static void GetAllWFileInDirectory(const wchar_t* szPath, std::set<std::wstring>& setFiles);
 	static std::string LocaltimeToISO8601(time_t time);
 	static time_t ISO8601ToTime(std::string& time);
 	static char* GenUUID();
