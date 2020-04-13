@@ -531,6 +531,19 @@ bool CStorageBillDlg::ParseALLData()
 			{
 				it->second->nBaoJiaJinE += 1000 * nBjsl;
 			}
+			else if(strHuoPinMingCheng == L"贵州茅台酒丁酉鸡年53度500ml")
+			{
+				it->second->nBaoJiaJinE += 1000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"2019年飞天茅台（小酒版）53度50ml*2")
+			{
+				if(nBjsl >= 12)
+					it->second->nBaoJiaJinE += 3000;
+				else if(nBjsl >= 10)
+					it->second->nBaoJiaJinE += 2000;
+				else if(nBjsl >= 6)
+					it->second->nBaoJiaJinE += 1000;
+			}
 		}
 		AddLog(L"读取销售出库明细成功");
 	}
@@ -1154,8 +1167,11 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 								nLocalBj = int(itB->nBaoJiaJinE*0.005);
 							else
 								nLocalBj = 2;
+							if(nLocalBj > 0 && sourceBJ > 0)
+								dZengZhi += min(nLocalBj, sourceBJ);
+							else
+								dZengZhi += max(nLocalBj, sourceBJ);
 
-							dZengZhi += max(nLocalBj, sourceBJ);
 
 							if(strBeiZhu == L"")
 								strBeiZhu = strBeiZhu + L"保价";
