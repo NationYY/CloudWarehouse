@@ -1168,7 +1168,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							else
 								nLocalBj = 2;
 							if(nLocalBj > 0 && sourceBJ > 0)
-								dZengZhi += min(nLocalBj, sourceBJ);
+								dZengZhi += sourceBJ;
 							else
 								dZengZhi += max(nLocalBj, sourceBJ);
 
