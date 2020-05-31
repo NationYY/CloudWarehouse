@@ -74,12 +74,13 @@ struct sSalesInfo
 	std::wstring strHuoPinMingXi;		//货品明细
 	std::wstring strYuanShiDanHao;		//原始单号
 	std::wstring strDianPu;				//店铺
+	std::wstring strBaoZhuang;			//包装
 	int nRow;							//在输出表中的行数
 	int nBaoJiaJinE;					//保价金额
 	bool bChaiFen;						//是否是拆分订单
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
 		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), 
-		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true)
+		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L"")
 	{
 	}
 };
@@ -120,6 +121,7 @@ enum eExportTitle
 	eET_HuoPinZongShuLiang,
 	eET_HuoPinMingXi,
 	eET_JiFeiZhongLiang,
+	eET_BaoZhuang,
 	eET_WuLiuFei,
 	eET_WuLiuChengBen,
 	eET_HaoCaiFei,

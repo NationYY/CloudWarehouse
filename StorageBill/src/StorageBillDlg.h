@@ -43,6 +43,10 @@ private:
 	bool Handle_YongChuangYaoHui();
 	bool Handle_MiYaShiQi();
 	bool Handle_TaiFuShangMao();
+	bool Handle_YiMaiKeJi();
+	bool Handle_XinMaBang();
+	bool Handle_QiYiJiangYuan();
+
 	bool LoadSFData();
 	bool LoadBSData();
 	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);

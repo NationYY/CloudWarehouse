@@ -111,7 +111,7 @@ struct LittleEndian
 	{
 		retVal = Type(0);
 		if (bytes == 0) bytes = sizeof(Type);
-		for (size_t i=0; i<bytes; ++i)
+		for (int i=0; i<bytes; ++i)
 		{
 			retVal |= ((Type)((unsigned char)buffer[pos+i])) << 8*i;
 		}
@@ -120,14 +120,14 @@ struct LittleEndian
 	template<typename Type>
 	static void ReadString(const char* buffer, Type* str, int pos=0, int bytes=0)
 	{
-		for (size_t i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));
+		for (int i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));
 	}
 
 	template<typename Type>
 	static void Write(char* buffer, Type val, int pos=0, int bytes=0)
 	{
 		if (bytes == 0) bytes = sizeof(Type);
-		for (size_t i=0; i<bytes; ++i)
+		for (int i=0; i<bytes; ++i)
 		{
 			buffer[pos+i] = (unsigned char)val;
 			val >>= 8;
@@ -137,7 +137,7 @@ struct LittleEndian
 	template<typename Type>
 	static void WriteString(char* buffer, Type* str, int pos=0, int bytes=0)
 	{
-		for (size_t i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));
+		for (int i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));
 	}
 
 	template<typename Type>
@@ -145,7 +145,7 @@ struct LittleEndian
 	{
 		retVal = Type(0);
 		if (bytes == 0) bytes = sizeof(Type);
-		for (size_t i=0; i<bytes; ++i)
+		for (int i=0; i<bytes; ++i)
 		{
 			retVal |= ((Type)((unsigned char)buffer[pos+i])) << 8*i;
 		}
@@ -154,14 +154,14 @@ struct LittleEndian
 	template<typename Type>
 	static void ReadString(const vector<char>& buffer, Type* str, int pos=0, int bytes=0)
 	{
-		for (size_t i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));
+		for (int i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));
 	}
 
 	template<typename Type>
 	static void Write(vector<char>& buffer, Type val, int pos=0, int bytes=0)
 	{
 		if (bytes == 0) bytes = sizeof(Type);
-		for (size_t i=0; i<bytes; ++i)
+		for (int i=0; i<bytes; ++i)
 		{
 			buffer[pos+i] = (unsigned char)val;
 			val >>= 8;
@@ -171,7 +171,7 @@ struct LittleEndian
 	template<typename Type>
 	static void WriteString(vector<char>& buffer, Type* str, int pos=0, int bytes=0)
 	{
-		for (size_t i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));
+		for (int i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));
 	}
 
 
