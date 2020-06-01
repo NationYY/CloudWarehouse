@@ -1876,59 +1876,40 @@ bool CStorageBillDlg::Handle_XinMaBang()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"顺丰热敏")
+					if(itB->strWuLiuGongSi == L"百世线下(分拨)")
 					{
-						double money = GetSFPrice(nWeight, itB->strSheng, g_yiMaiKeJiSFPrice);
-						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
-						if(itSF != m_mapSFAuthData.end())
-						{
-							if(itSF->second.backPay != L"")
-							{
-								double backPay = _wtof(itSF->second.backPay.c_str());
-								money += backPay;
-								strBeiZhu = strBeiZhu + L"转寄退回";
-							}
-							double needPay = _wtof(itSF->second.needPay.c_str());
-							if(needPay > money)
-							{
-								std::set<std::wstring>::iterator it = m_setSFZhongLiangYiChang.find(itB->strWuLiuDanHao.c_str());
-								if(it == m_setSFZhongLiangYiChang.end())
-								{
-									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[2]);
-									recordSheet->Cell(g_arrRecordRowIndex[2], 0)->SetWString(itB->strWuLiuDanHao.c_str());
-									recordSheet->Cell(g_arrRecordRowIndex[2], 1)->SetWString(itB->strHuoZhu.c_str());
-									g_arrRecordRowIndex[2]++;
-								}
-							}
-						}
-						if(itB->nBaoJiaJinE != 0)
-						{
-							if(itB->nBaoJiaJinE > 1000)
-								dZengZhi += int(itB->nBaoJiaJinE*0.005);
-							else
-								dZengZhi += 2;
+						
 
-							if(strBeiZhu == L"")
-								strBeiZhu = strBeiZhu + L"保价";
-							else
-								strBeiZhu = strBeiZhu + L" | 保价";
-						}
-						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
-
-
-					}
-					else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
-					{
 						double money = 0;
-						if(nWeight > 0)
+						int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+						if(nZSL != 1)
 						{
-							double money = GetBSPrice(nWeight, itB->strSheng, g_yiMaiKeJiBSPrice);
+							wchar_t szOut[120] = { 0 };
+							_swprintf(szOut, L"[新马帮快递货品数量异常] 单号=%s", itB->strWuLiuDanHao.c_str());
+							AddLog(szOut);
+						}
+						else
+						{
+							double money = GetBSPrice(5, itB->strSheng, g_xinMaBangBSPrice);
+							money += 0.4;
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
 					{
-					
+						int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+						if(nZSL == 0)
+						{
+							wchar_t szOut[120] = { 0 };
+							_swprintf(szOut, L"[新马帮快运货品数量异常] 单号=%s", itB->strWuLiuDanHao.c_str());
+							AddLog(szOut);
+						}
+						else
+						{
+							double money = GetBSPrice(5, itB->strSheng, g_xinMaBangBSPrice);
+							money += (nZSL*0.4);
+							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+						}
 					}
 					else
 					{
@@ -1940,7 +1921,6 @@ bool CStorageBillDlg::Handle_XinMaBang()
 				++itB;
 			}
 		}
-
 	}
 	excel.SaveAs(_file.c_str());
 	AddLog(L"新马帮账单生成成功");
@@ -2054,6 +2034,45 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 						wchar_t szOut[120] = { 0 };
 						_swprintf(szOut, L"[未知的物流方式] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
 						AddLog(szOut);
+					}
+				}
+				//打包费用
+				{
+					double _price = 0.9;
+					int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+					if(nZSL == 0)
+					{
+						wchar_t szOut[120] = { 0 };
+						_swprintf(szOut, L"[异常货品数量] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
+						AddLog(szOut);
+					}
+					if(nZSL > 5)
+						_price = 0.9 + (nZSL - 8)*0.1;
+					else
+						_price = 0.9;
+					sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
+				}
+				//耗材费用
+				{
+					int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+					if(nZSL == 0)
+					{
+						wchar_t szOut[120] = { 0 };
+						_swprintf(szOut, L"[异常货品数量] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
+						AddLog(szOut);
+					}
+					else
+					{
+						if(itB->strBaoZhuang == L"4#3层纸箱(4#3层纸箱)")
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(nZSL*0.1 + nZSL*0.6 + 1.95 + DOUBLE_PRECISION, 1).c_str());
+						else if(itB->strBaoZhuang == L"5#3层纸箱(5#3层纸箱)")
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(nZSL*0.1 + nZSL*0.6 + 1.32 + DOUBLE_PRECISION, 1).c_str());
+						else
+						{
+							wchar_t szOut[120] = { 0 };
+							_swprintf(szOut, L"[未知包装物] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
+							AddLog(szOut);
+						}
 					}
 				}
 				++itB;
