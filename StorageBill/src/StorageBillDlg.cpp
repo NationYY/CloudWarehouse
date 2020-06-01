@@ -2064,9 +2064,9 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 					else
 					{
 						if(itB->strBaoZhuang == L"4#3层纸箱(4#3层纸箱)")
-							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(nZSL*0.1 + nZSL*0.6 + 1.95 + DOUBLE_PRECISION, 1).c_str());
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 1.95 + DOUBLE_PRECISION, 1).c_str());
 						else if(itB->strBaoZhuang == L"5#3层纸箱(5#3层纸箱)")
-							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(nZSL*0.1 + nZSL*0.6 + 1.32 + DOUBLE_PRECISION, 1).c_str());
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 1.32 + DOUBLE_PRECISION, 1).c_str());
 						else
 						{
 							wchar_t szOut[120] = { 0 };
