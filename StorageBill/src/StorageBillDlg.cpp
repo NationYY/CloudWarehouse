@@ -378,7 +378,12 @@ bool CStorageBillDlg::ParseALLData()
 			
 			if(_data.strYuanShiDanHao != L"")
 				_data.bChaiFen = false;
-			double dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
+			const wchar_t* szZL = totalSheet->Cell(r, nZhongLiang)->GetWString();
+			double dTemp = 0.0;
+			if(szZL == NULL)
+				dTemp = totalSheet->Cell(r, nZhongLiang)->GetDouble();
+			else
+				dTemp = _wtof(szZL);
 			if(dTemp > 0.001)
 				dTemp += 0.05;
 			if(_data.strWuLiuGongSi == L"顺丰热敏" && m_bSF)
@@ -1313,7 +1318,6 @@ bool CStorageBillDlg::LoadBSData()
 		{
 			size_t maxRows = bsSheet->GetTotalRows();
 			size_t maxCols = bsSheet->GetTotalCols();
-			m_sfHandleCol = maxCols;
 			//load tile
 			int colNumber = -1;
 			int colWeight = -1;
@@ -1433,7 +1437,7 @@ bool CStorageBillDlg::LoadSFData()
 			SHEET_CELL_STRING(sfSheet, r, colVAServices, _data.vaServices);
 			SHEET_CELL_STRING(sfSheet, r, colNeedPay, _data.needPay);
 			_data.row = r;
-			if(_data.vaServices == L"保价")
+			if(_data.vaServices == L"保价" || _data.vaServices == L"特安")
 			{
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())
@@ -1907,6 +1911,7 @@ bool CStorageBillDlg::Handle_XinMaBang()
 						else
 						{
 							double money = GetBSPrice(5, itB->strSheng, g_xinMaBangBSPrice);
+							money *= nZSL;
 							money += (nZSL*0.4);
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
@@ -2047,7 +2052,7 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 						AddLog(szOut);
 					}
 					if(nZSL > 5)
-						_price = 0.9 + (nZSL - 8)*0.1;
+						_price = 0.9 + (nZSL - 5)*0.1;
 					else
 						_price = 0.9;
 					sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
