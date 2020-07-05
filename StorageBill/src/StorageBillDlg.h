@@ -39,7 +39,6 @@ private:
 	void _LogicThread();
 	bool ParseALLData();
 	bool CreateHuoZhuFile();
-	bool Handle_MoHeKeJi();
 	bool Handle_YongChuangYaoHui();
 	bool Handle_MiYaShiQi();
 	bool Handle_TaiFuShangMao();
@@ -52,7 +51,7 @@ private:
 	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CompareWithBSData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
-	double GetSFPrice(int nWeight, wstring strSheng, double price[][2]);
+	double GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice);
 	double GetBSPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice);
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
@@ -81,4 +80,5 @@ public:
 	afx_msg void OnLbnDblclkLogList();
 	CButton m_checkSF;
 	CButton m_checkBS;
+	wofstream m_logFile;
 };
