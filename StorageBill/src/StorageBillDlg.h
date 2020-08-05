@@ -40,6 +40,7 @@ private:
 	bool ParseALLData();
 	bool CreateHuoZhuFile();
 	bool Handle_YongChuangYaoHui();
+	bool Handle_YongChuangYaoHui_KunLunShan();
 	bool Handle_MiYaShiQi();
 	bool Handle_TaiFuShangMao();
 	bool Handle_YiMaiKeJi();
@@ -53,6 +54,7 @@ private:
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
 	double GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice);
 	double GetBSPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice);
+	double GetYTPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice);
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
 private:

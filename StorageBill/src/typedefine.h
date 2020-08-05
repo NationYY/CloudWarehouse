@@ -79,9 +79,11 @@ struct sSalesInfo
 	int nRow;							//在输出表中的行数
 	int nBaoJiaJinE;					//保价金额
 	bool bChaiFen;						//是否是拆分订单
+	bool bXiuGaiZhongLiang;				//是否自动计算重量
+	bool bKunLunShan;					//是否昆仑山
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
 		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), 
-		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L""), strKeFuBeiZhu(L"")
+		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L""), strKeFuBeiZhu(L""), bXiuGaiZhongLiang(L""), bKunLunShan(false)
 	{
 	}
 };
@@ -92,9 +94,10 @@ struct sInStorageInfo
 	std::wstring strShangJiaBianMa;     //商家编码
 	std::wstring strHuoPinBianMa;		//货品编码
 	std::wstring strHuoPinMingCheng;	//货品名称
+	std::wstring strPinPai;
 	int nCnt;
 	int nRow;
-	sInStorageInfo(): strHuoZhu(L""), strShangJiaBianMa(L""), strHuoPinBianMa(L""), strHuoPinMingCheng(L""), nCnt(0), nRow(0)
+	sInStorageInfo(): strHuoZhu(L""), strShangJiaBianMa(L""), strHuoPinBianMa(L""), strHuoPinMingCheng(L""), nCnt(0), nRow(0), strPinPai(L"")
 	{
 	}
 };
