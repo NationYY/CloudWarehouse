@@ -5,6 +5,8 @@ std::map< std::wstring, std::list<sExpressPriceInfo> > g_taiFuShangMaoBSPrice;
 std::map< std::wstring, std::list<sExpressPriceInfo> > g_yiMaiKeJiBSPrice;
 std::map< std::wstring, std::list<sExpressPriceInfo> > g_qiYiJiangYuanBSPrice;
 std::map< std::wstring, std::list<sExpressPriceInfo> > g_xinMaBangBSPrice;
+std::map< std::wstring, std::list<sExpressPriceInfo> > g_miYaBSPrice;
+std::map< std::wstring, std::list<sExpressPriceInfo> > g_kunLunShanYTPrice;
 //----------------------------------------------------------------------------------//
 
 //------------------------------------顺丰价格--------------------------------------//
@@ -329,25 +331,130 @@ void PrepareExpressPrice()
 		g_xinMaBangBSPrice[L"内蒙古自治区"].push_back({ 5, 0, 3, 7, 5.7 });
 	}
 	//永创耀辉顺丰
-	g_yongChuangYaoHuiSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
-	g_yongChuangYaoHuiSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
-	g_yongChuangYaoHuiSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
-	g_yongChuangYaoHuiSFPrice[0].push_back({ 3, 0, 1, 9, 4.2 });
+	{
+		g_yongChuangYaoHuiSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
+		g_yongChuangYaoHuiSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
+		g_yongChuangYaoHuiSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
+		g_yongChuangYaoHuiSFPrice[0].push_back({ 3, 0, 1, 9, 4.2 });
 
-	g_yongChuangYaoHuiSFPrice[1].push_back({ 0, 1, 1, 11, 0 });
-	g_yongChuangYaoHuiSFPrice[1].push_back({ 1, 2, 2, 14, 0 });
-	g_yongChuangYaoHuiSFPrice[1].push_back({ 2, 3, 3, 16, 0 });
-	g_yongChuangYaoHuiSFPrice[1].push_back({ 3, 0, 1, 10, 4.5 });
+		g_yongChuangYaoHuiSFPrice[1].push_back({ 0, 1, 1, 11, 0 });
+		g_yongChuangYaoHuiSFPrice[1].push_back({ 1, 2, 2, 14, 0 });
+		g_yongChuangYaoHuiSFPrice[1].push_back({ 2, 3, 3, 16, 0 });
+		g_yongChuangYaoHuiSFPrice[1].push_back({ 3, 0, 1, 10, 4.5 });
 
-	g_yongChuangYaoHuiSFPrice[2].push_back({ 0, 1, 1, 11, 0 });
-	g_yongChuangYaoHuiSFPrice[2].push_back({ 1, 2, 2, 15, 0 });
-	g_yongChuangYaoHuiSFPrice[2].push_back({ 2, 3, 3, 18.5, 0 });
-	g_yongChuangYaoHuiSFPrice[2].push_back({ 3, 0, 1, 10, 5.5 });
+		g_yongChuangYaoHuiSFPrice[2].push_back({ 0, 1, 1, 11, 0 });
+		g_yongChuangYaoHuiSFPrice[2].push_back({ 1, 2, 2, 15, 0 });
+		g_yongChuangYaoHuiSFPrice[2].push_back({ 2, 3, 3, 18.5, 0 });
+		g_yongChuangYaoHuiSFPrice[2].push_back({ 3, 0, 1, 10, 5.5 });
 
-	g_yongChuangYaoHuiSFPrice[3].push_back({ 0, 1, 1, 14, 0 });
-	g_yongChuangYaoHuiSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
-	g_yongChuangYaoHuiSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
-	g_yongChuangYaoHuiSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+		g_yongChuangYaoHuiSFPrice[3].push_back({ 0, 1, 1, 14, 0 });
+		g_yongChuangYaoHuiSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
+		g_yongChuangYaoHuiSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
+		g_yongChuangYaoHuiSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+	}
+	//弥雅百世
+	{
+		//3公斤起
+		g_miYaBSPrice[L"四川省"].push_back({ 0, 0, 3, 4.2, 1 });
+		g_miYaBSPrice[L"重庆"].push_back({ 0, 0, 3, 4.2, 1 });
+		g_miYaBSPrice[L"云南省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"贵州省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"陕西省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"江苏省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"浙江省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"上海"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"安徽省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"河南省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"湖北省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"福建省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"北京"].push_back({ 0, 0, 3, 4.2, 3.5 });
+		g_miYaBSPrice[L"天津"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"广东省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"广西壮族自治区"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"河北省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"湖南省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"江西省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"山西省"].push_back({ 0, 0, 3, 4.2, 3.5 });
+		g_miYaBSPrice[L"山东省"].push_back({ 0, 0, 3, 4.2, 2 });
+		g_miYaBSPrice[L"甘肃省"].push_back({ 0, 0, 3, 4.2, 3.5 });
+		g_miYaBSPrice[L"宁夏回族自治区"].push_back({ 0, 0, 3, 4.2, 6 });
+		g_miYaBSPrice[L"青海省"].push_back({ 0, 0, 3, 4.2, 6 });
+		g_miYaBSPrice[L"黑龙江省"].push_back({ 0, 0, 3, 4.2, 3.5 });
+		g_miYaBSPrice[L"吉林省"].push_back({ 0, 0, 3, 4.2, 3.5 });
+		g_miYaBSPrice[L"辽宁省"].push_back({ 0, 0, 3, 4.2, 3.5 });
+		g_miYaBSPrice[L"海南省"].push_back({ 0, 0, 3, 8, 6 });
+		//
+		g_miYaBSPrice[L"内蒙古自治区"].push_back({ 0, 0, 1, 8, 6 });
+		g_miYaBSPrice[L"新疆维吾尔自治区"].push_back({ 0, 0, 1, 8, 6 });
+		g_miYaBSPrice[L"西藏自治区"].push_back({ 0, 0, 1, 8, 6 });
+	}
+	//昆仑山圆通
+	{
+		//3-5一口价
+		g_kunLunShanYTPrice[L"上海"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"北京"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"河南省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"江苏省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"浙江省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"安徽省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"山东省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"天津"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"河北省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"湖南省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"湖北省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"山西省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"陕西省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"江西省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"广东省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"福建省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"广西省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"四川省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"重庆"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"云南省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"贵州省"].push_back({ 3, 5, 3, 3.75, 0 });
+		g_kunLunShanYTPrice[L"甘肃省"].push_back({ 3, 5, 3, 3.95, 0 });
+		g_kunLunShanYTPrice[L"宁夏回族自治区"].push_back({ 3, 5, 3, 3.95, 0 });
+		g_kunLunShanYTPrice[L"青海省"].push_back({ 3, 5, 3, 3.95, 0 });
+		g_kunLunShanYTPrice[L"黑龙江省"].push_back({ 3, 5, 3, 3.95, 0 });
+		g_kunLunShanYTPrice[L"吉林省"].push_back({ 3, 5, 3, 3.95, 0 });
+		g_kunLunShanYTPrice[L"辽宁省"].push_back({ 3, 5, 3, 3.95, 0 });
+		g_kunLunShanYTPrice[L"内蒙古自治区"].push_back({ 3, 5, 3, 4.25, 0 });
+		g_kunLunShanYTPrice[L"海南省"].push_back({ 3, 5, 3, 4.25, 0 });
+		//5以上
+		g_kunLunShanYTPrice[L"上海"].push_back({ 5, 0, 3, 4.5, 1.2 });
+		g_kunLunShanYTPrice[L"北京"].push_back({ 5, 0, 3, 4.5, 1.2 });
+		g_kunLunShanYTPrice[L"河南省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"江苏省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"浙江省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"安徽省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"山东省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"天津"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"河北省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"湖南省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"湖北省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"山西省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"陕西省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"江西省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"广东省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"福建省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"广西省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"四川省"].push_back({ 5, 0, 3, 4.5, 0.6 });
+		g_kunLunShanYTPrice[L"重庆"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"云南省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"贵州省"].push_back({ 5, 0, 3, 4.5, 1 });
+		g_kunLunShanYTPrice[L"甘肃省"].push_back({ 5, 0, 3, 4.5, 1.6 });
+		g_kunLunShanYTPrice[L"宁夏回族自治区"].push_back({ 5, 0, 3, 4.5, 1.6 });
+		g_kunLunShanYTPrice[L"青海省"].push_back({ 5, 0, 3, 4.5, 1.6 });
+		g_kunLunShanYTPrice[L"黑龙江省"].push_back({ 5, 0, 3, 4.5, 1.8 });
+		g_kunLunShanYTPrice[L"吉林省"].push_back({ 5, 0, 3, 4.5, 1.8 });
+		g_kunLunShanYTPrice[L"辽宁省"].push_back({ 5, 0, 3, 4.5, 1.8 });
+		g_kunLunShanYTPrice[L"内蒙古自治区"].push_back({ 5, 0, 3, 6, 5 });
+		g_kunLunShanYTPrice[L"海南省"].push_back({ 5, 0, 3, 4.5, 3.5 });
+		//
+		g_kunLunShanYTPrice[L"新疆维吾尔自治区"].push_back({ 0, 0, 1, 15.5, 13.5 });
+		g_kunLunShanYTPrice[L"西藏自治区"].push_back({ 0, 0, 1, 17.5, 17.5 });
+
+	}
 }
 
 //----------------------------------------------------------------------------------//

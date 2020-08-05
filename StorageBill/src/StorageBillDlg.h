@@ -46,6 +46,7 @@ private:
 	bool Handle_YiMaiKeJi();
 	bool Handle_XinMaBang();
 	bool Handle_QiYiJiangYuan();
+	bool Handle_FanJiang();
 
 	bool LoadSFData();
 	bool LoadBSData();
