@@ -27,7 +27,7 @@ if(_pStr)\
 
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世重量差异订单"};
 int g_arrRecordRowIndex[] ={0, 0, 0, 0};
-const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎"};
+const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎", L"玖王"};
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -565,6 +565,34 @@ bool CStorageBillDlg::ParseALLData()
 			{
 				it->second->nBaoJiaJinE += 2000 * nBjsl;
 			}
+			else if(strHuoPinMingCheng == L"贵州茅台酒飞天茅台53度酱香型白酒1.5L")
+			{
+				it->second->nBaoJiaJinE += 8000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"2019年飞天茅台53度200ml")
+			{
+				it->second->nBaoJiaJinE += 1000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"53度飞天茅台酒（玫瑰金）")
+			{
+				it->second->nBaoJiaJinE += 3000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"52度五粮液四川新品白酒")
+			{
+				it->second->nBaoJiaJinE += 1000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"五粮液2005浓香型白酒500ml")
+			{
+				it->second->nBaoJiaJinE += 1000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"53度贵州茅台酒（珍品）500ml")
+			{
+				it->second->nBaoJiaJinE += 4000 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"53度飞天茅台400ml")
+			{
+				it->second->nBaoJiaJinE += 2000 * nBjsl;
+			}
 			else if(strHuoPinMingCheng == L"2019年飞天茅台（小酒版）53度50ml*2")
 			{
 				if(nBjsl >= 12)
@@ -574,6 +602,12 @@ bool CStorageBillDlg::ParseALLData()
 				else if(nBjsl >= 6)
 					it->second->nBaoJiaJinE += 1000;
 			}
+			else if(strHuoPinMingCheng == L"五粮梦 52%500mL")
+			{
+				if(nBjsl >= 6)
+					it->second->nBaoJiaJinE += nBjsl/6*800;
+			}
+			
 		}
 		AddLog(L"读取销售出库明细成功");
 	}
@@ -961,7 +995,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 		return false;
 	wstring fileName = L"./Export_" + m_strYM + L"/" + L"永创昆仑山_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
-	CompareWithSFData(L"永创耀辉", listKunLunShanSales);
+	CompareWithSFData(L"永创耀辉", listKunLunShanSales, true);
 
 	//计算相关费用
 	{
@@ -1027,6 +1061,14 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 								else if(_itB->first == L"昆仑山矿泉水K24-510mL（大包装）")
 								{
 									_dWeight += 13.8*_itB->second;
+								}
+								else if(_itB->first == L"昆仑山保湿水100ml")
+								{
+									_dWeight += 0.35*_itB->second;
+								}
+								else if(_itB->first == L"昆仑山保湿水300ml")
+								{
+									_dWeight += 0.55*_itB->second;
 								}
 								else
 								{
@@ -1113,7 +1155,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快递")	
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运")	
 					{
 						map_key_wstring_val_int mapRet;
 						bool bChunShui = false;
@@ -1126,7 +1168,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 							{
 								if(_itB->first != L"昆仑山矿泉水K4-4L" && _itB->first != L"昆仑山矿泉水K12-510ml（小包装）" &&
 								   _itB->first != L"昆仑山矿泉水K24-350mL（大包装）" && _itB->first != L"昆仑山矿泉水K12-350mL（小包装）" &&
-								   _itB->first != L"昆仑山矿泉水K12-1.23L" && _itB->first != L"昆仑山矿泉水K24-510mL（大包装）")
+								   _itB->first != L"昆仑山矿泉水K12-1.23L" && _itB->first != L"昆仑山矿泉水K24-510mL（大包装）" &&
+								   _itB->first != L"昆仑山保湿水100ml" &&_itB->first != L"昆仑山保湿水300ml"
+								   )
 								{
 									bChunShui = false;
 									break;
@@ -1163,6 +1207,14 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 									else if(_itB->first == L"昆仑山矿泉水K24-510mL（大包装）")
 									{
 										money += (GetYTPrice(14, itB->strSheng, g_kunLunShanYTPrice)*_itB->second);
+									}
+									else if(_itB->first == L"昆仑山保湿水100ml")
+									{
+										money += (GetYTPrice(1, itB->strSheng, g_kunLunShanYTPrice)*_itB->second);
+									}
+									else if(_itB->first == L"昆仑山保湿水300ml")
+									{
+										money += (GetYTPrice(1, itB->strSheng, g_kunLunShanYTPrice)*_itB->second);
 									}
 									++_itB;
 								}
@@ -1663,7 +1715,7 @@ bool CStorageBillDlg::LoadSFData()
 	return true;
 }
 
-bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo)
+bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo, bool bWait)
 {
 	if(!m_bSF)
 		return true;
@@ -1729,7 +1781,7 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 		}
 		++itYCBegin;
 	}
-
+	if(!bWait)
 	{
 		BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[1]);
 		std::set<std::wstring>::iterator itB = m_mapYCNeedSFHandle[strHuoZhu].begin();

@@ -50,7 +50,7 @@ private:
 
 	bool LoadSFData();
 	bool LoadBSData();
-	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
+	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo, bool bWait=false);
 	bool CompareWithBSData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
 	double GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice);
