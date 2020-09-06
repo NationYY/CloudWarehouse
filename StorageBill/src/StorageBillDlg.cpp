@@ -797,7 +797,29 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 			sheet->Cell(nRecordRowIndex, eET_FaHuoShiJian)->SetWString(itB->strFaHuoShijian.c_str());
 			sheet->Cell(nRecordRowIndex, eET_HuoPinZongShuLiang)->SetWString(itB->strHuoPinZongShuLiang.c_str());
 			sheet->Cell(nRecordRowIndex, eET_HuoPinMingXi)->SetWString(itB->strHuoPinMingXi.c_str());
-			sheet->Cell(nRecordRowIndex, eET_BaoZhuang)->SetWString(itB->strBaoZhuang.c_str());
+			map_key_wstring_val_int mapRet;
+			bool b18l = true;
+			if(CFuncCommon::ParseKeyWStringInt(itB->strHuoPinMingXi, mapRet))
+			{
+				map_key_wstring_val_int::iterator _itB = mapRet.begin();
+				map_key_wstring_val_int::iterator _itE = mapRet.end();
+				while(_itB != _itE)
+				{
+					if(_itB->first != L"生抽酱油1.8L" && _itB->first != L"高粱香醋1.8L")
+						b18l = false;
+					++_itB;
+				}
+			}
+			if(b18l)
+			{
+				int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+				if(nZSL == 1)
+					sheet->Cell(nRecordRowIndex, eET_BaoZhuang)->SetWString(L"单支装纸箱");
+				else
+					sheet->Cell(nRecordRowIndex, eET_BaoZhuang)->SetWString(L"两支装纸箱");
+			}
+			else
+				sheet->Cell(nRecordRowIndex, eET_BaoZhuang)->SetWString(itB->strBaoZhuang.c_str());
 			sheet->Cell(nRecordRowIndex, eET_KeFuBeiZhu)->SetWString(itB->strKeFuBeiZhu.c_str());
 			//待计算
 			sheet->Cell(nRecordRowIndex, eET_JiFeiZhongLiang)->SetWString(L"0");
@@ -2250,10 +2272,14 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 					}
 					else
 					{
-						if(itB->strBaoZhuang == L"4#3层纸箱(4#3层纸箱)")
-							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 1.95 + DOUBLE_PRECISION, 1).c_str());
+						if(itB->strBaoZhuang == L"单支装纸箱")
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.2 + 2 + DOUBLE_PRECISION, 1).c_str());
+						else if(itB->strBaoZhuang == L"两支装纸箱")
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.2 + 2.6 + DOUBLE_PRECISION, 1).c_str());
+						else if(itB->strBaoZhuang == L"4#3层纸箱(4#3层纸箱)")
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 2.05 + DOUBLE_PRECISION, 1).c_str());
 						else if(itB->strBaoZhuang == L"5#3层纸箱(5#3层纸箱)")
-							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 1.32 + DOUBLE_PRECISION, 1).c_str());
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 1.42 + DOUBLE_PRECISION, 1).c_str());
 						else
 						{
 							wchar_t szOut[120] = { 0 };
