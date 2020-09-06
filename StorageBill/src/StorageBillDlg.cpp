@@ -1210,11 +1210,15 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 									}
 									else if(_itB->first == L"昆仑山保湿水100ml")
 									{
-										money += (GetYTPrice(1, itB->strSheng, g_kunLunShanYTPrice)*_itB->second);
+										double dw = 0.35*_itB->second;
+										int nw = int(dw) + 1;
+										money += 6.5+(nw-1)*3.5;
 									}
 									else if(_itB->first == L"昆仑山保湿水300ml")
 									{
-										money += (GetYTPrice(1, itB->strSheng, g_kunLunShanYTPrice)*_itB->second);
+										double dw = 0.55*_itB->second;
+										int nw = int(dw) + 1;
+										money += 6.5+(nw-1)*3.5;
 									}
 									++_itB;
 								}
