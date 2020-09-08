@@ -567,7 +567,7 @@ bool CStorageBillDlg::ParseALLData()
 			}
 			else if(strHuoPinMingCheng == L"贵州茅台酒飞天茅台53度酱香型白酒1.5L")
 			{
-				it->second->nBaoJiaJinE += 8000 * nBjsl;
+				it->second->nBaoJiaJinE += 9000 * nBjsl;
 			}
 			else if(strHuoPinMingCheng == L"2019年飞天茅台53度200ml")
 			{
