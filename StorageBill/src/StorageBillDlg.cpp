@@ -607,6 +607,11 @@ bool CStorageBillDlg::ParseALLData()
 				if(nBjsl >= 6)
 					it->second->nBaoJiaJinE += nBjsl/6*800;
 			}
+			else if(strHuoPinMingCheng == L"贵州茅台酒.贵宾.龙年纪念酒53度500ml")
+			{
+				it->second->nBaoJiaJinE += 7000 * nBjsl;
+			}
+			
 			
 		}
 		AddLog(L"读取销售出库明细成功");
