@@ -1,4 +1,5 @@
-#include "BasicExcelVC6.hpp"
+#include "stdafx.h"
+#include "BasicExcel.hpp"
 
 namespace YCompoundFiles
 {
@@ -47,12 +48,12 @@ bool Block::Open(const wchar_t* filename, ios_base::openmode mode)
 	if (mode & ios_base::in)
 	{
 		file_.seekg(0, ios_base::end);
-		fileSize_ = file_.tellg();
+		fileSize_ = (size_t)file_.tellg();
 	}
 	else if (mode & ios_base::out)
 	{
 		file_.seekp(0, ios_base::end);
-		fileSize_ = file_.tellp();
+		fileSize_ = (size_t)file_.tellp();
 	}
 	else
 	{
@@ -271,7 +272,7 @@ bool Block::Erase(vector<size_t>& indices)
 /********************************** Start of Class Header ************************************/
 // PURPOSE: Read and write data to a compound file header.
 CompoundFile::Header::Header() : 
-	fileType_(0xE11AB1A1E011CFD0),
+	fileType_(0xE11AB1A1E011CFD0LL),
 	uk1_(0), uk2_(0), uk3_(0), uk4_(0), uk5_(0x003B), uk6_(0x0003), uk7_(-2),
 	log2BigBlockSize_(9), log2SmallBlockSize_(6), 
 	uk8_(0), uk9_(0), uk10_(0), uk11_(0x00001000),
@@ -1069,7 +1070,7 @@ void CompoundFile::IncreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (header_.BATArray_[i] >= indices[j] &&
+			if (header_.BATArray_[i] >= (int)indices[j] &&
 				header_.BATArray_[i] != -1) ++count;
 		}
 		header_.BATArray_[i] += count;	
@@ -1081,7 +1082,7 @@ void CompoundFile::IncreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (header_.XBATStart_ >= indices[j] &&
+			if (header_.XBATStart_ >= (int)indices[j] &&
 				header_.XBATStart_ != -2) ++count;
 		}
 		header_.XBATStart_ += count;	
@@ -1093,7 +1094,7 @@ void CompoundFile::IncreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (header_.SBATStart_ >= indices[j] &&
+			if (header_.SBATStart_ >= (int)indices[j] &&
 				header_.SBATStart_ != -2) ++count;
 		}
 		header_.SBATStart_ += count;	
@@ -1106,7 +1107,7 @@ void CompoundFile::IncreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (blocksIndices_[i] > indices[j] &&
+			if (blocksIndices_[i] > (int)indices[j] &&
 				blocksIndices_[i] != -2 && 
 				blocksIndices_[i] != -3) ++count;
 		}
@@ -1117,7 +1118,7 @@ void CompoundFile::IncreaseLocationReferences(vector<size_t> indices)
 	size_t count = 0;
 	{for (size_t i=0; i<maxIndices; ++i)
 	{
-		if (header_.propertiesStart_ >= indices[i] &&
+		if (header_.propertiesStart_ >= (int)indices[i] &&
 			header_.propertiesStart_ != -2) ++count;
 	}}
 	header_.propertiesStart_ += count;
@@ -1129,7 +1130,7 @@ void CompoundFile::IncreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (properties_[0]->startBlock_ >= indices[j] &&
+			if (properties_[0]->startBlock_ >= (int)indices[j] &&
 				properties_[0]->startBlock_ != -2) ++count;
 		}
 		properties_[0]->startBlock_ += count;	
@@ -1141,7 +1142,7 @@ void CompoundFile::IncreaseLocationReferences(vector<size_t> indices)
 			size_t count = 0;
 			for (size_t j=0; j<maxIndices; ++j)
 			{
-				if (properties_[i]->startBlock_ >= indices[j] &&
+				if (properties_[i]->startBlock_ >= (int)indices[j] &&
 					properties_[i]->startBlock_ != -2) ++count;
 			}
 			properties_[i]->startBlock_ += count;	
@@ -1167,7 +1168,7 @@ void CompoundFile::DecreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (header_.BATArray_[i] > indices[j] &&
+			if (header_.BATArray_[i] > (int)indices[j] &&
 				header_.BATArray_[i] != -1) ++count;
 		}
 		header_.BATArray_[i] -= count;
@@ -1179,7 +1180,7 @@ void CompoundFile::DecreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (header_.XBATStart_ > indices[j] &&
+			if (header_.XBATStart_ > (int)indices[j] &&
 				header_.XBATStart_ != -2) ++count;
 		}
 		header_.XBATStart_ -= count;
@@ -1191,7 +1192,7 @@ void CompoundFile::DecreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (header_.SBATStart_ > indices[j] &&
+			if (header_.SBATStart_ > (int)indices[j] &&
 				header_.SBATStart_ != -2) ++count;
 		}
 		header_.SBATStart_ -= count;
@@ -1232,7 +1233,7 @@ void CompoundFile::DecreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (blocksIndices_[i] > indices[j] &&
+			if (blocksIndices_[i] > (int)indices[j] &&
 				blocksIndices_[i] != -2 && 
 				blocksIndices_[i] != -3) ++count;
 		}
@@ -1243,7 +1244,7 @@ void CompoundFile::DecreaseLocationReferences(vector<size_t> indices)
 	size_t count = 0;
 	{for (size_t i=0; i<maxIndices; ++i)
 	{
-		if (header_.propertiesStart_ > indices[i] &&
+		if (header_.propertiesStart_ > (int)indices[i] &&
 			header_.propertiesStart_ != -2) ++count;
 	}}
 	header_.propertiesStart_ -= count;
@@ -1255,7 +1256,7 @@ void CompoundFile::DecreaseLocationReferences(vector<size_t> indices)
 		size_t count = 0;
 		for (size_t j=0; j<maxIndices; ++j)
 		{
-			if (properties_[0]->startBlock_ > indices[j] &&
+			if (properties_[0]->startBlock_ > (int)indices[j] &&
 				properties_[0]->startBlock_ != -2) ++count;
 		}
 		properties_[0]->startBlock_ -= count;	
@@ -1268,7 +1269,7 @@ void CompoundFile::DecreaseLocationReferences(vector<size_t> indices)
 			size_t count = 0;
 			for (size_t j=0; j<maxIndices; ++j)
 			{
-				if (properties_[i]->startBlock_ > indices[j] &&
+				if (properties_[i]->startBlock_ > (int)indices[j] &&
 					properties_[i]->startBlock_ != -2) ++count;
 			}
 			properties_[i]->startBlock_ -= count;	
@@ -1317,7 +1318,7 @@ bool CompoundFile::LoadHeader()
 	header_.Read(&*(block_.begin()));
 
 	// Check magic number to see if it is a compound file 
-	if (header_.fileType_ != 0xE11AB1A1E011CFD0) return false;
+	if (header_.fileType_ != 0xE11AB1A1E011CFD0LL) return false;
 
 	block_.resize(header_.bigBlockSize_);		// Resize buffer block
 	file_.SetBlockSize(header_.bigBlockSize_);	// Resize block array block size
@@ -1336,7 +1337,7 @@ void CompoundFile::LoadBAT()
 // PURPOSE: Load all block allocation table information for compound file.
 {
 	// Read BAT indices
-	{for (size_t i=0; i<header_.BATCount_; ++i)
+	{for (int i=0; i<header_.BATCount_; ++i)
 	{
 		// Load blocksIndices_
 		blocksIndices_.resize(blocksIndices_.size()+128, -1);
@@ -1348,7 +1349,7 @@ void CompoundFile::LoadBAT()
 	}}
 
 	// Read XBAT indices
-	{for (size_t i=0; i<header_.XBATCount_; ++i)
+	{for (int i=0; i<header_.XBATCount_; ++i)
 	{
 		blocksIndices_.resize(blocksIndices_.size()+128, -1);
 		file_.Read(header_.XBATStart_+i+1, &*(block_.begin()));
@@ -1359,7 +1360,7 @@ void CompoundFile::LoadBAT()
 	}}
 
 	// Read SBAT indices
-	{for (size_t i=0; i<header_.SBATCount_; ++i)
+	{for (int i=0; i<header_.SBATCount_; ++i)
 	{
 		sblocksIndices_.resize(sblocksIndices_.size()+128, -1);
 		file_.Read(header_.SBATStart_+i+1, &*(block_.begin()));
@@ -1374,7 +1375,7 @@ void CompoundFile::SaveBAT()
 // PURPOSE: Save all block allocation table information for compound file.
 {
 	// Write BAT indices
-	{for (size_t i=0; i<header_.BATCount_; ++i)
+	{for (int i=0; i<header_.BATCount_; ++i)
 	{
 		for (size_t j=0; j<128; ++j)
 		{
@@ -1384,7 +1385,7 @@ void CompoundFile::SaveBAT()
 	}}
 
 	// Write XBAT indices
-	{for (size_t i=0; i<header_.XBATCount_; ++i)
+	{for (int i=0; i<header_.XBATCount_; ++i)
 	{
 		for (size_t j=0; j<128; ++j)
 		{
@@ -1394,7 +1395,7 @@ void CompoundFile::SaveBAT()
 	}}
 
 	// Write SBAT indices
-	{for (size_t i=0; i<header_.SBATCount_; ++i)
+	{for (int i=0; i<header_.SBATCount_; ++i)
 	{
 		for (size_t j=0; j<128; ++j)
 		{
@@ -1858,7 +1859,7 @@ void CompoundFile::FreeBlocks(vector<size_t>& indices, bool isBig)
 			{
 				if (j == indices[i]) continue;
 				if (sblocksIndices_[j] == indices[i]) sblocksIndices_[j] = sblocksIndices_[indices[i]];
-				if (sblocksIndices_[j] > indices[i] &&
+				if (sblocksIndices_[j] > (int)indices[i] &&
 					sblocksIndices_[j] != -1 &&
 					sblocksIndices_[j] != -2) --sblocksIndices_[j];
 			}
@@ -2252,21 +2253,21 @@ void CompoundFile::IncreasePropertyReferences(CompoundFile::PropertyTree* parent
 	if (parentTree->index_ >= index) ++parentTree->index_;
 	if (parentTree->self_->previousProp_ != -1)
 	{
-		if (parentTree->self_->previousProp_ >= index)
+		if (parentTree->self_->previousProp_ >= (int)index)
 		{
 			++parentTree->self_->previousProp_;
 		}
 	}
 	if (parentTree->self_->nextProp_!= -1)
 	{
-		if (parentTree->self_->nextProp_ >= index)
+		if (parentTree->self_->nextProp_ >= (int)index)
 		{
 			++parentTree->self_->nextProp_;
 		}
 	}
 	if (parentTree->self_->childProp_ != -1)
 	{
-		if (parentTree->self_->childProp_ >= index)
+		if (parentTree->self_->childProp_ >= (int)index)
 		{
 			++parentTree->self_->childProp_;
 		}
@@ -2289,21 +2290,21 @@ void CompoundFile::DecreasePropertyReferences(CompoundFile::PropertyTree* parent
 	if (parentTree->index_ > index) --parentTree->index_;
 	if (parentTree->self_->previousProp_ != -1)
 	{
-		if (parentTree->self_->previousProp_ > index)
+		if (parentTree->self_->previousProp_ > (int)index)
 		{
 			--parentTree->self_->previousProp_;
 		}
 	}
 	if (parentTree->self_->nextProp_!= -1)
 	{
-		if (parentTree->self_->nextProp_ > index)
+		if (parentTree->self_->nextProp_ > (int)index)
 		{
 			--parentTree->self_->nextProp_;
 		}
 	}
 	if (parentTree->self_->childProp_ != -1)
 	{
-		if (parentTree->self_->childProp_ > index)
+		if (parentTree->self_->childProp_ > (int)index)
 		{
 			--parentTree->self_->childProp_;
 		}
@@ -2643,7 +2644,7 @@ size_t LargeString::Read(const char* data)
 	wname_.clear();
 	size_t bytesRead = 2;
 	if (stringSize>0) bytesRead += ContinueRead(data+2, stringSize);
-	else bytesRead = 3;
+	else bytesRead = 3;	
 	return bytesRead;
 }
 size_t LargeString::ContinueRead(const char* data, size_t size)
@@ -3089,7 +3090,7 @@ size_t Workbook::SharedStringTable::Read(const char* data)
 	size_t npos = 8;
 	if (continueIndices_.empty())
 	{
-		for (size_t i=0; i<uniqueStringsTotal_; ++i)
+		for (int i=0; i<uniqueStringsTotal_; ++i)
 		{
 			npos += strings_[i].Read(&*(data_.begin())+npos);
 		}
@@ -3099,14 +3100,14 @@ size_t Workbook::SharedStringTable::Read(const char* data)
 		// Require special handling since CONTINUE records are present
 		size_t maxContinue = continueIndices_.size();
 
-		for (size_t i=0, c=0; i<uniqueStringsTotal_; ++i)
+		for (int i=0, c=0; i<uniqueStringsTotal_; ++i)
 		{
 			char unicode;
 			size_t stringSize;
 			LittleEndian::Read(data_, stringSize, npos, 2);
 			LittleEndian::Read(data_, unicode, npos+2, 1);
 			size_t multiplier = unicode & 1 ? 2 : 1;
-			if (c >= maxContinue || npos+stringSize*multiplier+3 <= continueIndices_[c])
+			if (c >= (int)maxContinue || npos+stringSize*multiplier+3 <= continueIndices_[c])
 			{
 				// String to be read is not split into two records
 				npos += strings_[i].Read(&*(data_.begin())+npos);
@@ -3125,7 +3126,7 @@ size_t Workbook::SharedStringTable::Read(const char* data)
 					stringSize -= size;
 					size = 0;
 				}
-				while (c<maxContinue && npos+stringSize+1>continueIndices_[c])
+				while (c<(int)maxContinue && npos+stringSize+1>continueIndices_[c])
 				{
 					size_t dataSize = (continueIndices_[c] - continueIndices_[c-1] - 1) / multiplier;
 					bytesRead += strings_[i].ContinueRead(&*(data_.begin())+npos+bytesRead, dataSize);
@@ -3149,11 +3150,11 @@ size_t Workbook::SharedStringTable::Write(char* data)
 	LittleEndian::Write(data_, uniqueStringsTotal_, 4, 4);
 
 	size_t maxContinue = continueIndices_.size();
-	for (size_t i=0, c=0, npos=8; i<uniqueStringsTotal_; ++i)
+	for (int i=0, c=0, npos=8; i<uniqueStringsTotal_; ++i)
 	{
 		npos += strings_[i].Write(&*(data_.begin())+npos);
-		if (c<maxContinue && npos==continueIndices_[c]) ++c;
-		else if (c<maxContinue && npos > continueIndices_[c])
+		if (c<(int)maxContinue && npos==continueIndices_[c]) ++c;
+		else if (c<(int)maxContinue && npos > (int)continueIndices_[c])
 		{
 			// Insert unicode flag where appropriate for CONTINUE records.
 			data_.insert(data_.begin()+continueIndices_[c], strings_[i].unicode_);
@@ -3169,7 +3170,7 @@ size_t Workbook::SharedStringTable::DataSize()
 	dataSize_ = 8;
 	continueIndices_.clear();
 	size_t curMax = 8224;
-	for (size_t i=0; i<uniqueStringsTotal_; ++i)
+	for (int i=0; i<uniqueStringsTotal_; ++i)
 	{
 		size_t stringSize = strings_[i].StringSize();
 		if (dataSize_+stringSize+3 <= curMax)
@@ -3638,7 +3639,7 @@ size_t Worksheet::CellTable::RowBlock::CellBlock::Number::Read(const char* data)
 	LittleEndian::Read(data_, rowIndex_, 0, 2);
 	LittleEndian::Read(data_, colIndex_, 2, 2);
 	LittleEndian::Read(data_, XFRecordIndex_, 4, 2);
-	__int64 value;
+	long long value;
 	LittleEndian::Read(data_, value, 6, 8);
 	intdouble_.intvalue_ = value;
 	value_ = intdouble_.doublevalue_;
@@ -3651,7 +3652,7 @@ size_t Worksheet::CellTable::RowBlock::CellBlock::Number::Write(char* data)
 	LittleEndian::Write(data_, colIndex_, 2, 2);
 	LittleEndian::Write(data_, XFRecordIndex_, 4, 2);
 	intdouble_.doublevalue_ = value_;
-	__int64 value = intdouble_.intvalue_;
+	long long value = intdouble_.intvalue_;
 	LittleEndian::Write(data_, value, 6, 8);
 	return Record::Write(data);
 }
@@ -4376,7 +4377,7 @@ size_t Worksheet::Window2::Write(char* data)
 // Returns true if the supplied rk value contains an integer.
 bool IsRKValueAnInteger(int rkValue)
 {
-	return (rkValue & 2);
+	return (rkValue & 2) != 0;
 }
 
 // Returns true if the supplied rk value contains a double.
@@ -4390,7 +4391,7 @@ double GetDoubleFromRKValue(int rkValue)
 {
 	union 
 	{
-		__int64 intvalue_;
+		long long intvalue_;
 		double doublevalue_;
 	} intdouble;
 
@@ -4407,7 +4408,7 @@ int GetIntegerFromRKValue(int rkValue)
 {
 	bool isMultiplied = rkValue & 1;
 	rkValue >>= 2;
-	if (isMultiplied) rkValue *= 0.01;
+	if (isMultiplied) rkValue = int(rkValue*0.01);
 	return rkValue;
 }
 
@@ -4416,14 +4417,14 @@ int GetRKValueFromDouble(double value)
 {
 	union 
 	{
-		__int64 intvalue_;
+		long long intvalue_;
 		double doublevalue_;
 	} intdouble;
 
 	bool isMultiplied = false;
-	int testVal1 = value;
+	int testVal1 = (int)value;
 	testVal1 *= 100;
-	int testVal2 = value * 100;
+	int testVal2 = (int)(value * 100);
 	if (testVal1!=testVal2)
 	{
 		isMultiplied = true;
@@ -4433,9 +4434,9 @@ int GetRKValueFromDouble(double value)
 	intdouble.doublevalue_ = value;
 	intdouble.intvalue_ >>= 34;
 
-	int rkValue = intdouble.intvalue_;
+	int rkValue = (int)intdouble.intvalue_;
 	rkValue <<= 2;
-	rkValue |= isMultiplied;
+	rkValue |= (int)isMultiplied;
 	return rkValue;
 }
 
@@ -4450,9 +4451,9 @@ int GetRKValueFromInteger(int value)
 // Returns true if the supplied double can be stored as a rk value.
 bool CanStoreAsRKValue(double value)
 {
-	int testVal1 = value * 100;
+	int testVal1 = int(value * 100);
 	testVal1 *= 100;
-	int testVal2 = value * 10000;
+	int testVal2 = int(value * 10000);
 	if (testVal1!=testVal2) return false;
 	else return true;
 }
@@ -5021,7 +5022,7 @@ void BasicExcel::AdjustExtSSTPositions()
 		workbook_.extSST_.firstStringPos_[i] = 4 + relativeOffset;
 		workbook_.extSST_.unused_[i] = 0;		
 
-		for (size_t j=0; j<workbook_.extSST_.stringsTotal_; ++j)
+		for (short j=0; j<workbook_.extSST_.stringsTotal_; ++j)
 		{
 			if (i*workbook_.extSST_.stringsTotal_+j >= workbook_.sst_.strings_.size()) break;
 			size_t stringSize = workbook_.sst_.strings_[i*workbook_.extSST_.stringsTotal_+j].StringSize();
@@ -5132,7 +5133,7 @@ void BasicExcel::UpdateWorksheets()
 
 		// References and pointers to shorten code
 		vector<Worksheet::CellTable::RowBlock>& rRowBlocks = worksheets_[s].cellTable_.rowBlocks_;
-		vector<Worksheet::CellTable::RowBlock::CellBlock>* pCellBlocks;
+		vector<Worksheet::CellTable::RowBlock::CellBlock>* pCellBlocks = NULL;
 		Worksheet::CellTable::RowBlock::CellBlock* pCell;
 		rRowBlocks.resize(maxRows/32 + (maxRows%32 ? 1 : 0));
 		for (size_t r=0, curRowBlock=0; r<maxRows; ++r)
@@ -5603,7 +5604,7 @@ void BasicExcelWorksheet::UpdateCells()
 				case CODE::BOOLERR:
 					if (rCellBlocks[j].boolerr_.error_ == 0)
 					{
-						cells_[row][col].Set(rCellBlocks[j].boolerr_.code_);
+						cells_[row][col].Set(rCellBlocks[j].boolerr_.value_);
 					}
 					break;
 					

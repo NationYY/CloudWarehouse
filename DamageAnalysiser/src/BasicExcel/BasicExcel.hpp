@@ -106,71 +106,73 @@ protected:
 
 struct LittleEndian
 {
-	#define READWRITE(Type) \
-	static void Read(const char* buffer, Type& retVal, int pos=0, int bytes=0)	\
-	{	\
-		retVal = Type(0);	\
-		if (bytes == 0) bytes = sizeof(Type);	\
-		for (size_t i=0; i<bytes; ++i)	\
-		{	\
-			retVal |= ((Type)((unsigned char)buffer[pos+i])) << 8*i;	\
-		}	\
-	}	\
-	static void ReadString(const char* buffer, Type* str, int pos=0, int bytes=0)	\
-	{	\
-		for (size_t i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));	\
-	}	\
-	static void Write(char* buffer, Type val, int pos=0, int bytes=0)	\
-	{	\
-		if (bytes == 0) bytes = sizeof(Type);	\
-		for (size_t i=0; i<bytes; ++i)	\
-		{	\
-			buffer[pos+i] = (unsigned char)val;	\
-			val >>= 8;	\
-		}	\
-	}	\
-	static void WriteString(char* buffer, Type* str, int pos=0, int bytes=0)	\
-	{	\
-		for (size_t i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));	\
-	}	\
-	static void Read(const vector<char>& buffer, Type& retVal, int pos=0, int bytes=0)	\
-	{	\
-		retVal = Type(0);	\
-		if (bytes == 0) bytes = sizeof(Type);	\
-		for (size_t i=0; i<bytes; ++i)	\
-		{	\
-			retVal |= ((Type)((unsigned char)buffer[pos+i])) << 8*i;	\
-		}	\
-	}	\
-	static void ReadString(const vector<char>& buffer, Type* str, int pos=0, int bytes=0)	\
-	{	\
-		for (size_t i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));	\
-	}	\
-	static void Write(vector<char>& buffer, Type val, int pos=0, int bytes=0)	\
-	{	\
-		if (bytes == 0) bytes = sizeof(Type);	\
-		for (size_t i=0; i<bytes; ++i)	\
-		{	\
-			buffer[pos+i] = (unsigned char)val;	\
-			val >>= 8;	\
-		}	\
-	}	\
-	static void WriteString(vector<char>& buffer, Type* str, int pos=0, int bytes=0)	\
-	{	\
-		for (size_t i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));	\
-	}	\
+	template<typename Type>
+	static void Read(const char* buffer, Type& retVal, int pos=0, int bytes=0)
+	{
+		retVal = Type(0);
+		if (bytes == 0) bytes = sizeof(Type);
+		for (int i=0; i<bytes; ++i)
+		{
+			retVal |= ((Type)((unsigned char)buffer[pos+i])) << 8*i;
+		}
+	}
 
-	READWRITE(char)
-	READWRITE(unsigned char)
-	READWRITE(short)
-	READWRITE(int)
-	READWRITE(unsigned int)
-	READWRITE(long)
-	READWRITE(unsigned long)
-	READWRITE(__int64)
-	READWRITE(unsigned __int64)
+	template<typename Type>
+	static void ReadString(const char* buffer, Type* str, int pos=0, int bytes=0)
+	{
+		for (int i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));
+	}
 
-	#undef READWRITE
+	template<typename Type>
+	static void Write(char* buffer, Type val, int pos=0, int bytes=0)
+	{
+		if (bytes == 0) bytes = sizeof(Type);
+		for (int i=0; i<bytes; ++i)
+		{
+			buffer[pos+i] = (unsigned char)val;
+			val >>= 8;
+		}
+	}
+
+	template<typename Type>
+	static void WriteString(char* buffer, Type* str, int pos=0, int bytes=0)
+	{
+		for (int i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));
+	}
+
+	template<typename Type>
+	static void Read(const vector<char>& buffer, Type& retVal, int pos=0, int bytes=0)
+	{
+		retVal = Type(0);
+		if (bytes == 0) bytes = sizeof(Type);
+		for (int i=0; i<bytes; ++i)
+		{
+			retVal |= ((Type)((unsigned char)buffer[pos+i])) << 8*i;
+		}
+	}
+
+	template<typename Type>
+	static void ReadString(const vector<char>& buffer, Type* str, int pos=0, int bytes=0)
+	{
+		for (int i=0; i<bytes; ++i) Read(buffer, str[i], pos+i*sizeof(Type));
+	}
+
+	template<typename Type>
+	static void Write(vector<char>& buffer, Type val, int pos=0, int bytes=0)
+	{
+		if (bytes == 0) bytes = sizeof(Type);
+		for (int i=0; i<bytes; ++i)
+		{
+			buffer[pos+i] = (unsigned char)val;
+			val >>= 8;
+		}
+	}
+
+	template<typename Type>
+	static void WriteString(vector<char>& buffer, Type* str, int pos=0, int bytes=0)
+	{
+		for (int i=0; i<bytes; ++i) Write(buffer, str[i], pos+i*sizeof(Type));
+	}
 
 
 	static void Read(const char* buffer, wchar_t& retVal, int pos=0, int bytes=0)
@@ -309,7 +311,7 @@ protected:
 		void Write(char* block);
 		void Read(char* block);
 
-		__int64 fileType_;		// Magic number identifying this as a compound file system (0x0000)
+		long long fileType_;		// Magic number identifying this as a compound file system (0x0000)
 		int uk1_;					// Unknown constant (0x0008)
 		int uk2_;					// Unknown constant (0x000C)
 		int uk3_;					// Unknown constant (0x0010)
@@ -360,11 +362,11 @@ protected:
 		Property();		
 		void Write(char* block);
 		void Read(char* block);
-		friend bool operator==(const Property& lhs, const Property& rhs) 
+		friend bool operator==(const CompoundFile::Property& lhs, const CompoundFile::Property& rhs) 
 		{
 			return (!wcscmp(lhs.name_, rhs.name_));
 		}
-		friend bool operator< (const Property& lhs, const Property& rhs)
+		friend bool operator< (const CompoundFile::Property& lhs, const CompoundFile::Property& rhs)
 		{
 			size_t maxLen1 = wcslen(lhs.name_);
 			size_t maxLen2 = wcslen(rhs.name_);
@@ -377,10 +379,10 @@ protected:
 				else return false;
 			}
 		}
-		friend bool operator!=(const Property& lhs, const Property& rhs) {return !(lhs == rhs);}
-		friend bool operator> (const Property& lhs, const Property& rhs) {return (rhs < lhs);}
-		friend bool operator<=(const Property& lhs, const Property& rhs) {return !(rhs < lhs);}
-		friend bool operator>=(const Property& lhs, const Property& rhs) {return !(lhs < rhs);}
+		friend bool operator!=(const CompoundFile::Property& lhs, const CompoundFile::Property& rhs) {return !(lhs == rhs);}
+		friend bool operator> (const CompoundFile::Property& lhs, const CompoundFile::Property& rhs) {return (rhs < lhs);}
+		friend bool operator<=(const CompoundFile::Property& lhs, const CompoundFile::Property& rhs) {return !(rhs < lhs);}
+		friend bool operator>=(const CompoundFile::Property& lhs, const CompoundFile::Property& rhs) {return !(lhs < rhs);}
 
 		wchar_t name_[32];				// A unicode null-terminated uncompressed 16bit string (lblocke the high bytes) containing the name of the property. (0x00, 0x02, 0x04, ... 0x3E)
 		short nameSize_;				// Number of characters in the NAME field (0x40)
@@ -898,7 +900,7 @@ public:
 				private:
 					union 
 					{
-						__int64 intvalue_;
+						long long intvalue_;
 						double doublevalue_;
 					} intdouble_;
 				};
