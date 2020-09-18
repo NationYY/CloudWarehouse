@@ -524,10 +524,15 @@ bool CStorageBillDlg::ParseALLData()
 			}
 			else if(strHuoPinMingCheng == L"郎.青花郎（20）酱香型53度白酒500ml")
 			{
-				if(nBjsl >= 6)
-					it->second->nBaoJiaJinE += 5000;
-				else
-					it->second->nBaoJiaJinE += 900 * nBjsl;
+				it->second->nBaoJiaJinE += 900 * nBjsl;
+			}
+			else if(strHuoPinMingCheng == L"郎.红花郎（10）酱香型53度白酒500ml")
+			{
+				it->second->nBaoJiaJinE += 600 * nBjsl;
+			
+			else if(strHuoPinMingCheng == L"郎.红花郎（15）酱香型53度白酒500ml")
+			{
+				it->second->nBaoJiaJinE += 800 * nBjsl;
 			}
 			else if(strHuoPinMingCheng == L"53度贵州茅台酒蓝")
 			{
@@ -1261,7 +1266,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 						AddLog(szOut);
 					}
 				}
-				sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(L"0.9");
+				int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+				double dCzf = nZSL*0.9;
+				sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(dCzf + DOUBLE_PRECISION, 1).c_str());
 				//计算增值费用
 				{
 					if(dZengZhi > 0)
