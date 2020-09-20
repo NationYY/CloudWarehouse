@@ -458,7 +458,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			sheet->Cell(rIndex, 5)->SetWString(L"ÆÆËðÂÊ:");
 			wchar_t out[32] = {0};
-			swprintf(out, L"%.2f%%", double(nP)/double(itB->second));
+			swprintf(out, L"%.2f%%", (double(nP)/double(itB->second))*100);
 			sheet->Cell(rIndex, 6)->SetWString(out);
 			rIndex++;
 			++itB;
@@ -476,7 +476,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			sheet->Cell(rIndex, 4)->SetInteger(itB1->second.damageCnt);
 			sheet->Cell(rIndex, 5)->SetWString(L"ÆÆËðÂÊ:");
 			wchar_t out[32] = { 0 };
-			swprintf(out, L"%.2f%%", double(itB1->second.damageCnt)/double(itB1->second.allCnt));
+			swprintf(out, L"%.2f%%", (double(itB1->second.damageCnt)/double(itB1->second.allCnt))*100);
 			sheet->Cell(rIndex, 6)->SetWString(out);
 			rIndex++;
 			++itB1;
