@@ -21,12 +21,18 @@
     <ClInclude Include="..\src\targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\BasicExcel\BasicExcel.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WeightFiller.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BasicExcel\BasicExcel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
