@@ -170,6 +170,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			int nDingDanBianHao = -1;
 			int nYanHuoYuan = -1;
 			int nYuanShiDanHao = -1;
+			int nWuLiuGongSi = -1;
 			for(size_t c = 0; c < maxCols; ++c)
 			{
 				BasicExcelCell* cell = saleSheet->Cell(0, c);
@@ -183,8 +184,10 @@ int _tmain(int argc, _TCHAR* argv[])
 					nYanHuoYuan = c;
 				else if(strTitle == L"原始单号")
 					nYuanShiDanHao = c;
+				else if(strTitle == L"物流公司")
+					nWuLiuGongSi = c;
 			}
-			if(nHuoZhu == -1 || nDingDanBianHao == -1 || nYanHuoYuan == -1 || nYuanShiDanHao == -1)
+			if(nHuoZhu == -1 || nDingDanBianHao == -1 || nYanHuoYuan == -1 || nYuanShiDanHao == -1 || nWuLiuGongSi == -1)
 			{
 				THROW_ERROR(L"销售出库单 有标题未找到");
 			}
@@ -194,28 +197,58 @@ int _tmain(int argc, _TCHAR* argv[])
 				wstring strDingDanBianHao;
 				wstring strYanHuoYuan;
 				wstring strYuanShiDanHao;
+				wstring strWuLiuGongSi;
 				const wchar_t* _pStr = NULL;
 				SHEET_CELL_STRING(saleSheet, r, nHuoZhu, strHuoZhu);
 				SHEET_CELL_STRING(saleSheet, r, nDingDanBianHao, strDingDanBianHao);
 				SHEET_CELL_STRING(saleSheet, r, nYanHuoYuan, strYanHuoYuan);
 				SHEET_CELL_STRING(saleSheet, r, nYuanShiDanHao, strYuanShiDanHao);
+				SHEET_CELL_STRING(saleSheet, r, nWuLiuGongSi, strWuLiuGongSi);
 				if(strHuoZhu == L"永创耀辉")
 				{
-					SSaleInfo info;
-					info.strYanHuoYuan = strYanHuoYuan;
-					mapSaleInfo[strDingDanBianHao] = info;
-
-					map<wstring, int>::iterator it = mapYanHuoShuLiang.find(strYanHuoYuan);
-					if(it != mapYanHuoShuLiang.end())
-						it->second++;
+					bool bAdd = false;
+					if(strWuLiuGongSi == L"中通快运(菜鸟)")
+						bAdd = false;
+					else if(strWuLiuGongSi == L"顺丰热敏(拼多多)")
+						bAdd = true;
+					else if(strWuLiuGongSi == L"中通快递")
+						bAdd = true;
+					else if(strWuLiuGongSi == L"顺丰热敏(线下)")
+						bAdd = true;
+					else if(strWuLiuGongSi == L"顺丰空运")
+						bAdd = true;
+					else if(strWuLiuGongSi == L"中通快运")
+						bAdd = false;
+					else if(strWuLiuGongSi == L"百世快运")
+						bAdd = false;
+					else if(strWuLiuGongSi == L"自提")
+						bAdd = false;
+					else if(strWuLiuGongSi == L"百世线下(分拨)")
+						bAdd = true;
 					else
-						mapYanHuoShuLiang[strYanHuoYuan] = 1;
-					vec_wvals vecYuanShiDanHao;
-					if(parse_pairs(strYuanShiDanHao, vecYuanShiDanHao, L","))
 					{
-						for(int i=0; i<vecYuanShiDanHao.size(); ++i)
+						wchar_t szBuffer[128] = { 0 };
+						wsprintfW(szBuffer, L"未处理的物流公司[%s]", strWuLiuGongSi.c_str());
+						THROW_ERROR(szBuffer);
+					}
+					if(bAdd)
+					{
+						SSaleInfo info;
+						info.strYanHuoYuan = strYanHuoYuan;
+						mapSaleInfo[strDingDanBianHao] = info;
+
+						map<wstring, int>::iterator it = mapYanHuoShuLiang.find(strYanHuoYuan);
+						if(it != mapYanHuoShuLiang.end())
+							it->second++;
+						else
+							mapYanHuoShuLiang[strYanHuoYuan] = 1;
+						vec_wvals vecYuanShiDanHao;
+						if(parse_pairs(strYuanShiDanHao, vecYuanShiDanHao, L","))
 						{
-							mapYuan2DingDan[vecYuanShiDanHao[i]] = strDingDanBianHao;
+							for(int i = 0; i < vecYuanShiDanHao.size(); ++i)
+							{
+								mapYuan2DingDan[vecYuanShiDanHao[i]] = strDingDanBianHao;
+							}
 						}
 					}
 				}
