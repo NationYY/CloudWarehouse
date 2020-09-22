@@ -33,7 +33,7 @@ struct SWeightInfo
 	double pieceWeight;
 	double eachWeight;
 	bool isPieceBox;
-	wchar_t szShortName;
+	wchar_t szShortName[128];
 	SWeightInfo()
 	{
 		memset(this, 0, sizeof(SWeightInfo));
@@ -90,9 +90,8 @@ void LoadConfig()
 
 		wchar_t szShortName[128] = { 0 };
 		wsprintfW(szBuffer, L"short_name%d", i + 1);
-		GetPrivateProfileString(L"weight_info", szBuffer, L"", szShortName, 128, L"./config.ini");
+		GetPrivateProfileString(L"weight_info", szBuffer, L"", info.szShortName, 128, L"./config.ini");
 
-		info.szShortName = szShortName;
 		info.pieceWeight = _wtof(szPieceWeight);
 		info.eachWeight = _wtof(szEachWeight);
 		mapWeighInfo[info.szName] = info;
