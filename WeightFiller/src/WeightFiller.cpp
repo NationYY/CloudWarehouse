@@ -32,6 +32,8 @@ struct SWeightInfo
 	int pieceCnt;
 	double pieceWeight;
 	double eachWeight;
+	bool isPieceBox;
+	wchar_t szShortName;
 	SWeightInfo()
 	{
 		memset(this, 0, sizeof(SWeightInfo));
@@ -77,6 +79,20 @@ void LoadConfig()
 		wsprintfW(szBuffer, L"each_weight%d", i + 1);
 		GetPrivateProfileString(L"weight_info", szBuffer, L"", szEachWeight, 128, L"./config.ini");
 
+
+		wchar_t szPieceIsBox[128] = { 0 };
+		wsprintfW(szBuffer, L"piece_is_box%d", i + 1);
+		GetPrivateProfileString(L"weight_info", szBuffer, L"", szPieceIsBox, 128, L"./config.ini");
+		if(wcscmp(szPieceIsBox, L"0") == 0)
+			info.isPieceBox = false;
+		else
+			info.isPieceBox = true;
+
+		wchar_t szShortName[128] = { 0 };
+		wsprintfW(szBuffer, L"short_name%d", i + 1);
+		GetPrivateProfileString(L"weight_info", szBuffer, L"", szShortName, 128, L"./config.ini");
+
+		info.szShortName = szShortName;
 		info.pieceWeight = _wtof(szPieceWeight);
 		info.eachWeight = _wtof(szEachWeight);
 		mapWeighInfo[info.szName] = info;
@@ -180,13 +196,15 @@ int _tmain(int argc, _TCHAR* argv[])
 			sheet->Cell(0, 4)->SetWString(L"收件人手机号");
 			sheet->Cell(0, 5)->SetWString(L"重量");
 			sheet->Cell(0, 6)->SetWString(L"箱数");
-			sheet->Cell(0, 7)->SetWString(L"客服备注");
+			sheet->Cell(0, 7)->SetWString(L"制单备注");
+			sheet->Cell(0, 8)->SetWString(L"客服备注");
 			int rowIndex = 1;
 			std::map<wstring, SDingDanInfo>::iterator itB = mapDingDanInfo.begin();
 			std::map<wstring, SDingDanInfo>::iterator itE = mapDingDanInfo.end();
 			while(itB != itE)
 			{
 				wstring szName;
+				wstring szBeiZhu;
 				double dZhongLiang = 0.0;
 				bool bZhengXiang = true;
 				int nXiangShu = 0;
@@ -204,10 +222,16 @@ int _tmain(int argc, _TCHAR* argv[])
 reCheckWeight:
 					if(itZL != mapWeighInfo.end())
 					{
+						if(!itZL->second.isPieceBox)
+							bZhengXiang = false;
 						if(itGB->second % itZL->second.pieceCnt == 0)
 						{
 							int nPieces = itGB->second/itZL->second.pieceCnt;
 							nXiangShu += nPieces;
+							wchar_t szBuffer[128] = { 0 };
+							wsprintf(szBuffer, L"%s整%d", itZL->second.szShortName, nPieces);
+							szBeiZhu += szBuffer;
+							szBeiZhu += L"|";
 							dZhongLiang += nPieces*itZL->second.pieceWeight;
 						}
 						else
@@ -227,6 +251,10 @@ reCheckWeight:
 								int nPieces = itGB->second/itZL->second.pieceCnt;
 								dZhongLiang += ((nLastCnt*itZL->second.eachWeight)+(nPieces*itZL->second.pieceWeight));
 							}
+							wchar_t szBuffer[128] = { 0 };
+							wsprintf(szBuffer, L"%s散%d", itZL->second.szShortName, nLastCnt);
+							szBeiZhu += szBuffer;
+							szBeiZhu += L"|";
 							bZhengXiang = false;
 						}
 					}
@@ -252,8 +280,9 @@ reCheckWeight:
 				if(bZhengXiang)
 					sheet->Cell(rowIndex, 6)->SetInteger(nXiangShu);
 				else
-					sheet->Cell(rowIndex, 6)->SetInteger(0);
-				sheet->Cell(rowIndex, 7)->SetWString(itB->second.strBeiZhu.c_str());
+					sheet->Cell(rowIndex, 6)->SetInteger(0);	
+				sheet->Cell(rowIndex, 7)->SetWString(szBeiZhu.c_str());
+				sheet->Cell(rowIndex, 8)->SetWString(itB->second.strBeiZhu.c_str());
 				rowIndex++;
 				++itB;
 			}
