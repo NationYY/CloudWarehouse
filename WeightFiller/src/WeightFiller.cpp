@@ -44,27 +44,25 @@ struct SDingDanInfo
 	double dWeight;
 	int nBoxCnt;
 	int nHuoPinShuLiang;
-	wstring strHuoPinMingXi;
 	wstring strShouJianRen;
 	wstring strShouJianRenDianHua;
 	wstring strShouJianRedDiZhi;
 	wstring strBeiZhu;
 	std::map<std::wstring, int> mapGoodsInfo;
 };
-
-int _tmain(int argc, _TCHAR* argv[])
+std::map<wstring, SWeightInfo> mapWeighInfo;
+void LoadConfig()
 {
-	std::map<wstring, SWeightInfo> mapWeighInfo;
-	std::map<wstring, SDingDanInfo> mapDingDanInfo;
-	for(int i=0; i<200; ++i)
+	mapWeighInfo.clear();
+	for(int i = 0; i < 200; ++i)
 	{
 		SWeightInfo info;
 		wchar_t szBuffer[128] = { 0 };
-		wsprintfW(szBuffer, L"name%d", i+1);
+		wsprintfW(szBuffer, L"name%d", i + 1);
 		GetPrivateProfileString(L"weight_info", szBuffer, L"", info.szName, 128, L"./config.ini");
 		if(info.szName == L"")
 		{
-			wsprintfW(szBuffer, L"finish cnt %d", i+1);
+			wsprintfW(szBuffer, L"finish cnt %d", i + 1);
 			THROW_ERROR(szBuffer);
 			break;
 		}
@@ -75,12 +73,22 @@ int _tmain(int argc, _TCHAR* argv[])
 		wchar_t szEachWeight[128] = { 0 };
 		wsprintfW(szBuffer, L"piece_weight%d", i + 1);
 		GetPrivateProfileString(L"weight_info", szBuffer, L"", szPieceWeight, 128, L"./config.ini");
+
 		wsprintfW(szBuffer, L"each_weight%d", i + 1);
 		GetPrivateProfileString(L"weight_info", szBuffer, L"", szEachWeight, 128, L"./config.ini");
+
 		info.pieceWeight = _wtof(szPieceWeight);
 		info.eachWeight = _wtof(szEachWeight);
 		mapWeighInfo[info.szName] = info;
 	}
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	std::wcout.imbue(std::locale("chs")); 
+	LoadConfig();
+
+	std::map<wstring, SDingDanInfo> mapDingDanInfo;
 	BasicExcel saleDetailExcel;
 	if(!saleDetailExcel.Load("销售出库明细.xls"))
 	{
@@ -150,8 +158,107 @@ int _tmain(int argc, _TCHAR* argv[])
 			int nHuoPinCnt;
 			SHEET_CELL_STRING(saleDetailSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
 			SHEET_CELL_INT(saleDetailSheet, r, nHuoPinShuLiang, nHuoPinCnt);
-			it->second.mapGoodsInfo[strHuoPinMingCheng] = nHuoPinCnt;
+			std::map<std::wstring, int>::iterator _it = it->second.mapGoodsInfo.find(strHuoPinMingCheng);
+			if(_it == it->second.mapGoodsInfo.end())
+				it->second.mapGoodsInfo[strHuoPinMingCheng] = nHuoPinCnt;
+			else
+				_it->second += nHuoPinCnt;
 		}
+	}
+
+	{
+		DeleteFile(L"./结果.xls");
+		BasicExcel excel;
+		excel.AddWorksheet(L"sheet1");
+		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"sheet1");
+		if(sheet)
+		{
+			sheet->Cell(0, 0)->SetWString(L"货品名称");
+			sheet->Cell(0, 1)->SetWString(L"物流编号");
+			sheet->Cell(0, 2)->SetWString(L"收件人");
+			sheet->Cell(0, 3)->SetWString(L"收件人地址");
+			sheet->Cell(0, 4)->SetWString(L"收件人手机号");
+			sheet->Cell(0, 5)->SetWString(L"重量");
+			sheet->Cell(0, 6)->SetWString(L"箱数");
+			sheet->Cell(0, 7)->SetWString(L"客服备注");
+			int rowIndex = 1;
+			std::map<wstring, SDingDanInfo>::iterator itB = mapDingDanInfo.begin();
+			std::map<wstring, SDingDanInfo>::iterator itE = mapDingDanInfo.end();
+			while(itB != itE)
+			{
+				wstring szName;
+				double dZhongLiang = 0.0;
+				bool bZhengXiang = true;
+				int nXiangShu = 0;
+				std::map<std::wstring, int>::iterator itGB = itB->second.mapGoodsInfo.begin();
+				std::map<std::wstring, int>::iterator itGE = itB->second.mapGoodsInfo.end();
+				while(itGB != itGE)
+				{
+					if(itGB !=  itB->second.mapGoodsInfo.begin())
+						szName = szName + L";";
+					wchar_t szBuffer[128] = {0};
+					wsprintf(szBuffer, L"%s@%d", itGB->first.c_str(), itGB->second);
+					szName = szName + szBuffer;
+
+					std::map<wstring, SWeightInfo>::iterator itZL = mapWeighInfo.find(itGB->first);
+reCheckWeight:
+					if(itZL != mapWeighInfo.end())
+					{
+						if(itGB->second % itZL->second.pieceCnt == 0)
+						{
+							int nPieces = itGB->second/itZL->second.pieceCnt;
+							nXiangShu += nPieces;
+							dZhongLiang += nPieces*itZL->second.pieceWeight;
+						}
+						else
+						{
+							int nLastCnt = itGB->second % itZL->second.pieceCnt;
+							if(itZL->second.eachWeight < 0.01)
+							{
+								wchar_t szBuffer[128] = { 0 };
+								wsprintf(szBuffer, L"[%s] 缺少单瓶重量数据,请补充", itZL->first.c_str());
+								THROW_ERROR(szBuffer);
+								LoadConfig();
+								itZL = mapWeighInfo.find(itGB->first);
+								goto reCheckWeight;
+							}
+							else
+							{
+								int nPieces = itGB->second/itZL->second.pieceCnt;
+								dZhongLiang += ((nLastCnt*itZL->second.eachWeight)+(nPieces*itZL->second.pieceWeight));
+							}
+							bZhengXiang = false;
+						}
+					}
+					else
+					{
+						wchar_t szBuffer[128] = { 0 };
+						wsprintf(szBuffer, L"[%s] 缺少重量数据, 请补充", itGB->first.c_str());
+						THROW_ERROR(szBuffer);
+						LoadConfig();
+						itZL = mapWeighInfo.find(itGB->first);
+						goto reCheckWeight;
+					}
+					++itGB;
+				}
+				sheet->Cell(rowIndex, 0)->SetWString(szName.c_str());
+				sheet->Cell(rowIndex, 1)->SetWString(itB->first.c_str());
+				sheet->Cell(rowIndex, 2)->SetWString(itB->second.strShouJianRen.c_str());
+				sheet->Cell(rowIndex, 3)->SetWString(itB->second.strShouJianRedDiZhi.c_str());
+				sheet->Cell(rowIndex, 4)->SetWString(itB->second.strShouJianRenDianHua.c_str());
+				int nZhongLiang = (int)ceil(dZhongLiang);
+				sheet->Cell(rowIndex, 5)->SetInteger(nZhongLiang);
+
+				if(bZhengXiang)
+					sheet->Cell(rowIndex, 6)->SetInteger(nXiangShu);
+				else
+					sheet->Cell(rowIndex, 6)->SetInteger(0);
+				sheet->Cell(rowIndex, 7)->SetWString(itB->second.strBeiZhu.c_str());
+				rowIndex++;
+				++itB;
+			}
+		}
+		excel.SaveAs("./结果.xls");
 	}
 	return 0;
 }
