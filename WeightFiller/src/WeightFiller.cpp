@@ -250,10 +250,22 @@ reCheckWeight:
 								int nPieces = itGB->second/itZL->second.pieceCnt;
 								dZhongLiang += ((nLastCnt*itZL->second.eachWeight)+(nPieces*itZL->second.pieceWeight));
 							}
-							wchar_t szBuffer[128] = { 0 };
-							wsprintf(szBuffer, L"%sÉ¢%d", itZL->second.szShortName, nLastCnt);
-							szBeiZhu += szBuffer;
-							szBeiZhu += L"|";
+							if(itGB->second > itZL->second.pieceCnt)
+							{
+								int nPieces = itGB->second/itZL->second.pieceCnt;
+								wchar_t szBuffer[128] = { 0 };
+								wsprintf(szBuffer, L"%sÕû%d|%sÉ¢%d", itZL->second.szShortName, nPieces, itZL->second.szShortName, nLastCnt);
+								szBeiZhu += szBuffer;
+								szBeiZhu += L"|";
+							}
+							else
+							{
+								wchar_t szBuffer[128] = { 0 };
+								wsprintf(szBuffer, L"%sÉ¢%d", itZL->second.szShortName, nLastCnt);
+								szBeiZhu += szBuffer;
+								szBeiZhu += L"|";
+							}
+							
 							bZhengXiang = false;
 						}
 					}
