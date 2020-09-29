@@ -64,6 +64,7 @@ private:
 	bool m_bRun;
 	bool m_bSF;
 	bool m_bBS;
+	bool m_bYG;
 	thread_safe_queue<std::wstring> m_queueLog;
 	std::map< std::wstring, std::list<sSalesInfo> > m_mapAllSalesInfo;
 	std::map< std::wstring, sSalesInfo* > m_mapTempSalesInfo;
@@ -71,6 +72,7 @@ private:
 	std::map<std::wstring, sBSAuthData> m_mapBSAuthData;
 	std::map< std::wstring, std::set<std::wstring> > m_mapYCNeedSFHandle;
 	std::map< std::wstring, std::map<std::wstring, sInStorageInfo> > m_mapInStorageInfo;
+	std::map< std::wstring, int > m_mapBaoJiaJinE;
 	std::set<std::wstring> m_setSFZhongLiangYiChang;
 	BasicExcel m_sfExcel;
 	BasicExcel m_recordExcel;
@@ -84,4 +86,5 @@ public:
 	CButton m_checkSF;
 	CButton m_checkBS;
 	wofstream m_logFile;
+	CButton m_checkYGZD;
 };

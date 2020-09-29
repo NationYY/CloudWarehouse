@@ -19,11 +19,13 @@ if(_pStr)\
 
 #define SHEET_CELL_DOUBLE(sheet, r, c, dOut) dOut = sheet->Cell(r, c)->GetDouble();
 
+#define SHEET_CELL_INT(sheet, r, c, nOut) nOut = sheet->Cell(r, c)->GetInteger();
+
 #define TOTAL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库单.xls"
 #define DETAIL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库明细.xls"
 #define SF_FILE_PATH L"./系统数据/"+m_strYM+L"/顺丰账单.xls"
 #define IN_STORAGE_PATH L"./系统数据/"+m_strYM+L"/入库明细账.xls"
-
+#define KUAI_YUN_WEIGHT_FILE_PATH L"./系统数据/"+m_strYM+L"/快运出库重量.xls"
 
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世重量差异订单"};
 int g_arrRecordRowIndex[] ={0, 0, 0, 0};
@@ -83,6 +85,7 @@ void CStorageBillDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, m_editYM);
 	DDX_Control(pDX, IDC_CHECK1, m_checkSF);
 	DDX_Control(pDX, IDC_CHECK2, m_checkBS);
+	DDX_Control(pDX, IDC_CHECK3, m_checkYGZD);
 }
 
 BEGIN_MESSAGE_MAP(CStorageBillDlg, CDialogEx)
@@ -160,16 +163,19 @@ void CStorageBillDlg::_LogicThread()
 				goto __break_logic;
 			if(!Handle_YongChuangYaoHui())
 				goto __break_logic;
-			if(!Handle_MiYaShiQi())
-				goto __break_logic;
-			if(!Handle_TaiFuShangMao())
-				goto __break_logic;
-			if(!Handle_YiMaiKeJi())
-				goto __break_logic;
-			if(!Handle_XinMaBang())
-				goto __break_logic;
-			if(!Handle_QiYiJiangYuan())
-				goto __break_logic;
+			if(!m_bYG)
+			{
+				if(!Handle_MiYaShiQi())
+					goto __break_logic;
+				if(!Handle_TaiFuShangMao())
+					goto __break_logic;
+				if(!Handle_YiMaiKeJi())
+					goto __break_logic;
+				if(!Handle_XinMaBang())
+					goto __break_logic;
+				if(!Handle_QiYiJiangYuan())
+					goto __break_logic;
+			}
 			//if(!Handle_FanJiang())
 			//	goto __break_logic;
 			wstring filePath = L"./Export_" + m_strYM + L"/" + L"compare_record.xls";
@@ -246,6 +252,7 @@ void CStorageBillDlg::OnBnClickedCreateBill()
 	}
 	m_bSF = (m_checkSF.GetState()==1);
 	m_bBS = (m_checkBS.GetState()==1);
+	m_bYG = (m_checkYGZD.GetState()==1);
 	m_bRun = true;
 	m_strYM = strYM.GetBuffer();
 	wstring folderPath = L"./Export_" + m_strYM;
@@ -309,9 +316,53 @@ bool CStorageBillDlg::ParseALLData()
 	std::wstring strTotalFileName = TOTAL_FILE_PATH;
 	std::wstring strDetailFileName = DETAIL_FILE_PATH;
 	std::wstring strInStorageFileName = IN_STORAGE_PATH;
+	std::wstring strKuaiYunWeightFileName = KUAI_YUN_WEIGHT_FILE_PATH;
 	BasicExcel totalExcel;
 	BasicExcel inStorageExcel;
 	BasicExcel detailExcel;
+	BasicExcel kuaiYunWeightExcel;
+	BasicExcel baoJiaExcel;
+	std::string strBaoJiaFileName = "./系统数据/保价统计.xls";
+	if(!baoJiaExcel.Load(strBaoJiaFileName.c_str()))
+	{
+		THROW_ERROR(L"保价统计 加载失败");
+	}
+	BasicExcelWorksheet* baoJiaSheet = baoJiaExcel.GetWorksheet(L"Sheet1");
+	if(baoJiaSheet)
+	{
+		size_t maxRows = baoJiaSheet->GetTotalRows();
+		size_t maxCols = baoJiaSheet->GetTotalCols();
+		int nHuoPinMingCheng = -1;
+		int nJinE = -1;
+		for(size_t c = 0; c < maxCols; ++c)
+		{
+			BasicExcelCell* cell = baoJiaSheet->Cell(0, c);
+			std::wstring strTitle = cell->GetWString();
+			if(strTitle == L"货品名称")
+				nHuoPinMingCheng = c;
+			else if(strTitle == L"保价价格")
+				nJinE = c;
+		}
+		if(nHuoPinMingCheng == -1 || nJinE == -1)
+		{
+			THROW_ERROR(L"保价统计 有标题未找到");
+		}
+		for(size_t r = 1; r < maxRows; ++r)
+		{
+			const wchar_t* _pStr = NULL;
+			std::wstring strHuoPinMingCheng;
+			int jinE;
+			SHEET_CELL_STRING(baoJiaSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
+			SHEET_CELL_INT(baoJiaSheet, r, nJinE, jinE);
+			m_mapBaoJiaJinE[strHuoPinMingCheng] = jinE;
+		}
+		AddLog(L"读取保价统计成功");
+	}
+	else
+	{
+		THROW_ERROR(L"保价统计 加载失败");
+	}
+
 	std::string _strTotalFileName = CFuncCommon::WString2String(strTotalFileName.c_str());
 	if(!totalExcel.Load(_strTotalFileName.c_str()))
 	{
@@ -412,6 +463,7 @@ bool CStorageBillDlg::ParseALLData()
 	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
 	if(detailSheet)
 	{
+		std::set<std::wstring> setNotHaveBaoJiaJinE;
 		size_t maxRows = detailSheet->GetTotalRows();
 		size_t maxCols = detailSheet->GetTotalCols();
 
@@ -494,208 +546,151 @@ bool CStorageBillDlg::ParseALLData()
 			if(strHuoPinMingCheng != L"杏汁180ml*1罐" && strHuoPinMingCheng != L"番茄汁180ml*1罐")
 				it->second->bChaiFen = false;
 			int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
-			if(strHuoPinMingCheng == L"五粮液乙亥猪年纪念酒52%500mL")
+			std::map< std::wstring, int >::iterator itBJ = m_mapBaoJiaJinE.find(strHuoPinMingCheng);
+			if(itBJ != m_mapBaoJiaJinE.end())
+				it->second->nBaoJiaJinE += itBJ->second*nBjsl;
+			else if(it->second->strHuoZhu == L"永创耀辉")
 			{
-				if(nBjsl >= 6)
-					it->second->nBaoJiaJinE += 5000;
-				else
-					it->second->nBaoJiaJinE += 900*nBjsl;
+				std::set<std::wstring>::iterator itNHBJ = setNotHaveBaoJiaJinE.find(strHuoPinMingCheng);
+				if(itNHBJ == setNotHaveBaoJiaJinE.end())
+				{
+					setNotHaveBaoJiaJinE.insert(strHuoPinMingCheng);
+					wchar_t szBuffer[128] = { 0 };
+					wsprintfW(szBuffer, L"未找到保价金额 货品=%s", strHuoPinMingCheng.c_str());
+					AddLog(szBuffer);
+				}
 			}
-			else if(strHuoPinMingCheng == L"五粮液52度囍•庚子鼠年纪念酒500ml*2")
-			{
-				if(nBjsl >= 6)
-					it->second->nBaoJiaJinE += 5000;
-				else
-					it->second->nBaoJiaJinE += 900 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"五粮液52度囍•乙亥猪年纪念酒500ml*4")
-			{
-				if(nBjsl >= 6)
-					it->second->nBaoJiaJinE += 5000;
-				else
-					it->second->nBaoJiaJinE += 800 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"五粮液52度囍•乙亥猪年纪念酒500ml*2")
-			{
-				if(nBjsl >= 6)
-					it->second->nBaoJiaJinE += 5000;
-				else
-					it->second->nBaoJiaJinE += 900 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"郎.青花郎（20）酱香型53度白酒500ml")
-			{
-				it->second->nBaoJiaJinE += 900 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"郎.红花郎（10）酱香型53度白酒500ml")
-			{
-				it->second->nBaoJiaJinE += 600 * nBjsl;
-			
-			else if(strHuoPinMingCheng == L"郎.红花郎（15）酱香型53度白酒500ml")
-			{
-				it->second->nBaoJiaJinE += 800 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"53度贵州茅台酒蓝")
-			{
-				it->second->nBaoJiaJinE += 3000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"贵州茅台酒（青印）53度500ml")
-			{
-				it->second->nBaoJiaJinE += 2500 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"52度国窖1573经典装")
-			{
-				it->second->nBaoJiaJinE += 800 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"53度飞天茅台酒（猴年纪念酒）")
-			{
-				it->second->nBaoJiaJinE += 4000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"贵州茅台酒飞天茅台53度酱香型白酒3L")
-			{
-				it->second->nBaoJiaJinE += 20000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"五粮液（经典) 52%500mL")
-			{
-				it->second->nBaoJiaJinE += 1000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"五粮液52度丁酉生肖鸡酒500ml")
-			{
-				it->second->nBaoJiaJinE += 1000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"五粮液缘定晶生戒指版500ml")
-			{
-				it->second->nBaoJiaJinE += 1000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"贵州茅台酒丁酉鸡年53度500ml")
-			{
-				it->second->nBaoJiaJinE += 2000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"贵州茅台酒飞天茅台53度酱香型白酒1.5L")
-			{
-				it->second->nBaoJiaJinE += 9000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"2019年飞天茅台53度200ml")
-			{
-				it->second->nBaoJiaJinE += 1000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"53度飞天茅台酒（玫瑰金）")
-			{
-				it->second->nBaoJiaJinE += 3000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"52度五粮液四川新品白酒")
-			{
-				it->second->nBaoJiaJinE += 1000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"五粮液2005浓香型白酒500ml")
-			{
-				it->second->nBaoJiaJinE += 1000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"53度贵州茅台酒（珍品）500ml")
-			{
-				it->second->nBaoJiaJinE += 4000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"53度飞天茅台400ml")
-			{
-				it->second->nBaoJiaJinE += 2000 * nBjsl;
-			}
-			else if(strHuoPinMingCheng == L"2019年飞天茅台（小酒版）53度50ml*2")
-			{
-				if(nBjsl >= 12)
-					it->second->nBaoJiaJinE += 3000;
-				else if(nBjsl >= 10)
-					it->second->nBaoJiaJinE += 2000;
-				else if(nBjsl >= 6)
-					it->second->nBaoJiaJinE += 1000;
-			}
-			else if(strHuoPinMingCheng == L"五粮梦 52%500mL")
-			{
-				if(nBjsl >= 6)
-					it->second->nBaoJiaJinE += nBjsl/6*800;
-			}
-			else if(strHuoPinMingCheng == L"贵州茅台酒.贵宾.龙年纪念酒53度500ml")
-			{
-				it->second->nBaoJiaJinE += 7000 * nBjsl;
-			}
-			
-			
 		}
 		AddLog(L"读取销售出库明细成功");
 	}
-	m_mapTempSalesInfo.clear();
+	
 
-	std::string _strInStorageFileName = CFuncCommon::WString2String(strInStorageFileName.c_str());
-	if(!inStorageExcel.Load(_strInStorageFileName.c_str()))
+	std::string _strKuaiYunWeightFileName = CFuncCommon::WString2String(strKuaiYunWeightFileName.c_str());
+	if(!kuaiYunWeightExcel.Load(_strKuaiYunWeightFileName.c_str()))
 	{
-		THROW_ERROR(L"入库明细账 加载失败");
+		THROW_ERROR(L"快运出库重量 加载失败");
 	}
-	BasicExcelWorksheet* inStorageSheet = inStorageExcel.GetWorksheet(L"Sheet1");
-	if(inStorageSheet)
+	BasicExcelWorksheet* kuaiYunWeightSheet = kuaiYunWeightExcel.GetWorksheet(L"sheet1");
+	if(kuaiYunWeightSheet)
 	{
-		size_t maxRows = inStorageSheet->GetTotalRows();
-		size_t maxCols = inStorageSheet->GetTotalCols();
+		size_t maxRows = kuaiYunWeightSheet->GetTotalRows();
+		size_t maxCols = kuaiYunWeightSheet->GetTotalCols();
 
-		int nHuoZhu = -1;
-		int nRuKuYuanYin = -1;
-		int nShangJiaBianMa = -1;
-		int nHuoPingBianMa = -1;
-		int nHuoPinMingCheng = -1;
-		int nShuLiang = -1;
-		int nPinPai = -1;
+
+		int nWuLiuDanHao = -1;
+		int nZhongLiang = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
-			BasicExcelCell* cell = inStorageSheet->Cell(0, c);
+			BasicExcelCell* cell = kuaiYunWeightSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
-			if(strTitle == L"货主")
-				nHuoZhu = c;
-			else if(strTitle == L"入库原因")
-				nRuKuYuanYin = c;
-			else if(strTitle == L"商家编码")
-				nShangJiaBianMa = c;
-			else if(strTitle == L"货品编号")
-				nHuoPingBianMa = c;
-			else if(strTitle == L"货品名称")
-				nHuoPinMingCheng = c;
-			else if(strTitle == L"数量")
-				nShuLiang = c;
-			else if(strTitle == L"品牌")
-				nPinPai = c;
+			if(strTitle == L"物流编号")
+				nWuLiuDanHao = c;
+			else if(strTitle == L"重量")
+				nZhongLiang = c;
 		}
-		if(nHuoZhu == -1 || nRuKuYuanYin == -1 || nShangJiaBianMa == -1 || nHuoPingBianMa == -1 || nHuoPinMingCheng == -1 || nShuLiang == -1 || nPinPai == -1)
+		if(nWuLiuDanHao == -1 || nZhongLiang == -1)
 		{
-			THROW_ERROR(L"入库明细账 有标题未找到");
+			THROW_ERROR(L"快运出库重量 有标题未找到");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
-			sInStorageInfo info;
+			std::wstring strWuLiuDanHao;
+			double dZhongLiang;
 			const wchar_t* _pStr = NULL;
-			SHEET_CELL_STRING(inStorageSheet, r, nHuoZhu, info.strHuoZhu);
-			std::wstring strRuKuYuanYin;
-			SHEET_CELL_STRING(inStorageSheet, r, nRuKuYuanYin, strRuKuYuanYin);
-			if(strRuKuYuanYin != L"其它入库" && strRuKuYuanYin != L"采购入库")
-				continue;
-			SHEET_CELL_STRING(inStorageSheet, r, nShangJiaBianMa, info.strShangJiaBianMa);
-			SHEET_CELL_STRING(inStorageSheet, r, nHuoPingBianMa, info.strHuoPinBianMa);
-			SHEET_CELL_STRING(inStorageSheet, r, nHuoPinMingCheng, info.strHuoPinMingCheng);
-			SHEET_CELL_STRING(inStorageSheet, r, nPinPai, info.strPinPai);
-			info.nCnt = inStorageSheet->Cell(r, nShuLiang)->GetInteger();
-			std::wstring strKey = info.strShangJiaBianMa+info.strHuoPinBianMa;
-			std::map< std::wstring, std::map<std::wstring, sInStorageInfo> >::iterator itHuoZhu = m_mapInStorageInfo.find(info.strHuoZhu);
-			if(itHuoZhu == m_mapInStorageInfo.end())
-				m_mapInStorageInfo[info.strHuoZhu][strKey] = info;
-			else
+			SHEET_CELL_STRING(kuaiYunWeightSheet, r, nWuLiuDanHao, strWuLiuDanHao);
+			SHEET_CELL_DOUBLE(kuaiYunWeightSheet, r, nZhongLiang, dZhongLiang);
+			std::map< std::wstring, sSalesInfo* >::iterator it = m_mapTempSalesInfo.find(strWuLiuDanHao);
+			if(it == m_mapTempSalesInfo.end())
 			{
-				std::map<std::wstring, sInStorageInfo>::iterator itInfo = itHuoZhu->second.find(strKey);
-				if(itInfo == itHuoZhu->second.end())
-					itHuoZhu->second[strKey] = info;
-				else
-					itInfo->second.nCnt += info.nCnt;
+				wchar_t szBuffer[128] = { 0 };
+				wsprintfW(szBuffer, L"快运出库重量 未找到单号%s", strWuLiuDanHao.c_str());
+				THROW_ERROR(szBuffer);
 			}
+			it->second->strZhongLiang = CFuncCommon::Double2WString(dZhongLiang+DOUBLE_PRECISION, 2);
 		}
-		AddLog(L"读取入库明细账成功");
+		AddLog(L"读取快运出库重量成功");
 	}
 	else
 	{
-		THROW_ERROR(L"入库明细账 加载失败");
+		THROW_ERROR(L"快运出库重量 加载失败");
+	}
+	m_mapTempSalesInfo.clear();
+	if(!m_bYG)
+	{
+		std::string _strInStorageFileName = CFuncCommon::WString2String(strInStorageFileName.c_str());
+		if(!inStorageExcel.Load(_strInStorageFileName.c_str()))
+		{
+			THROW_ERROR(L"入库明细账 加载失败");
+		}
+		BasicExcelWorksheet* inStorageSheet = inStorageExcel.GetWorksheet(L"Sheet1");
+		if(inStorageSheet)
+		{
+			size_t maxRows = inStorageSheet->GetTotalRows();
+			size_t maxCols = inStorageSheet->GetTotalCols();
+
+			int nHuoZhu = -1;
+			int nRuKuYuanYin = -1;
+			int nShangJiaBianMa = -1;
+			int nHuoPingBianMa = -1;
+			int nHuoPinMingCheng = -1;
+			int nShuLiang = -1;
+			int nPinPai = -1;
+			for(size_t c = 0; c < maxCols; ++c)
+			{
+				BasicExcelCell* cell = inStorageSheet->Cell(0, c);
+				std::wstring strTitle = cell->GetWString();
+				if(strTitle == L"货主")
+					nHuoZhu = c;
+				else if(strTitle == L"入库原因")
+					nRuKuYuanYin = c;
+				else if(strTitle == L"商家编码")
+					nShangJiaBianMa = c;
+				else if(strTitle == L"货品编号")
+					nHuoPingBianMa = c;
+				else if(strTitle == L"货品名称")
+					nHuoPinMingCheng = c;
+				else if(strTitle == L"数量")
+					nShuLiang = c;
+				else if(strTitle == L"品牌")
+					nPinPai = c;
+			}
+			if(nHuoZhu == -1 || nRuKuYuanYin == -1 || nShangJiaBianMa == -1 || nHuoPingBianMa == -1 || nHuoPinMingCheng == -1 || nShuLiang == -1 || nPinPai == -1)
+			{
+				THROW_ERROR(L"入库明细账 有标题未找到");
+			}
+			for(size_t r = 1; r < maxRows; ++r)
+			{
+				sInStorageInfo info;
+				const wchar_t* _pStr = NULL;
+				SHEET_CELL_STRING(inStorageSheet, r, nHuoZhu, info.strHuoZhu);
+				std::wstring strRuKuYuanYin;
+				SHEET_CELL_STRING(inStorageSheet, r, nRuKuYuanYin, strRuKuYuanYin);
+				if(strRuKuYuanYin != L"其它入库" && strRuKuYuanYin != L"采购入库")
+					continue;
+				SHEET_CELL_STRING(inStorageSheet, r, nShangJiaBianMa, info.strShangJiaBianMa);
+				SHEET_CELL_STRING(inStorageSheet, r, nHuoPingBianMa, info.strHuoPinBianMa);
+				SHEET_CELL_STRING(inStorageSheet, r, nHuoPinMingCheng, info.strHuoPinMingCheng);
+				SHEET_CELL_STRING(inStorageSheet, r, nPinPai, info.strPinPai);
+				info.nCnt = inStorageSheet->Cell(r, nShuLiang)->GetInteger();
+				std::wstring strKey = info.strShangJiaBianMa + info.strHuoPinBianMa;
+				std::map< std::wstring, std::map<std::wstring, sInStorageInfo> >::iterator itHuoZhu = m_mapInStorageInfo.find(info.strHuoZhu);
+				if(itHuoZhu == m_mapInStorageInfo.end())
+					m_mapInStorageInfo[info.strHuoZhu][strKey] = info;
+				else
+				{
+					std::map<std::wstring, sInStorageInfo>::iterator itInfo = itHuoZhu->second.find(strKey);
+					if(itInfo == itHuoZhu->second.end())
+						itHuoZhu->second[strKey] = info;
+					else
+						itInfo->second.nCnt += info.nCnt;
+				}
+			}
+			AddLog(L"读取入库明细账成功");
+		}
+		else
+		{
+			THROW_ERROR(L"入库明细账 加载失败");
+		}
 	}
 	return true;
 }
@@ -1048,81 +1043,23 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 					nZhongLiang += 1;
 					nZhongLiang += DOUBLE_PRECISION;
 					nWeight = int(nZhongLiang);
-					if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
-					{
-						if(nWeight < 3)
-							nWeight = 3;
-					}
+					//if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
+					//{
+					//	if(nWeight < 3)
+					//		nWeight = 3;
+					//}
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
 				else
 				{
-					if(itB->strZhongLiang == L"0.00")
-					{
-						nWeight = 0;
-						double _dWeight = 0.0;
-						map_key_wstring_val_int mapRet;
-						if(CFuncCommon::ParseKeyWStringInt(itB->strHuoPinMingXi, mapRet))
-						{
-							map_key_wstring_val_int::iterator _itB = mapRet.begin();
-							map_key_wstring_val_int::iterator _itE = mapRet.end();
-							while(_itB != _itE)
-							{
-								if(_itB->first == L"昆仑山矿泉水K4-4L")
-								{
-									_dWeight += 18.1*_itB->second;
-								}
-								else if(_itB->first == L"昆仑山矿泉水K12-510ml（小包装）")
-								{
-									_dWeight += 6.97*_itB->second;
-								}
-								else if(_itB->first == L"昆仑山矿泉水K24-350mL（大包装）")
-								{
-									_dWeight += 9.81*_itB->second;
-								}
-								else if(_itB->first == L"昆仑山矿泉水K12-350mL（小包装）")
-								{
-									_dWeight += 4.95*_itB->second;
-								}
-								else if(_itB->first == L"昆仑山矿泉水K12-1.23L")
-								{
-									_dWeight += 16.4*_itB->second;
-								}
-								else if(_itB->first == L"昆仑山矿泉水K24-510mL（大包装）")
-								{
-									_dWeight += 13.8*_itB->second;
-								}
-								else if(_itB->first == L"昆仑山保湿水100ml")
-								{
-									_dWeight += 0.35*_itB->second;
-								}
-								else if(_itB->first == L"昆仑山保湿水300ml")
-								{
-									_dWeight += 0.55*_itB->second;
-								}
-								else
-								{
-									_dWeight = 0;
-									break;
-								}
-								++_itB;
-							}
-							if(_dWeight > 0.00001)
-								nWeight = int(_dWeight) + 1;
-						}
-					}
-					else
-					{
-						nWeight = _wtoi(itB->strZhongLiang.c_str());
-						if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
-						{
-							if(nWeight < 3)
-								nWeight = 3;
-						}
-					}
-
+					nWeight = _wtoi(itB->strZhongLiang.c_str());
+					//if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
+					//{
+					//	if(nWeight < 3)
+					//			nWeight = 3;
+					//}
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
@@ -1137,19 +1074,23 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
 						if(itSF != m_mapSFAuthData.end())
 							sourceBJ = _wtoi(itSF->second.bjPay.c_str());
-						if(itB->nBaoJiaJinE != 0 || sourceBJ > 0)
+						if(itB->nBaoJiaJinE != 0)
 						{
-							int nLocalBj = 0;
-							if(itB->nBaoJiaJinE > 1000)
-								nLocalBj = int(itB->nBaoJiaJinE*0.005);
+							dZengZhi += (itB->nBaoJiaJinE*0.003);
+							if(dZengZhi < 1)
+								dZengZhi = 0.0;
 							else
-								nLocalBj = 2;
-							if(nLocalBj > 0 && sourceBJ > 0)
-								dZengZhi += sourceBJ;
-							else
-								dZengZhi += max(nLocalBj, sourceBJ);
-
-
+							{
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"保价";
+								else
+									strBeiZhu = strBeiZhu + L" | 保价";
+							}
+						}
+						else if(sourceBJ > 0)
+						
+						{
+							dZengZhi += sourceBJ;
 							if(strBeiZhu == L"")
 								strBeiZhu = strBeiZhu + L"保价";
 							else
@@ -1187,7 +1128,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运")	
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
 						map_key_wstring_val_int mapRet;
 						bool bChunShui = false;
@@ -1315,11 +1256,11 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					nZhongLiang += 1;
 					nZhongLiang += DOUBLE_PRECISION;
 					nWeight = int(nZhongLiang);
-					if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
-					{
-						if(nWeight < 3)
-							nWeight = 3;
-					}
+					//if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
+					//{
+					//	if(nWeight < 3)
+					//		nWeight = 3;
+					//}
 					wchar_t szWeight[10] ={0};
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
@@ -1331,11 +1272,11 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					else
 					{
 						nWeight = _wtoi(itB->strZhongLiang.c_str());
-						if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
-						{
-							if(nWeight < 3)
-								nWeight = 3;
-						}
+						//if(itB->strWuLiuGongSi != L"顺丰热敏(线下)" && itB->strWuLiuGongSi != L"顺丰热敏(拼多多)")
+						//{
+						//	if(nWeight < 3)
+						//		nWeight = 3;
+						//}
 					}
 					
 					wchar_t szWeight[10] ={0};
@@ -1355,10 +1296,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						if(itB->nBaoJiaJinE != 0 || sourceBJ > 0)
 						{
 							int nLocalBj = 0;
-							if(itB->nBaoJiaJinE > 1000)
-								nLocalBj = int(itB->nBaoJiaJinE*0.005);
-							else
-								nLocalBj = 2;
+							nLocalBj = int(itB->nBaoJiaJinE*0.003);
 							if(nLocalBj > 0 && sourceBJ > 0)
 								dZengZhi += sourceBJ;
 							else
@@ -1408,7 +1346,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
 					else if(itB->strWuLiuGongSi == L"中通快运")
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
-					else if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"中通快递")
+					else if(itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
+					else if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"中通快递" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" )
 					{
 						double money = 0;
 						if(nWeight > 0)
