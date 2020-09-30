@@ -1088,7 +1088,6 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 							}
 						}
 						else if(sourceBJ > 0)
-						
 						{
 							dZengZhi += sourceBJ;
 							if(strBeiZhu == L"")
@@ -1293,16 +1292,22 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
 						if(itSF != m_mapSFAuthData.end())
 							sourceBJ = _wtoi(itSF->second.bjPay.c_str());
-						if(itB->nBaoJiaJinE != 0 || sourceBJ > 0)
+						if(itB->nBaoJiaJinE != 0)
 						{
-							int nLocalBj = 0;
-							nLocalBj = int(itB->nBaoJiaJinE*0.003);
-							if(nLocalBj > 0 && sourceBJ > 0)
-								dZengZhi += sourceBJ;
+							dZengZhi += (itB->nBaoJiaJinE*0.003);
+							if(dZengZhi < 1)
+								dZengZhi = 0.0;
 							else
-								dZengZhi += max(nLocalBj, sourceBJ);
-
-
+							{
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"保价";
+								else
+									strBeiZhu = strBeiZhu + L" | 保价";
+							}
+						}
+						else if(sourceBJ > 0)
+						{
+							dZengZhi += sourceBJ;
 							if(strBeiZhu == L"")
 								strBeiZhu = strBeiZhu + L"保价";
 							else
@@ -1344,10 +1349,12 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
-					else if(itB->strWuLiuGongSi == L"中通快运")
+					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+					{
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
-					else if(itB->strWuLiuGongSi == L"中通快运(菜鸟)")
-						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
+					}
+						
+						
 					else if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"中通快递" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" )
 					{
 						double money = 0;
