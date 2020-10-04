@@ -56,6 +56,7 @@ private:
 	double GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice);
 	double GetBSPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice);
 	double GetYTPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice);
+	double GetZYKYPrice()
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
 private:
