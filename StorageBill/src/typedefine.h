@@ -11,6 +11,7 @@ struct sSFAuthData
 	wstring needPay;
 	wstring backPay;
 	wstring bjPay;
+	wstring type;
 	bool bHandle;
 	int row;
 	sSFAuthData():
@@ -21,7 +22,8 @@ struct sSFAuthData
 		backPay(L""),
 		needPay(L""),
 		bjPay(L""),
-		row(-1)
+		row(-1),
+		type(L"")
 	{
 	}
 };
@@ -29,21 +31,15 @@ struct sSFAuthData
 struct sBSAuthData
 {
 	wstring number;
-	double weight;
-	double needPay1;
-	double needPay2;
-	double needPay3;
-	double needPay4;
-	double needPay5;
+	double ysWeight;
+	int finalWeight;
+	double needPay;
 	int row;
 	sBSAuthData() :
 		number(L""),
-		weight(0.0),
-		needPay1(0.0),
-		needPay2(0.0),
-		needPay3(0.0),
-		needPay4(0.0),
-		needPay5(0.0),
+		ysWeight(0.0),
+		finalWeight(0),
+		needPay(0.0),
 		row(-1)
 	{
 	}
@@ -67,6 +63,7 @@ struct sSalesInfo
 	std::wstring strWuLiuGongSi;		//物流公司
 	std::wstring strWuLiuDanHao;		//物流单号
 	std::wstring strSheng;				//省
+	std::wstring strShi;				//市
 	std::wstring strShouJianRenDiZhi;	//收件人地址
 	std::wstring strZhongLiang;			//重量
 	std::wstring strFaHuoShijian;		//发货时间
@@ -83,7 +80,7 @@ struct sSalesInfo
 	bool bKunLunShan;					//是否昆仑山
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
 		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), 
-		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L""), strKeFuBeiZhu(L""), bXiuGaiZhongLiang(L""), bKunLunShan(false)
+		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L""), strKeFuBeiZhu(L""), bXiuGaiZhongLiang(L""), bKunLunShan(false), strShi(L"")
 	{
 	}
 };
@@ -102,6 +99,7 @@ struct sInStorageInfo
 	}
 };
 
+//快递价格SF1031574654216
 struct sExpressPriceInfo
 {
 	int nMinZL;			//最小重量 大于等于
@@ -109,7 +107,27 @@ struct sExpressPriceInfo
 	int nFirstZL;		//首重
 	double dFirstPrice;	//首重费用
 	double dXZPrice;	//续重费用
+	double dFirstCommission;//首重抽成
+	double dXZCommission;	//续重抽成
+	sExpressPriceInfo(int _nMinZL, int _nMaxZL, int _nFirstZL, double _dFirstPrice,	double _dXZPrice, double _dFirstCommission=0.0, double _dXZCommission=0.0)
+	{
+		nMinZL = _nMinZL;
+		nMaxZL = _nMaxZL;
+		nFirstZL = _nFirstZL;
+		dFirstPrice = _dFirstPrice;
+		dXZPrice = _dXZPrice;
+		dFirstCommission = _dFirstCommission;
+		dXZCommission = _dXZCommission;
+	}
 };
+
+//快运价格
+struct sLargeExpressPriceInfo
+{
+	double minPrice;	//起步价
+	double dXZPrice;	//续重费用
+};
+ 
 
 enum eExportTitle
 {

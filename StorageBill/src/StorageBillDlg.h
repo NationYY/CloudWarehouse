@@ -46,17 +46,15 @@ private:
 	bool Handle_YiMaiKeJi();
 	bool Handle_XinMaBang();
 	bool Handle_QiYiJiangYuan();
-	bool Handle_FanJiang();
-
+	bool Handle_HaTeNengLiang();
 	bool LoadSFData();
 	bool LoadBSData();
 	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo, bool bWait=false);
 	bool CompareWithBSData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
 	double GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice);
-	double GetBSPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice);
-	double GetYTPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice);
-	double GetZYKYPrice()
+	double GetKDPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice, wstring strKuDiType);
+	double GetKYPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, sLargeExpressPriceInfo >& mapPrice);
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
 private:
@@ -75,9 +73,12 @@ private:
 	std::map< std::wstring, std::map<std::wstring, sInStorageInfo> > m_mapInStorageInfo;
 	std::map< std::wstring, int > m_mapBaoJiaJinE;
 	std::set<std::wstring> m_setSFZhongLiangYiChang;
+	std::set<std::wstring> m_setSFOtherType;
 	BasicExcel m_sfExcel;
+	BasicExcel m_bsExcel;
 	BasicExcel m_recordExcel;
 	size_t m_sfHandleCol;
+	size_t m_bsHandleCol;
 	std::wstring m_strYM;
 public:
 	CListBox m_ctrlListLog;
@@ -88,4 +89,5 @@ public:
 	CButton m_checkBS;
 	wofstream m_logFile;
 	CButton m_checkYGZD;
+	bool m_bSFErrorPrice;
 };
