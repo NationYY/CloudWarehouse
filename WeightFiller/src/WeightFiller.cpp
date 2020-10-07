@@ -50,7 +50,14 @@ struct SDingDanInfo
 	wstring strShouJianRenDianHua;
 	wstring strShouJianRedDiZhi;
 	wstring strBeiZhu;
+	wstring strDaYinBeiZhu;
 	std::map<std::wstring, int> mapGoodsInfo;
+	SDingDanInfo()
+	{
+		strWuLiuDanHao = strShouJianRen = strShouJianRenDianHua = strShouJianRedDiZhi = strBeiZhu = strDaYinBeiZhu = L"";
+		dWeight = 0.0;
+		nBoxCnt = nHuoPinShuLiang = 0;
+	}
 };
 std::map<wstring, SWeightInfo> mapWeighInfo;
 void LoadConfig()
@@ -123,6 +130,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		int nShouJianRenShouJi = -1;
 		int nShouJianRenDiZhi = -1;
 		int nBeiZhu = -1;
+		int nDaYinBeiZhu = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
 			BasicExcelCell* cell = saleDetailSheet->Cell(0, c);
@@ -144,9 +152,12 @@ int _tmain(int argc, _TCHAR* argv[])
 				nShouJianRenShouJi = c;
 			else if(strTitle == L"客服备注")
 				nBeiZhu = c;
+			else if(strTitle == L"打印备注")
+				nDaYinBeiZhu = c;
+			
 		}
 		if(nHuoPinMingCheng == -1 || nWuLiuBianHao == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nShouJianRen == -1
-			|| nShouJianRenShouJi == -1 || nShouJianRenDiZhi == -1 || nBeiZhu == -1)
+			|| nShouJianRenShouJi == -1 || nShouJianRenDiZhi == -1 || nBeiZhu == -1 || nDaYinBeiZhu == -1)
 		{
 			THROW_ERROR(L"销售出库明细 有标题未找到");
 		}
@@ -169,6 +180,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			SHEET_CELL_STRING(saleDetailSheet, r, nShouJianRenDiZhi, it->second.strShouJianRedDiZhi);
 			SHEET_CELL_STRING(saleDetailSheet, r, nShouJianRenShouJi, it->second.strShouJianRenDianHua);
 			SHEET_CELL_STRING(saleDetailSheet, r, nBeiZhu, it->second.strBeiZhu);
+			SHEET_CELL_STRING(saleDetailSheet, r, nDaYinBeiZhu, it->second.strDaYinBeiZhu);
 			wstring strHuoPinMingCheng;
 			int nHuoPinCnt;
 			SHEET_CELL_STRING(saleDetailSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
@@ -293,7 +305,14 @@ reCheckWeight:
 				else
 					sheet->Cell(rowIndex, 6)->SetInteger(0);	
 				sheet->Cell(rowIndex, 7)->SetWString(szBeiZhu.c_str());
-				sheet->Cell(rowIndex, 8)->SetWString(itB->second.strBeiZhu.c_str());
+				wstring strBZ = itB->second.strBeiZhu;
+				if(itB->second.strDaYinBeiZhu != L"")
+				{
+					if(strBZ != L"")
+						strBZ += L"|";
+					strBZ += itB->second.strDaYinBeiZhu;
+				}
+				sheet->Cell(rowIndex, 8)->SetWString(strBZ.c_str());
 				rowIndex++;
 				++itB;
 			}
