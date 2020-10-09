@@ -861,6 +861,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(it->second.needPay.c_str());
 					else
 					{
+						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(L"0");
 						wchar_t szBuffer[128] = { 0 };
 						wsprintfW(szBuffer, L"未找到顺丰成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
 						AddLog(szBuffer);
@@ -886,6 +887,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 						}
 						else
 						{
+							sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(L"0");
 							wchar_t szBuffer[128] = { 0 };
 							wsprintfW(szBuffer, L"未找到百世快递成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
 							AddLog(szBuffer);
@@ -902,6 +904,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(CFuncCommon::Double2WString(it->second.wuliuPay + it->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
 					else
 					{
+						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(L"0");
 						wchar_t szBuffer[128] = { 0 };
 						wsprintfW(szBuffer, L"未找到中通快运成本 单号=%s 货主=%s", itB->strWuLiuDanHao.c_str(), itB->strHuoZhu.c_str());
 						AddLog(szBuffer);
