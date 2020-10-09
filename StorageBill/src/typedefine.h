@@ -28,18 +28,35 @@ struct sSFAuthData
 	}
 };
 
-struct sBSAuthData
+struct sBSKDAuthData
 {
 	wstring number;
 	double ysWeight;
 	int finalWeight;
 	double needPay;
 	int row;
-	sBSAuthData() :
+	sBSKDAuthData() :
 		number(L""),
 		ysWeight(0.0),
 		finalWeight(0),
 		needPay(0.0),
+		row(-1)
+	{
+	}
+};
+
+struct sZTKYAuthData
+{
+	wstring number;
+	double finalWeight;
+	double wuliuPay;
+	double shanglowPay;
+	int row;
+	sZTKYAuthData() :
+		number(L""),
+		finalWeight(0.0),
+		wuliuPay(0.0),
+		shanglowPay(0.0),
 		row(-1)
 	{
 	}
