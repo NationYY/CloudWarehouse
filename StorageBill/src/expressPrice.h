@@ -20,3 +20,7 @@ extern std::vector< std::list<sExpressPriceInfo> > g_yongChuangYaoHuiSFPrice;
 extern std::map< std::wstring, sLargeExpressPriceInfo > g_yongChuangYaoHuiZTKYPrice;
 extern std::map< std::wstring, sLargeExpressPriceInfo > g_xinMaBangZTKYPrice;
 //----------------------------------------------------------------------------------//
+
+
+//----------------------------------成本核算价格用---------------------------------//
+extern std::map< std::wstring, sLargeExpressPriceInfo > g_chengBenZTKYPrice;
