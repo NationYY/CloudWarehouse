@@ -496,8 +496,8 @@ void PrepareExpressPrice()
 		g_kunLunShanYTPrice[L"内蒙古自治区"].push_back({ 5, 0, 3, 6, 5 });
 		g_kunLunShanYTPrice[L"海南省"].push_back({ 5, 0, 3, 4.5, 3.5 });
 		//
-		g_kunLunShanYTPrice[L"新疆维吾尔自治区"].push_back({ 0, 0, 1, 15.5, 13.5 });
-		g_kunLunShanYTPrice[L"西藏自治区"].push_back({ 0, 0, 1, 17.5, 17.5 });
+		g_kunLunShanYTPrice[L"新疆维吾尔自治区"].push_back({ 0, 0, 26, 80, 3 });
+		g_kunLunShanYTPrice[L"西藏自治区"].push_back({ 0, 0, 15, 60, 4 });
 	}
 	//中通快运成本
 	{

@@ -1334,9 +1334,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 						AddLog(szOut);
 					}
 				}
-				int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
-				double dCzf = nZSL*0.9;
-				sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(dCzf + DOUBLE_PRECISION, 1).c_str());
+				sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(0.9 + DOUBLE_PRECISION, 1).c_str());
 				//计算增值费用
 				{
 					if(dZengZhi > 0)
@@ -1429,8 +1427,8 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							else
 								strBeiZhu = strBeiZhu + L" | 保价";
 						}
-						if(sourceBJ > DOUBLE_PRECISION && sourceBJ > dZengZhi)
-							dZengZhi = sourceBJ;
+						//if(sourceBJ > DOUBLE_PRECISION && sourceBJ > dZengZhi)
+						//	dZengZhi = sourceBJ;
 						if(itSF != m_mapSFAuthData.end())
 						{
 							if(itSF->second.type != L"特惠专配")
