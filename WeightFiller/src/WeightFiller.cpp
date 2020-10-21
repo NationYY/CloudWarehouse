@@ -207,7 +207,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			sheet->Cell(0, 4)->SetWString(L"收件人手机号");
 			sheet->Cell(0, 5)->SetWString(L"重量");
 			sheet->Cell(0, 6)->SetWString(L"箱数");
-			sheet->Cell(0, 7)->SetWString(L"制单备注");
+			sheet->Cell(0, 7)->SetWString(L"中通不用管这列");
 			sheet->Cell(0, 8)->SetWString(L"客服备注");
 			int rowIndex = 1;
 			std::map<wstring, SDingDanInfo>::iterator itB = mapDingDanInfo.begin();
@@ -235,7 +235,7 @@ reCheckWeight:
 					{
 						if(!itZL->second.isPieceBox)
 							bZhengXiang = false;
-						if(itGB->second % itZL->second.pieceCnt == 0)
+						if(itZL->second.pieceCnt != 0 && itGB->second % itZL->second.pieceCnt == 0)
 						{
 							int nPieces = itGB->second/itZL->second.pieceCnt;
 							nXiangShu += nPieces;
@@ -247,7 +247,11 @@ reCheckWeight:
 						}
 						else
 						{
-							int nLastCnt = itGB->second % itZL->second.pieceCnt;
+							int nLastCnt = 0;
+							if(itZL->second.pieceCnt != 0)
+								nLastCnt = itGB->second % itZL->second.pieceCnt;
+							else
+								nLastCnt = itGB->second;
 							if(itZL->second.eachWeight < 0.01)
 							{
 								wchar_t szBuffer[128] = { 0 };
@@ -259,10 +263,12 @@ reCheckWeight:
 							}
 							else
 							{
-								int nPieces = itGB->second/itZL->second.pieceCnt;
+								int nPieces = 0;
+								if(itZL->second.pieceCnt != 0)
+									nPieces = itGB->second/itZL->second.pieceCnt;
 								dZhongLiang += ((nLastCnt*itZL->second.eachWeight)+(nPieces*itZL->second.pieceWeight));
 							}
-							if(itGB->second > itZL->second.pieceCnt)
+							if(itZL->second.pieceCnt != 0 && itGB->second > itZL->second.pieceCnt)
 							{
 								int nPieces = itGB->second/itZL->second.pieceCnt;
 								wchar_t szBuffer[128] = { 0 };
@@ -292,7 +298,7 @@ reCheckWeight:
 					}
 					++itGB;
 				}
-				sheet->Cell(rowIndex, 0)->SetWString(szName.c_str());
+				sheet->Cell(rowIndex, 0)->SetWString(szBeiZhu.c_str());
 				sheet->Cell(rowIndex, 1)->SetWString(itB->first.c_str());
 				sheet->Cell(rowIndex, 2)->SetWString(itB->second.strShouJianRen.c_str());
 				sheet->Cell(rowIndex, 3)->SetWString(itB->second.strShouJianRedDiZhi.c_str());
@@ -304,7 +310,7 @@ reCheckWeight:
 					sheet->Cell(rowIndex, 6)->SetInteger(nXiangShu);
 				else
 					sheet->Cell(rowIndex, 6)->SetInteger(0);	
-				sheet->Cell(rowIndex, 7)->SetWString(szBeiZhu.c_str());
+				sheet->Cell(rowIndex, 7)->SetWString(szName.c_str());
 				wstring strBZ = itB->second.strBeiZhu;
 				if(itB->second.strDaYinBeiZhu != L"")
 				{
