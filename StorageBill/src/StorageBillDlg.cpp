@@ -1873,7 +1873,7 @@ bool CStorageBillDlg::LoadSFData()
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
 				continue;
 			}
-			if(_data.vaServices == L"转寄退回" || _data.vaServices == L"异地退回")
+			else if(_data.vaServices == L"转寄退回" || _data.vaServices == L"异地退回")
 			{
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())
@@ -1892,6 +1892,12 @@ bool CStorageBillDlg::LoadSFData()
 				}
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
 				continue;
+			}
+			else if(_data.vaServices != L"")
+			{
+				wchar_t szBuffer[128] = { 0 };
+				wsprintfW(szBuffer, L"顺丰未知增值服务类型 %s", _data.vaServices.c_str());
+				AddLog(szBuffer);
 			}
 			_pStr = sfSheet->Cell(r, m_sfHandleCol)->GetWString();
 			if(_pStr)
