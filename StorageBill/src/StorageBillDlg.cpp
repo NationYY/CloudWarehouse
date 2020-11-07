@@ -2050,7 +2050,7 @@ bool CStorageBillDlg::CompareWithBSKDData(std::wstring strHuoZhu, std::list<sSal
 
 bool CStorageBillDlg::CompareWithZTKYData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo)
 {
-	if(!m_bBSKD)
+	if(!m_bZYKY)
 		return true;
 	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[4]);
 	if(recordSheet == NULL)
