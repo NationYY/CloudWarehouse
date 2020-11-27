@@ -194,6 +194,13 @@ void CStorageBillDlg::_LogicThread()
 			m_bskdExcel.Save();
 			m_ztkyExcel.Save();
 			AddLog(L"账单生成完成");
+
+
+			AddLog(L"[昆仑山矿泉水K6—510ml] 包装盒");
+			AddLog(L"[45度小郎酒（精酿）分享装100ml*6] [45度小郎酒（精酿）100ml] [45度经典小郎酒100ml] [45度小郎酒（经典）分享装100ml*6] 包装盒");
+			AddLog(L"[五粮液歪嘴酒100ml] 包装盒");
+			AddLog(L"顺丰 [贵州茅台酒飞天茅台53度酱香型白酒1.5L] [五粮液1618珍酿52度3L] [贵州茅台酒飞天茅台53度酱香型白酒3L] [贵州茅台酒飞天茅台53度酱香型白酒6L] 包装盒");
+			AddLog(L"顺丰 整件酒包装盒");
 		}
 	__break_logic:
 		m_bRun = false;
