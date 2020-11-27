@@ -109,7 +109,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	std::wcout.imbue(std::locale("chs")); 
 	LoadConfig();
-
+	std::map<wstring, int> mapAllCnt;
 	std::map<wstring, SDingDanInfo> mapDingDanInfo;
 	BasicExcel saleDetailExcel;
 	if(!saleDetailExcel.Load("销售出库明细.xls"))
@@ -244,6 +244,14 @@ reCheckWeight:
 							szBeiZhu += szBuffer;
 							szBeiZhu += L"|";
 							dZhongLiang += nPieces*itZL->second.pieceWeight;
+
+							wsprintf(szBuffer, L"%s整件", itZL->second.szShortName);
+							wstring __name = szBuffer;
+							std::map<wstring, int>::iterator itAllCnt = mapAllCnt.find(__name);
+							if(itAllCnt == mapAllCnt.end())
+								mapAllCnt[__name] = nPieces;
+							else
+								itAllCnt->second += nPieces;
 						}
 						else
 						{
@@ -275,6 +283,23 @@ reCheckWeight:
 								wsprintf(szBuffer, L"%s整%d|%s散%d", itZL->second.szShortName, nPieces, itZL->second.szShortName, nLastCnt);
 								szBeiZhu += szBuffer;
 								szBeiZhu += L"|";
+
+								wsprintf(szBuffer, L"%s整件", itZL->second.szShortName);
+								wstring __name = szBuffer;
+								std::map<wstring, int>::iterator itAllCnt = mapAllCnt.find(__name);
+								if(itAllCnt == mapAllCnt.end())
+									mapAllCnt[__name] = nPieces;
+								else
+									itAllCnt->second += nPieces;
+
+								wsprintf(szBuffer, L"%s散%d", itZL->second.szShortName, nLastCnt);
+								__name = szBuffer;
+								itAllCnt = mapAllCnt.find(__name);
+								if(itAllCnt == mapAllCnt.end())
+									mapAllCnt[__name] = 1;
+								else
+									itAllCnt->second += 1;
+
 							}
 							else
 							{
@@ -282,6 +307,13 @@ reCheckWeight:
 								wsprintf(szBuffer, L"%s散%d", itZL->second.szShortName, nLastCnt);
 								szBeiZhu += szBuffer;
 								szBeiZhu += L"|";
+
+								wstring __name = szBuffer;
+								std::map<wstring, int>::iterator itAllCnt = mapAllCnt.find(__name);
+								if(itAllCnt == mapAllCnt.end())
+									mapAllCnt[__name] = 1;
+								else
+									itAllCnt->second += 1;
 							}
 							
 							bZhengXiang = false;
@@ -321,6 +353,16 @@ reCheckWeight:
 				sheet->Cell(rowIndex, 8)->SetWString(strBZ.c_str());
 				rowIndex++;
 				++itB;
+			}
+			sheet->Cell(rowIndex++, 0)->SetWString(L"货品汇总");
+			std::map<wstring, int>::iterator __itB = mapAllCnt.begin();
+			std::map<wstring, int>::iterator __itE = mapAllCnt.end();
+			while(__itB != __itE)
+			{
+				sheet->Cell(rowIndex, 0)->SetWString(__itB->first.c_str());
+				sheet->Cell(rowIndex, 1)->SetInteger(__itB->second);
+				rowIndex++;
+				++__itB;
 			}
 		}
 		excel.SaveAs("./结果.xls");
