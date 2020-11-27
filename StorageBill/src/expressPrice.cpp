@@ -13,6 +13,10 @@ std::map< std::wstring, std::list<sExpressPriceInfo> > g_yongChuangYaoHuiKDPrice
 //------------------------------------顺丰价格--------------------------------------//
 //永创耀辉
 std::vector< std::list<sExpressPriceInfo> > g_yongChuangYaoHuiSFPrice;
+//弥雅
+std::vector< std::list<sExpressPriceInfo> > g_miYaSFPrice;
+//七一酱园
+std::vector< std::list<sExpressPriceInfo> > g_qiYiJiangYuanSFPrice;
 //----------------------------------------------------------------------------------//
 
 
@@ -21,6 +25,12 @@ std::vector< std::list<sExpressPriceInfo> > g_yongChuangYaoHuiSFPrice;
 std::map< std::wstring, sLargeExpressPriceInfo > g_yongChuangYaoHuiZTKYPrice;
 //新马帮
 std::map< std::wstring, sLargeExpressPriceInfo > g_xinMaBangZTKYPrice;
+//颐麦科技
+std::map< std::wstring, sLargeExpressPriceInfo > g_yiMaiKeJiZTKYPrice;
+//弥雅
+std::map< std::wstring, sLargeExpressPriceInfo > g_miYaZTKYPrice;
+//七一酱园
+std::map< std::wstring, sLargeExpressPriceInfo > g_qiYiJiangYuanZTKYPrice;
 //----------------------------------------------------------------------------------//
 
 
@@ -29,9 +39,8 @@ std::map< std::wstring, sLargeExpressPriceInfo > g_chengBenZTKYPrice;
 
 void PrepareExpressPrice()
 {
-	g_yongChuangYaoHuiSFPrice.resize(4);
+	
 	//最小重量 最大重量  首重	首重费用	续重费用
-
 	//泰福商贸
 	{
 		//0-3公斤 一口价
@@ -347,6 +356,7 @@ void PrepareExpressPrice()
 	}
 	//永创耀辉顺丰
 	{
+		g_yongChuangYaoHuiSFPrice.resize(4);
 		g_yongChuangYaoHuiSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
 		g_yongChuangYaoHuiSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
 		g_yongChuangYaoHuiSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
@@ -671,6 +681,164 @@ void PrepareExpressPrice()
 		g_xinMaBangZTKYPrice[L"海南省"] = { 27, 2.7 };
 		g_xinMaBangZTKYPrice[L"新疆维吾尔自治区"] = { 85, 3.2 };
 		g_xinMaBangZTKYPrice[L"西藏自治区"] = { 65, 4.2 };
+	}
+	//颐麦科技中通快运
+	{
+		g_yiMaiKeJiZTKYPrice[L"四川省"] = { 25, 1.1 };
+		g_yiMaiKeJiZTKYPrice[L"甘孜藏族自治州"] = { 25, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"阿坝藏族羌族自治州"] = { 25, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"凉山彝族自治州"] = { 25, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"上海"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"北京"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"河南省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"江苏省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"浙江省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"安徽省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"山东省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"天津"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"河北省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"湖南省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"湖北省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"山西省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"陕西省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"江西省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"广东省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"福建省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"广西壮族自治区"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"重庆"] = { 28, 1.3 };
+		g_yiMaiKeJiZTKYPrice[L"云南省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"贵州省"] = { 28, 1.5 };
+		g_yiMaiKeJiZTKYPrice[L"甘肃省"] = { 28, 3 };
+		g_yiMaiKeJiZTKYPrice[L"青海省"] = { 28, 3 };
+		g_yiMaiKeJiZTKYPrice[L"黑龙江省"] = { 28, 1.8 };
+		g_yiMaiKeJiZTKYPrice[L"吉林省"] = { 28, 1.8 };
+		g_yiMaiKeJiZTKYPrice[L"辽宁省"] = { 28, 1.8 };
+		g_yiMaiKeJiZTKYPrice[L"海南省"] = { 28, 3 };
+		g_yiMaiKeJiZTKYPrice[L"新疆维吾尔自治区"] = { 85, 3.5 };
+		g_yiMaiKeJiZTKYPrice[L"西藏自治区"] = { 65, 4.5 };
+		g_yiMaiKeJiZTKYPrice[L"宁夏回族自治区"] = { 54, 3 };
+		g_yiMaiKeJiZTKYPrice[L"内蒙古自治区"] = { 75, 3.5 };
+	}
+	//弥雅中通快运
+	{
+		g_miYaZTKYPrice[L"上海"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"北京"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"河南省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"江苏省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"浙江省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"安徽省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"山东省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"天津"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"河北省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"湖南省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"湖北省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"山西省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"陕西省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"江西省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"广东省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"福建省"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"广西壮族自治区"] = { 27.5, 1.3 };
+		g_miYaZTKYPrice[L"四川省"] = { 22.5, 1 };
+		g_miYaZTKYPrice[L"甘孜藏族自治州"] = { 22.5, 1.4 };
+		g_miYaZTKYPrice[L"阿坝藏族羌族自治州"] = { 22.5, 1.4 };
+		g_miYaZTKYPrice[L"凉山彝族自治州"] = { 22.5, 1.4 };
+		g_miYaZTKYPrice[L"重庆"] = { 27.5, 1.2 };
+		g_miYaZTKYPrice[L"云南省"] = { 27.5, 1.4 };
+		g_miYaZTKYPrice[L"贵州省"] = { 27.5, 1.4 };
+		g_miYaZTKYPrice[L"甘肃省"] = { 27.5, 3 };
+		g_miYaZTKYPrice[L"宁夏回族自治区"] = { 42.5, 2.8 };
+		g_miYaZTKYPrice[L"青海省"] = { 27.5, 2.8 };
+		g_miYaZTKYPrice[L"黑龙江省"] = { 27.5, 1.4 };
+		g_miYaZTKYPrice[L"吉林省"] = { 27.5, 1.4 };
+		g_miYaZTKYPrice[L"辽宁省"] = { 27.5, 1.4 };
+		g_miYaZTKYPrice[L"内蒙古自治区"] = { 72.5, 3 };
+		g_miYaZTKYPrice[L"海南省"] = { 27.5, 2.7 };
+		g_miYaZTKYPrice[L"新疆维吾尔自治区"] = { 82.5, 3.2 };
+		g_miYaZTKYPrice[L"西藏自治区"] = { 62.5, 4.2 };
+	}
+	//七一酱园中通快运
+	{
+		g_qiYiJiangYuanZTKYPrice[L"上海"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"北京"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"河南省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"江苏省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"浙江省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"安徽省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"山东省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"天津"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"河北省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"湖南省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"湖北省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"山西省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"陕西省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"江西省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"广东省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"福建省"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"广西壮族自治区"] = { 27.5, 1.3 };
+		g_qiYiJiangYuanZTKYPrice[L"四川省"] = { 22.5, 1 };
+		g_qiYiJiangYuanZTKYPrice[L"甘孜藏族自治州"] = { 22.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"阿坝藏族羌族自治州"] = { 22.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"凉山彝族自治州"] = { 22.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"重庆"] = { 27.5, 1.2 };
+		g_qiYiJiangYuanZTKYPrice[L"云南省"] = { 27.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"贵州省"] = { 27.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"甘肃省"] = { 27.5, 3 };
+		g_qiYiJiangYuanZTKYPrice[L"宁夏回族自治区"] = { 42.5, 2.8 };
+		g_qiYiJiangYuanZTKYPrice[L"青海省"] = { 27.5, 2.8 };
+		g_qiYiJiangYuanZTKYPrice[L"黑龙江省"] = { 27.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"吉林省"] = { 27.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"辽宁省"] = { 27.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"内蒙古自治区"] = { 72.5, 3 };
+		g_qiYiJiangYuanZTKYPrice[L"海南省"] = { 27.5, 2.7 };
+		g_qiYiJiangYuanZTKYPrice[L"新疆维吾尔自治区"] = { 82.5, 3.2 };
+		g_qiYiJiangYuanZTKYPrice[L"西藏自治区"] = { 62.5, 4.2 };
+	}
+	
+	//弥雅顺丰
+	{
+		g_miYaSFPrice.resize(4);
+		g_miYaSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
+		g_miYaSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
+		g_miYaSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
+		g_miYaSFPrice[0].push_back({ 3, 0, 1, 9, 4.2 });
+
+		g_miYaSFPrice[1].push_back({ 0, 1, 1, 11, 0 });
+		g_miYaSFPrice[1].push_back({ 1, 2, 2, 14, 0 });
+		g_miYaSFPrice[1].push_back({ 2, 3, 3, 16, 0 });
+		g_miYaSFPrice[1].push_back({ 3, 0, 1, 10, 4.5 });
+
+		g_miYaSFPrice[2].push_back({ 0, 1, 1, 11, 0 });
+		g_miYaSFPrice[2].push_back({ 1, 2, 2, 15, 0 });
+		g_miYaSFPrice[2].push_back({ 2, 3, 3, 18.5, 0 });
+		g_miYaSFPrice[2].push_back({ 3, 0, 1, 10, 5.5 });
+
+		g_miYaSFPrice[3].push_back({ 0, 1, 1, 14, 0 });
+		g_miYaSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
+		g_miYaSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
+		g_miYaSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+	}
+	//七一酱园顺丰
+	{
+		g_qiYiJiangYuanSFPrice.resize(4);
+		g_qiYiJiangYuanSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
+		g_qiYiJiangYuanSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
+		g_qiYiJiangYuanSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
+		g_qiYiJiangYuanSFPrice[0].push_back({ 3, 0, 1, 9, 4.2 });
+
+		g_qiYiJiangYuanSFPrice[1].push_back({ 0, 1, 1, 11, 0 });
+		g_qiYiJiangYuanSFPrice[1].push_back({ 1, 2, 2, 14, 0 });
+		g_qiYiJiangYuanSFPrice[1].push_back({ 2, 3, 3, 16, 0 });
+		g_qiYiJiangYuanSFPrice[1].push_back({ 3, 0, 1, 10, 4.5 });
+
+		g_qiYiJiangYuanSFPrice[2].push_back({ 0, 1, 1, 11, 0 });
+		g_qiYiJiangYuanSFPrice[2].push_back({ 1, 2, 2, 15, 0 });
+		g_qiYiJiangYuanSFPrice[2].push_back({ 2, 3, 3, 18.5, 0 });
+		g_qiYiJiangYuanSFPrice[2].push_back({ 3, 0, 1, 10, 5.5 });
+
+		g_qiYiJiangYuanSFPrice[3].push_back({ 0, 1, 1, 14, 0 });
+		g_qiYiJiangYuanSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
+		g_qiYiJiangYuanSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
+		g_qiYiJiangYuanSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
 	}
 }
 

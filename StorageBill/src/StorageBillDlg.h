@@ -47,6 +47,7 @@ private:
 	bool Handle_XinMaBang();
 	bool Handle_QiYiJiangYuan();
 	bool Handle_HaTeNengLiang();
+	bool Handle_HanTaiLang();
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
