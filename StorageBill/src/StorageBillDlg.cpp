@@ -21,8 +21,8 @@ if(_pStr)\
 
 #define SHEET_CELL_INT(sheet, r, c, nOut) nOut = sheet->Cell(r, c)->GetInteger();
 
-#define TOTAL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库单.xls"
-#define DETAIL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库明细.xls"
+#define TOTAL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库单"
+#define DETAIL_FILE_PATH L"./系统数据/"+m_strYM+L"/销售出库明细"
 #define SF_FILE_PATH L"./系统数据/"+m_strYM+L"/顺丰账单.xls"
 #define IN_STORAGE_PATH L"./系统数据/"+m_strYM+L"/入库明细账.xls"
 #define KUAI_YUN_WEIGHT_FILE_PATH L"./系统数据/"+m_strYM+L"/快运出库重量.xls"
@@ -330,62 +330,153 @@ void CStorageBillDlg::SetHScroll()
 	ReleaseDC(dc);
 }
 
-bool CStorageBillDlg::ParseALLData()
+bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool checkFail)
 {
-	std::wstring strTotalFileName = TOTAL_FILE_PATH;
-	std::wstring strDetailFileName = DETAIL_FILE_PATH;
-	std::wstring strInStorageFileName = IN_STORAGE_PATH;
-	std::wstring strKuaiYunWeightFileName = KUAI_YUN_WEIGHT_FILE_PATH;
-	BasicExcel totalExcel;
-	BasicExcel inStorageExcel;
 	BasicExcel detailExcel;
-	BasicExcel kuaiYunWeightExcel;
-	BasicExcel baoJiaExcel;
-	std::string strBaoJiaFileName = "./系统数据/保价统计.xls";
-	if(!baoJiaExcel.Load(strBaoJiaFileName.c_str()))
+	std::string fileName = CFuncCommon::WString2String(wfileName.c_str());
+	if(!detailExcel.Load(fileName.c_str()))
 	{
-		THROW_ERROR(L"保价统计 加载失败");
+		if(checkFail)
+		{
+			wchar_t szBuffer[128] ={0};
+			wsprintfW(szBuffer, L"%s 加载失败", wfileName.c_str());
+			THROW_ERROR(szBuffer);
+		}
+		return false;
 	}
-	BasicExcelWorksheet* baoJiaSheet = baoJiaExcel.GetWorksheet(L"Sheet1");
-	if(baoJiaSheet)
+	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
+	if(detailSheet)
 	{
-		size_t maxRows = baoJiaSheet->GetTotalRows();
-		size_t maxCols = baoJiaSheet->GetTotalCols();
+		std::set<std::wstring> setNotHaveBaoJiaJinE;
+		size_t maxRows = detailSheet->GetTotalRows();
+		size_t maxCols = detailSheet->GetTotalCols();
+
 		int nHuoPinMingCheng = -1;
-		int nJinE = -1;
+		int nHuoPinZongShuLiang = -1;
+		int nHuoPinShuLiang = -1;
+		int nWuLiuDanHao = -1;
+		int nSheng = -1;
+		int nShengShiQu = -1;
+		int nShi = -1;
+		int nPinPai = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
-			BasicExcelCell* cell = baoJiaSheet->Cell(0, c);
+			BasicExcelCell* cell = detailSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
 			if(strTitle == L"货品名称")
 				nHuoPinMingCheng = c;
-			else if(strTitle == L"保价价格")
-				nJinE = c;
+			else if(strTitle == L"货品总数量")
+				nHuoPinZongShuLiang = c;
+			else if(strTitle == L"货品数量")
+				nHuoPinShuLiang = c;
+			else if(strTitle == L"物流编号")
+				nWuLiuDanHao = c;
+			else if(strTitle == L"省")
+				nSheng = c;
+			else if(strTitle == L"市")
+				nShi = c;
+			else if(strTitle == L"省市区")
+				nShengShiQu = c;
+			else if(strTitle == L"品牌")
+				nPinPai = c;
 		}
-		if(nHuoPinMingCheng == -1 || nJinE == -1)
+		if(nHuoPinMingCheng == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nWuLiuDanHao == -1 || nSheng == -1 || nShi == -1 || nShengShiQu == -1 || nPinPai == -1)
 		{
-			THROW_ERROR(L"保价统计 有标题未找到");
+			wchar_t szBuffer[128] ={0};
+			wsprintfW(szBuffer, L"%s 有标题未找到", wfileName.c_str());
+			THROW_ERROR(szBuffer);
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
+			std::wstring strWuLiuDanHao;
+			std::wstring strPinPai;
 			const wchar_t* _pStr = NULL;
+			SHEET_CELL_STRING(detailSheet, r, nWuLiuDanHao, strWuLiuDanHao);
+			SHEET_CELL_STRING(detailSheet, r, nPinPai, strPinPai);
+			std::map< std::wstring, sSalesInfo* >::iterator it = m_mapTempSalesInfo.find(strWuLiuDanHao);
+			if(it == m_mapTempSalesInfo.end())
+			{
+				continue;
+				wchar_t szBuffer[128] ={0};
+				wsprintfW(szBuffer, L"%s 未找到单号%s", wfileName.c_str(), strWuLiuDanHao.c_str());
+				THROW_ERROR(szBuffer);
+			}
+			double dZSL = detailSheet->Cell(r, nHuoPinZongShuLiang)->GetDouble();
+			it->second->strHuoPinZongShuLiang = CFuncCommon::Double2WString(dZSL+DOUBLE_PRECISION, 0);
+			SHEET_CELL_STRING(detailSheet, r, nSheng, it->second->strSheng);
+			if(it->second->strSheng == L"")
+			{
+				wstring strShengShiQu = L"";
+				SHEET_CELL_STRING(detailSheet, r, nShengShiQu, strShengShiQu);
+				if(strShengShiQu.find(L"广西区省") != wstring::npos)
+				{
+					it->second->strSheng = L"广西壮族自治区";
+				}
+				else if(strShengShiQu.find(L"宁夏区省") != wstring::npos)
+				{
+					it->second->strSheng = L"宁夏回族自治区";
+				}
+				else
+				{
+					wchar_t szBuffer[128] ={0};
+					wsprintfW(szBuffer, L"%s 未识别省市区 %s", wfileName.c_str(), strShengShiQu.c_str());
+					THROW_ERROR(szBuffer);
+				}
+			}
+			SHEET_CELL_STRING(detailSheet, r, nShi, it->second->strShi);
 			std::wstring strHuoPinMingCheng;
-			int jinE;
-			SHEET_CELL_STRING(baoJiaSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
-			SHEET_CELL_INT(baoJiaSheet, r, nJinE, jinE);
-			m_mapBaoJiaJinE[strHuoPinMingCheng] = jinE;
+			SHEET_CELL_STRING(detailSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
+			double dSL = detailSheet->Cell(r, nHuoPinShuLiang)->GetDouble();
+			std::wstring strHuoPinShuLiang = CFuncCommon::Double2WString(dSL+DOUBLE_PRECISION, 0);
+			if(it->second->strHuoPinMingXi == L"")
+				it->second->strHuoPinMingXi = strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
+			else
+				it->second->strHuoPinMingXi = it->second->strHuoPinMingXi + L";" + strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
+			if(strPinPai == L"昆仑山")
+				it->second->bKunLunShan = true;
+			if(strHuoPinMingCheng != L"杏汁180ml*1罐" && strHuoPinMingCheng != L"番茄汁180ml*1罐")
+				it->second->bChaiFen = false;
+			int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
+			std::map< std::wstring, int >::iterator itBJ = m_mapBaoJiaJinE.find(strHuoPinMingCheng);
+			if(itBJ != m_mapBaoJiaJinE.end())
+				it->second->nBaoJiaJinE += itBJ->second*nBjsl;
+			else if(it->second->strHuoZhu == L"永创耀辉" && strPinPai != L"昆仑山")
+			{
+				std::set<std::wstring>::iterator itNHBJ = setNotHaveBaoJiaJinE.find(strHuoPinMingCheng);
+				if(itNHBJ == setNotHaveBaoJiaJinE.end())
+				{
+					setNotHaveBaoJiaJinE.insert(strHuoPinMingCheng);
+					wchar_t szBuffer[128] ={0};
+					wsprintfW(szBuffer, L"未找到保价金额 货品=%s", strHuoPinMingCheng.c_str());
+					AddLog(szBuffer);
+				}
+			}
 		}
-		AddLog(L"读取保价统计成功");
+		wchar_t szBuffer[128] ={0};
+		wsprintfW(szBuffer, L"读取 %s 成功", wfileName.c_str());
+		AddLog(szBuffer);
 	}
 	else
 	{
-		THROW_ERROR(L"保价统计 加载失败");
+		wchar_t szBuffer[128] ={0};
+		wsprintfW(szBuffer, L"%s 加载失败", wfileName.c_str());
+		THROW_ERROR(szBuffer);
 	}
-
-	std::string _strTotalFileName = CFuncCommon::WString2String(strTotalFileName.c_str());
-	if(!totalExcel.Load(_strTotalFileName.c_str()))
+	return true;
+}
+bool CStorageBillDlg::LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFail)
+{
+	std::string fileName = CFuncCommon::WString2String(wfileName.c_str());
+	BasicExcel totalExcel;
+	if(!totalExcel.Load(fileName.c_str()))
 	{
-		THROW_ERROR(L"销售出库单 加载失败");
+		if(checkFail)
+		{
+			wchar_t szBuffer[128] ={0};
+			wsprintfW(szBuffer, L"%s 加载失败", wfileName.c_str());
+			THROW_ERROR(szBuffer);
+		}
+		return false;
 	}
 	BasicExcelWorksheet* totalSheet = totalExcel.GetWorksheet(L"Sheet1");
 	if(totalSheet)
@@ -430,11 +521,13 @@ bool CStorageBillDlg::ParseALLData()
 				nBaoZhuang = c;
 			else if(strTitle == L"客服备注")
 				nKeFuBeiZhu = c;
-			
+
 		}
 		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1 || nYuanShiDanHao == -1 || nDianPu == -1 || nKeFuBeiZhu == -1)
 		{
-			THROW_ERROR(L"销售出库单 有标题未找到");
+			wchar_t szBuffer[128] ={0};
+			wsprintfW(szBuffer, L"%s 有标题未找到", wfileName.c_str());
+			THROW_ERROR(szBuffer);
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
@@ -467,126 +560,81 @@ bool CStorageBillDlg::ParseALLData()
 			std::list<sSalesInfo>::iterator it = --m_mapAllSalesInfo[_data.strHuoZhu].end();
 			m_mapTempSalesInfo[_data.strWuLiuDanHao] = &(*it);
 		}
-		AddLog(L"读取销售出库单成功");
+		wchar_t szBuffer[128] ={0};
+		wsprintfW(szBuffer, L"读取 %s 成功", wfileName.c_str());
+		AddLog(szBuffer);
 	}
 	else
 	{
-		THROW_ERROR(L"销售出库单 加载失败");
+		wchar_t szBuffer[128] ={0};
+		wsprintfW(szBuffer, L"%s 加载失败", wfileName.c_str());
+		THROW_ERROR(szBuffer);
 	}
+	return true;
+}
 
-	std::string _strDetailFileName = CFuncCommon::WString2String(strDetailFileName.c_str());
-	if(!detailExcel.Load(_strDetailFileName.c_str()))
+bool CStorageBillDlg::ParseALLData()
+{
+	std::wstring strTotalFileName = TOTAL_FILE_PATH;
+	std::wstring strDetailFileName = DETAIL_FILE_PATH;
+	std::wstring strInStorageFileName = IN_STORAGE_PATH;
+	std::wstring strKuaiYunWeightFileName = KUAI_YUN_WEIGHT_FILE_PATH;
+	BasicExcel inStorageExcel;
+	BasicExcel kuaiYunWeightExcel;
+	BasicExcel baoJiaExcel;
+	std::string strBaoJiaFileName = "./系统数据/保价统计.xls";
+	if(!baoJiaExcel.Load(strBaoJiaFileName.c_str()))
 	{
-		THROW_ERROR(L"销售出库明细 加载失败");
+		THROW_ERROR(L"保价统计 加载失败");
 	}
-	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
-	if(detailSheet)
+	BasicExcelWorksheet* baoJiaSheet = baoJiaExcel.GetWorksheet(L"Sheet1");
+	if(baoJiaSheet)
 	{
-		std::set<std::wstring> setNotHaveBaoJiaJinE;
-		size_t maxRows = detailSheet->GetTotalRows();
-		size_t maxCols = detailSheet->GetTotalCols();
-
+		size_t maxRows = baoJiaSheet->GetTotalRows();
+		size_t maxCols = baoJiaSheet->GetTotalCols();
 		int nHuoPinMingCheng = -1;
-		int nHuoPinZongShuLiang = -1;
-		int nHuoPinShuLiang = -1;
-		int nWuLiuDanHao = -1;
-		int nSheng = -1;
-		int nShengShiQu = -1;
-		int nShi = -1;
-		int nPinPai = -1;
+		int nJinE = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
-			BasicExcelCell* cell = detailSheet->Cell(0, c);
+			BasicExcelCell* cell = baoJiaSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
 			if(strTitle == L"货品名称")
 				nHuoPinMingCheng = c;
-			else if(strTitle == L"货品总数量")
-				nHuoPinZongShuLiang = c;
-			else if(strTitle == L"货品数量")
-				nHuoPinShuLiang = c;
-			else if(strTitle == L"物流编号")
-				nWuLiuDanHao = c;
-			else if(strTitle == L"省")
-				nSheng = c;
-			else if(strTitle == L"市")
-				nShi = c;
-			else if(strTitle == L"省市区")
-				nShengShiQu = c;
-			else if(strTitle == L"品牌")
-				nPinPai = c;
+			else if(strTitle == L"保价价格")
+				nJinE = c;
 		}
-		if(nHuoPinMingCheng == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nWuLiuDanHao == -1 || nSheng == -1 || nShi == -1 || nShengShiQu == -1 || nPinPai == -1)
+		if(nHuoPinMingCheng == -1 || nJinE == -1)
 		{
-			THROW_ERROR(L"销售出库明细 有标题未找到");
+			THROW_ERROR(L"保价统计 有标题未找到");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
-			std::wstring strWuLiuDanHao;
-			std::wstring strPinPai;
 			const wchar_t* _pStr = NULL;
-			SHEET_CELL_STRING(detailSheet, r, nWuLiuDanHao, strWuLiuDanHao);
-			SHEET_CELL_STRING(detailSheet, r, nPinPai, strPinPai);
-			std::map< std::wstring, sSalesInfo* >::iterator it = m_mapTempSalesInfo.find(strWuLiuDanHao);
-			if(it == m_mapTempSalesInfo.end())
-			{
-				continue;
-				wchar_t szBuffer[128] ={0};
-				wsprintfW(szBuffer, L"销售出库明细 未找到单号%s", strWuLiuDanHao.c_str());
-				THROW_ERROR(szBuffer);
-			}
-			double dZSL = detailSheet->Cell(r, nHuoPinZongShuLiang)->GetDouble();
-			it->second->strHuoPinZongShuLiang = CFuncCommon::Double2WString(dZSL+DOUBLE_PRECISION, 0);
-			SHEET_CELL_STRING(detailSheet, r, nSheng, it->second->strSheng);
-			if(it->second->strSheng == L"")
-			{
-				wstring strShengShiQu = L"";
-				SHEET_CELL_STRING(detailSheet, r, nShengShiQu, strShengShiQu);
-				if(strShengShiQu.find(L"广西区省") != wstring::npos)
-				{
-					it->second->strSheng = L"广西壮族自治区";		
-				}
-				else if(strShengShiQu.find(L"宁夏区省") != wstring::npos)
-				{
-					it->second->strSheng = L"宁夏回族自治区";		
-				}
-				else
-				{
-					wchar_t szBuffer[128] = { 0 };
-					wsprintfW(szBuffer, L"销售出库明细 未识别省市区 %s", strShengShiQu.c_str());
-					THROW_ERROR(szBuffer);
-				}
-			}
-			SHEET_CELL_STRING(detailSheet, r, nShi, it->second->strShi);
 			std::wstring strHuoPinMingCheng;
-			SHEET_CELL_STRING(detailSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
-			double dSL = detailSheet->Cell(r, nHuoPinShuLiang)->GetDouble();
-			std::wstring strHuoPinShuLiang = CFuncCommon::Double2WString(dSL+DOUBLE_PRECISION, 0);
-			if(it->second->strHuoPinMingXi == L"")
-				it->second->strHuoPinMingXi = strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
-			else
-				it->second->strHuoPinMingXi = it->second->strHuoPinMingXi + L";" + strHuoPinMingCheng + L"@" + strHuoPinShuLiang;
-			if(strPinPai == L"昆仑山")
-				it->second->bKunLunShan = true;
-			if(strHuoPinMingCheng != L"杏汁180ml*1罐" && strHuoPinMingCheng != L"番茄汁180ml*1罐")
-				it->second->bChaiFen = false;
-			int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
-			std::map< std::wstring, int >::iterator itBJ = m_mapBaoJiaJinE.find(strHuoPinMingCheng);
-			if(itBJ != m_mapBaoJiaJinE.end())
-				it->second->nBaoJiaJinE += itBJ->second*nBjsl;
-			else if(it->second->strHuoZhu == L"永创耀辉" && strPinPai != L"昆仑山")
-			{
-				std::set<std::wstring>::iterator itNHBJ = setNotHaveBaoJiaJinE.find(strHuoPinMingCheng);
-				if(itNHBJ == setNotHaveBaoJiaJinE.end())
-				{
-					setNotHaveBaoJiaJinE.insert(strHuoPinMingCheng);
-					wchar_t szBuffer[128] = { 0 };
-					wsprintfW(szBuffer, L"未找到保价金额 货品=%s", strHuoPinMingCheng.c_str());
-					AddLog(szBuffer);
-				}
-			}
+			int jinE;
+			SHEET_CELL_STRING(baoJiaSheet, r, nHuoPinMingCheng, strHuoPinMingCheng);
+			SHEET_CELL_INT(baoJiaSheet, r, nJinE, jinE);
+			m_mapBaoJiaJinE[strHuoPinMingCheng] = jinE;
 		}
-		AddLog(L"读取销售出库明细成功");
+		AddLog(L"读取保价统计成功");
 	}
+	else
+	{
+		THROW_ERROR(L"保价统计 加载失败");
+	}
+	for(int i=1; i<10; ++i)
+	{
+		wchar_t szBuffer[128] ={0};
+		wsprintfW(szBuffer, L"%s%d.xls", strTotalFileName.c_str(), i);
+		LoadXiaoShouChuKuDan(szBuffer, i==1);
+	}
+	for(int i=1; i<10; ++i)
+	{
+		wchar_t szBuffer[128] ={0};
+		wsprintfW(szBuffer, L"%s%d.xls", strDetailFileName.c_str(), i);
+		LoadXiaoShouChuKuMingXi(szBuffer, i==1);
+	}
+	
 	std::map< std::wstring, sSalesInfo* >::iterator itTmpB = m_mapTempSalesInfo.begin();
 	std::map< std::wstring, sSalesInfo* >::iterator itTmpE = m_mapTempSalesInfo.end();
 	while(itTmpB != itTmpE)

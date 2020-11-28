@@ -38,6 +38,8 @@ public:
 private:
 	void _LogicThread();
 	bool ParseALLData();
+	bool LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFail);
+	bool LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool checkFail);
 	bool CreateHuoZhuFile();
 	bool Handle_YongChuangYaoHui();
 	bool Handle_YongChuangYaoHui_KunLunShan();
