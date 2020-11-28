@@ -440,7 +440,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 			std::map< std::wstring, int >::iterator itBJ = m_mapBaoJiaJinE.find(strHuoPinMingCheng);
 			if(itBJ != m_mapBaoJiaJinE.end())
 				it->second->nBaoJiaJinE += itBJ->second*nBjsl;
-			else if(it->second->strHuoZhu == L"永创耀辉" && strPinPai != L"昆仑山")
+			else if(it->second->strHuoZhu == L"永创耀辉" && strPinPai != L"昆仑山" && (itB->second->strWuLiuGongSi == L"顺丰热敏(线下)" || itB->second->strWuLiuGongSi == L"顺丰热敏(拼多多)"))
 			{
 				std::set<std::wstring>::iterator itNHBJ = setNotHaveBaoJiaJinE.find(strHuoPinMingCheng);
 				if(itNHBJ == setNotHaveBaoJiaJinE.end())
