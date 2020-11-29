@@ -201,6 +201,8 @@ void CStorageBillDlg::_LogicThread()
 			AddLog(L"[五粮液歪嘴酒100ml] 包装盒");
 			AddLog(L"顺丰 [贵州茅台酒飞天茅台53度酱香型白酒1.5L] [五粮液1618珍酿52度3L] [贵州茅台酒飞天茅台53度酱香型白酒3L] [贵州茅台酒飞天茅台53度酱香型白酒6L] 包装盒");
 			AddLog(L"顺丰 整件酒包装盒");
+			AddLog(L"罗永浩带货 价格修改");
+			AddLog(L"辣风芹 刷单价格修改  代发50多单顺丰价格修改");
 		}
 	__break_logic:
 		m_bRun = false;
