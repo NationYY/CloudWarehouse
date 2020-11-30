@@ -442,7 +442,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 			std::map< std::wstring, int >::iterator itBJ = m_mapBaoJiaJinE.find(strHuoPinMingCheng);
 			if(itBJ != m_mapBaoJiaJinE.end())
 				it->second->nBaoJiaJinE += itBJ->second*nBjsl;
-			else if(it->second->strHuoZhu == L"永创耀辉" && strPinPai != L"昆仑山" && (itB->second->strWuLiuGongSi == L"顺丰热敏(线下)" || itB->second->strWuLiuGongSi == L"顺丰热敏(拼多多)"))
+			else if(it->second->strHuoZhu == L"永创耀辉" && strPinPai != L"昆仑山" && (it->second->strWuLiuGongSi == L"顺丰热敏(线下)" || it->second->strWuLiuGongSi == L"顺丰热敏(拼多多)"))
 			{
 				std::set<std::wstring>::iterator itNHBJ = setNotHaveBaoJiaJinE.find(strHuoPinMingCheng);
 				if(itNHBJ == setNotHaveBaoJiaJinE.end())
@@ -997,7 +997,7 @@ bool CStorageBillDlg::CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& list
 				{
 					std::map<std::wstring, sZTKYAuthData>::iterator it = m_mapZYKYAuthData.find(itB->strWuLiuDanHao);
 					if(it != m_mapZYKYAuthData.end())
-						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(CFuncCommon::Double2WString(it->second.wuliuPay + it->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
+						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(CFuncCommon::Double2WString(it->second.yingShou + DOUBLE_PRECISION, 1).c_str());
 					else
 					{
 						sheet->Cell(nRecordRowIndex, eET_WuLiuChengBen)->SetWString(L"0");
@@ -1388,14 +1388,18 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 							if(itZTKY != m_mapZYKYAuthData.end())
 							{
 								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
-								if(chengbenMoney+DOUBLE_PRECISION  < itZTKY->second.wuliuPay)
+								if(chengbenMoney+DOUBLE_PRECISION  < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
 									recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"永创耀辉");
 									recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
-									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.wuliuPay + DOUBLE_PRECISION, 1).c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou-itZTKY->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
 									recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
 									g_arrRecordRowIndex[5]++;
+
+									BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
+									if(ztSheet)
+										ztSheet->Cell(itZTKY->second.row, m_ztkyHandleCol)->SetWString(L"价格异常");
 								}
 
 								if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
@@ -1576,14 +1580,18 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						if(itZTKY != m_mapZYKYAuthData.end())
 						{
 							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
-							if(chengbenMoney+DOUBLE_PRECISION < itZTKY->second.wuliuPay)
+							if(chengbenMoney+DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 							{
 								BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
 								recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"永创耀辉");
 								recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
-								recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.wuliuPay + DOUBLE_PRECISION, 1).c_str());
+								recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou-itZTKY->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
 								recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
 								g_arrRecordRowIndex[5]++;
+
+								BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
+								if(ztSheet)
+									ztSheet->Cell(itZTKY->second.row, m_ztkyHandleCol)->SetWString(L"价格异常");
 							}
 							if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
 							{
@@ -1923,7 +1931,7 @@ bool CStorageBillDlg::LoadZTKYData()
 		//load tile
 		int colNumber = -1;
 		int colWeight = -1;
-		int wuliuPay = -1;
+		int yingShou = -1;
 		int shanglouPay = -1;
 		bool bFix = false;
 		for(size_t c = 0; c < maxCols; ++c)
@@ -1933,12 +1941,12 @@ bool CStorageBillDlg::LoadZTKYData()
 			if(_titile)
 			{
 				std::wstring strTitle = _titile;
-				if(strTitle == L"物流单号")
+				if(strTitle == L"运单号")
 					colNumber = c;
-				else if(strTitle == L"计费重量")
+				else if(strTitle == L"结算重量")
 					colWeight = c;
-				else if(strTitle == L"物流费")
-					wuliuPay = c;
+				else if(strTitle == L"应收")
+					yingShou = c;
 				else if(strTitle == L"上楼费")
 					shanglouPay = c;
 				else if(strTitle == L"对账结果")
@@ -1949,7 +1957,7 @@ bool CStorageBillDlg::LoadZTKYData()
 			}
 			
 		}
-		if(colNumber == -1 || colWeight == -1 || wuliuPay == -1 || shanglouPay == 1)
+		if(colNumber == -1 || colWeight == -1 || yingShou == -1 || shanglouPay == 1)
 		{
 			wchar_t szBuffer[128] = { 0 };
 			wsprintfW(szBuffer, L"中通快运账单有标题未找到");
@@ -1963,7 +1971,7 @@ bool CStorageBillDlg::LoadZTKYData()
 			const wchar_t* _pStr = NULL;
 			SHEET_CELL_STRING(ztSheet, r, colNumber, _data.number);
 			SHEET_CELL_DOUBLE(ztSheet, r, colWeight, _data.finalWeight);
-			SHEET_CELL_DOUBLE(ztSheet, r, wuliuPay, _data.wuliuPay);
+			SHEET_CELL_DOUBLE(ztSheet, r, yingShou, _data.yingShou);
 			SHEET_CELL_DOUBLE(ztSheet, r, shanglouPay, _data.shanglowPay);
 			_data.row = r;
 			m_mapZYKYAuthData[_data.number] = _data;
@@ -2236,7 +2244,7 @@ bool CStorageBillDlg::CompareWithZTKYData(std::wstring strHuoZhu, std::list<sSal
 	BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[4]);
 	if(recordSheet == NULL)
 		return false;
-	BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet2");
+	BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
 	if(ztSheet == NULL)
 	{
 		THROW_ERROR(L"中通快运账单找不到 账单明细 子表");
@@ -2264,7 +2272,7 @@ bool CStorageBillDlg::CompareWithZTKYData(std::wstring strHuoZhu, std::list<sSal
 				recordSheet->Cell(g_arrRecordRowIndex[4], 2)->SetDouble(dZTWeight);
 				recordSheet->Cell(g_arrRecordRowIndex[4], 3)->SetWString(itYCBegin->strZhongLiang.c_str());
 				g_arrRecordRowIndex[4]++;
-				ztSheet->Cell(itZT->second.row, m_ztkyHandleCol)->SetWString(L"1");
+				ztSheet->Cell(itZT->second.row, m_ztkyHandleCol)->SetWString(L"重量异常");
 			}
 			else
 				ztSheet->Cell(itZT->second.row, m_ztkyHandleCol)->SetWString(L"1");
@@ -2584,14 +2592,18 @@ bool CStorageBillDlg::Handle_XinMaBang()
 							if(itZTKY != m_mapZYKYAuthData.end())
 							{
 								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
-								if(chengbenMoney+DOUBLE_PRECISION < itZTKY->second.wuliuPay)
+								if(chengbenMoney+DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
 									recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"永创耀辉");
 									recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
-									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.wuliuPay + DOUBLE_PRECISION, 1).c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou-itZTKY->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
 									recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
 									g_arrRecordRowIndex[5]++;
+
+									BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
+									if(ztSheet)
+										ztSheet->Cell(itZTKY->second.row, m_ztkyHandleCol)->SetWString(L"价格异常");
 								}
 
 								if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
@@ -2778,14 +2790,18 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 						if(itZTKY != m_mapZYKYAuthData.end())
 						{
 							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
-							if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.wuliuPay)
+							if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 							{
 								BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
 								recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"哈特能量");
 								recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
-								recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.wuliuPay + DOUBLE_PRECISION, 1).c_str());
+								recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou-itZTKY->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
 								recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
 								g_arrRecordRowIndex[5]++;
+
+								BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
+								if(ztSheet)
+									ztSheet->Cell(itZTKY->second.row, m_ztkyHandleCol)->SetWString(L"价格异常");
 							}
 							if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
 							{
@@ -3007,14 +3023,18 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 							if(itZTKY != m_mapZYKYAuthData.end())
 							{
 								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
-								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.wuliuPay)
+								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
 									recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"永创耀辉");
 									recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
-									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.wuliuPay + DOUBLE_PRECISION, 1).c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou-itZTKY->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
 									recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
 									g_arrRecordRowIndex[5]++;
+
+									BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
+									if(ztSheet)
+										ztSheet->Cell(itZTKY->second.row, m_ztkyHandleCol)->SetWString(L"价格异常");
 								}
 
 								if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)

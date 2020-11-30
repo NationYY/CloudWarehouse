@@ -512,39 +512,39 @@ void PrepareExpressPrice()
 	//中通快运成本
 	{
 		g_chengBenZTKYPrice[L"上海"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"北京"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"河南省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"江苏省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"浙江省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"安徽省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"山东省"] = { 25, 1.1 };
+		g_chengBenZTKYPrice[L"北京"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"河南省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"江苏省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"浙江省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"安徽省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"山东省"] = { 23, 1.1 };
 		g_chengBenZTKYPrice[L"天津"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"河北省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"湖南省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"湖北省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"山西省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"陕西省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"江西省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"广东省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"福建省"] = { 25, 1.1 };
-		g_chengBenZTKYPrice[L"广西壮族自治区"] = { 25, 1.1 };
+		g_chengBenZTKYPrice[L"河北省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"湖南省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"湖北省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"山西省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"陕西省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"江西省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"广东省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"福建省"] = { 23, 1.1 };
+		g_chengBenZTKYPrice[L"广西壮族自治区"] = { 23, 1.1 };
 		g_chengBenZTKYPrice[L"四川省"] = { 20, 0.8 };
-		g_chengBenZTKYPrice[L"甘孜藏族自治州"] = { 20, 1.2 };
-		g_chengBenZTKYPrice[L"阿坝藏族羌族自治州"] = { 20, 1.2 };
-		g_chengBenZTKYPrice[L"凉山彝族自治州"] = { 20, 1.2 };
-		g_chengBenZTKYPrice[L"重庆"] = { 25, 1 };
-		g_chengBenZTKYPrice[L"云南省"] = { 25, 1.2 };
-		g_chengBenZTKYPrice[L"贵州省"] = { 25, 1.2 };
-		g_chengBenZTKYPrice[L"甘肃省"] = { 25, 2.8 };
-		g_chengBenZTKYPrice[L"宁夏回族自治区"] = { 40, 2.6 };
+		g_chengBenZTKYPrice[L"阿坝藏族羌族自治州"] = { 50, 1.5 };
+		g_chengBenZTKYPrice[L"攀枝花市"] = { 20, 1 };
+
+		g_chengBenZTKYPrice[L"重庆"] = { 23, 1 };
+		g_chengBenZTKYPrice[L"云南省"] = { 30, 1.1 };
+		g_chengBenZTKYPrice[L"贵州省"] = { 23, 1.2 };
+		g_chengBenZTKYPrice[L"甘肃省"] = { 33, 1.6 };
+		g_chengBenZTKYPrice[L"宁夏回族自治区"] = { 40, 1.5 };
 		g_chengBenZTKYPrice[L"青海省"] = { 25, 2.6 };
-		g_chengBenZTKYPrice[L"黑龙江省"] = { 25, 1.2 };
-		g_chengBenZTKYPrice[L"吉林省"] = { 25, 1.2 };
-		g_chengBenZTKYPrice[L"辽宁省"] = { 25, 1.2 };
-		g_chengBenZTKYPrice[L"内蒙古自治区"] = { 70, 2.8 };
+		g_chengBenZTKYPrice[L"黑龙江省"] = { 35, 1.5 };
+		g_chengBenZTKYPrice[L"吉林省"] = { 35, 1.5 };
+		g_chengBenZTKYPrice[L"辽宁省"] = { 35, 1.5 };
+		g_chengBenZTKYPrice[L"内蒙古自治区"] = { 40, 1.5 };
 		g_chengBenZTKYPrice[L"海南省"] = { 25, 2.5 };
-		g_chengBenZTKYPrice[L"新疆维吾尔自治区"] = { 80, 3 };
-		g_chengBenZTKYPrice[L"西藏自治区"] = { 60, 4 };
+		g_chengBenZTKYPrice[L"新疆维吾尔自治区"] = { 50, 3 };
+		g_chengBenZTKYPrice[L"西藏自治区"] = { 70, 3 };
 	}
 	//永创耀辉中通快运
 	{

@@ -49,13 +49,13 @@ struct sZTKYAuthData
 {
 	wstring number;
 	double finalWeight;
-	double wuliuPay;
+	double yingShou;
 	double shanglowPay;
 	int row;
 	sZTKYAuthData() :
 		number(L""),
 		finalWeight(0.0),
-		wuliuPay(0.0),
+		yingShou(0.0),
 		shanglowPay(0.0),
 		row(-1)
 	{
