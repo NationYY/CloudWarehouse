@@ -1922,7 +1922,7 @@ bool CStorageBillDlg::LoadZTKYData()
 	std::wstring strZTFileName = ZTKY_FILE_PATH;
 	std::string _strZTFileName = CFuncCommon::WString2String(strZTFileName.c_str());
 	m_ztkyExcel.Load(_strZTFileName.c_str());
-	BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet2");
+	BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
 	if(ztSheet)
 	{
 		size_t maxRows = ztSheet->GetTotalRows();
