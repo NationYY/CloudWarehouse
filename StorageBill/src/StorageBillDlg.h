@@ -53,6 +53,7 @@ private:
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
+	void FillKDWeight();
 	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo, bool bWait=false);
 	bool CompareWithBSKDData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CompareWithZTKYData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);

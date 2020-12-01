@@ -151,6 +151,36 @@ BOOL CStorageBillDlg::OnInitDialog()
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
+void CStorageBillDlg::FillKDWeight()
+{
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itB1 = m_mapAllSalesInfo.begin();
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itE1 = m_mapAllSalesInfo.end();
+	while(itB1 != itE1)
+	{
+		std::list<sSalesInfo>::iterator itB2 = itB1->second.begin();
+		std::list<sSalesInfo>::iterator itE2 = itB1->second.end();
+		while(itB2 != itE2)
+		{
+			if(itB2->strWuLiuGongSi == L"百世快递(菜鸟)" || itB2->strWuLiuGongSi == L"百世快递(拼多多)")
+			{
+				std::map<std::wstring, sBSKDAuthData>::iterator itBS = m_mapBSKDAuthData.find(itB2->strWuLiuDanHao);
+				if(itBS != m_mapBSKDAuthData.end())
+					itB2->strZhongLiang = CFuncCommon::Double2WString(itBS->second.ysWeight+DOUBLE_PRECISION, 2);
+			}
+			else if(itB2->strWuLiuGongSi == L"顺丰热敏(拼多多)" || itB2->strWuLiuGongSi == L"顺丰热敏(线下)")
+			{
+				std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB2->strWuLiuDanHao);
+				if(itSF != m_mapSFAuthData.end())
+					itB2->strZhongLiang = itSF->second.weight;
+			}
+			itB2++;
+		}
+		itB1++;
+	}
+
+}
+
+
 void CStorageBillDlg::_LogicThread()
 {
 	while(!m_bExit)
@@ -168,6 +198,7 @@ void CStorageBillDlg::_LogicThread()
 				goto __break_logic;
 			if(!LoadZTKYData())
 				goto __break_logic;
+			FillKDWeight();
 			if(!Handle_YongChuangYaoHui())
 				goto __break_logic;
 			if(!m_bYG)
@@ -657,6 +688,9 @@ bool CStorageBillDlg::ParseALLData()
 					itTmpB->second->strZhongLiang = L"16.40";
 				else if(itTmpB->second->strHuoPinMingXi == L"昆仑山矿泉水K24-510mL（大包装）@1")
 					itTmpB->second->strZhongLiang = L"13.80";
+				else if(itTmpB->second->strHuoPinMingXi == L"昆仑山矿泉水K6—510ml@1")
+					itTmpB->second->strZhongLiang = L"3.5400";
+				
 			}
 		}
 		++itTmpB;
@@ -1321,8 +1355,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 								if(_itB->first != L"昆仑山矿泉水K4-4L" && _itB->first != L"昆仑山矿泉水K12-510ml（小包装）" &&
 								   _itB->first != L"昆仑山矿泉水K24-350mL（大包装）" && _itB->first != L"昆仑山矿泉水K12-350mL（小包装）" &&
 								   _itB->first != L"昆仑山矿泉水K12-1.23L" && _itB->first != L"昆仑山矿泉水K24-510mL（大包装）" &&
-								   _itB->first != L"昆仑山保湿水100ml" &&_itB->first != L"昆仑山保湿水300ml" && 
-								   _itB->first != L"昆仑山矿泉水510mL(单瓶大包装)" &&_itB->first != L"昆仑山矿泉水1.23L(单瓶)"
+								   _itB->first != L"昆仑山保湿水100ml" && _itB->first != L"昆仑山保湿水300ml" && 
+								   _itB->first != L"昆仑山矿泉水510mL(单瓶大包装)" && _itB->first != L"昆仑山矿泉水1.23L(单瓶)" &&
+								   _itB->first != L"昆仑山矿泉水K6—510ml"
 								   )
 								{
 									bChunShui = false;
@@ -1377,6 +1412,10 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 									{
 										money += (GetKDPrice(1, itB->strSheng, g_kunLunShanYTPrice, L"圆通快递")*_itB->second);
 									}
+									else if(_itB->first == L"昆仑山矿泉水K6—510ml")
+									{
+										money += (GetKDPrice(4, itB->strSheng, g_kunLunShanYTPrice, L"圆通快递")*_itB->second);
+									}
 									++_itB;
 								}
 								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -1387,9 +1426,6 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZYKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZYKYAuthData.end())
 							{
-								if(itB->strWuLiuDanHao == L"202047002771")
-									int a = 3;
-
 								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
 								if(chengbenMoney+DOUBLE_PRECISION  < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
