@@ -542,7 +542,7 @@ void PrepareExpressPrice()
 		g_chengBenZTKYPrice[L"吉林省"] = { 35, 1.5 };
 		g_chengBenZTKYPrice[L"辽宁省"] = { 35, 1.5 };
 		g_chengBenZTKYPrice[L"内蒙古自治区"] = { 40, 1.5 };
-		g_chengBenZTKYPrice[L"海南省"] = { 25, 2.5 };
+		g_chengBenZTKYPrice[L"海南省"] = { 40, 2.5 };
 		g_chengBenZTKYPrice[L"新疆维吾尔自治区"] = { 50, 3 };
 		g_chengBenZTKYPrice[L"西藏自治区"] = { 70, 3 };
 	}
@@ -566,22 +566,22 @@ void PrepareExpressPrice()
 		g_yongChuangYaoHuiZTKYPrice[L"福建省"] = {27.5, 1.3};
 		g_yongChuangYaoHuiZTKYPrice[L"广西壮族自治区"] = {27.5, 1.3};
 		g_yongChuangYaoHuiZTKYPrice[L"四川省"] = {22.5, 1};
-		g_yongChuangYaoHuiZTKYPrice[L"甘孜藏族自治州"] = {22.5, 1.4};
-		g_yongChuangYaoHuiZTKYPrice[L"阿坝藏族羌族自治州"] = {22.5, 1.4};
-		g_yongChuangYaoHuiZTKYPrice[L"凉山彝族自治州"] = {22.5, 1.4};
+		g_yongChuangYaoHuiZTKYPrice[L"甘孜藏族自治州"] = {50, 1.5};
+		g_yongChuangYaoHuiZTKYPrice[L"阿坝藏族羌族自治州"] = {50, 1.5};
+		g_yongChuangYaoHuiZTKYPrice[L"凉山彝族自治州"] = {50, 1.5};
 		g_yongChuangYaoHuiZTKYPrice[L"重庆"] = {27.5, 1.2};
-		g_yongChuangYaoHuiZTKYPrice[L"云南省"] = {27.5, 1.4};
+		g_yongChuangYaoHuiZTKYPrice[L"云南省"] = {33, 1.4};
 		g_yongChuangYaoHuiZTKYPrice[L"贵州省"] = {27.5, 1.4};
-		g_yongChuangYaoHuiZTKYPrice[L"甘肃省"] = {27.5, 3};
+		g_yongChuangYaoHuiZTKYPrice[L"甘肃省"] = {35, 3};
 		g_yongChuangYaoHuiZTKYPrice[L"宁夏回族自治区"] = {42.5, 2.8};
-		g_yongChuangYaoHuiZTKYPrice[L"青海省"] = {27.5, 2.8};
-		g_yongChuangYaoHuiZTKYPrice[L"黑龙江省"] = {27.5, 1.4};
-		g_yongChuangYaoHuiZTKYPrice[L"吉林省"] = {27.5, 1.4};
-		g_yongChuangYaoHuiZTKYPrice[L"辽宁省"] = {27.5, 1.4};
+		g_yongChuangYaoHuiZTKYPrice[L"青海省"] = {42.5, 2.8};
+		g_yongChuangYaoHuiZTKYPrice[L"黑龙江省"] = {37, 1.4};
+		g_yongChuangYaoHuiZTKYPrice[L"吉林省"] = {37, 1.4};
+		g_yongChuangYaoHuiZTKYPrice[L"辽宁省"] = {37, 1.4};
 		g_yongChuangYaoHuiZTKYPrice[L"内蒙古自治区"] = {72.5, 3};
-		g_yongChuangYaoHuiZTKYPrice[L"海南省"] = {27.5, 2.7};
+		g_yongChuangYaoHuiZTKYPrice[L"海南省"] = {42, 2.7};
 		g_yongChuangYaoHuiZTKYPrice[L"新疆维吾尔自治区"] = {82.5, 3.2};
-		g_yongChuangYaoHuiZTKYPrice[L"西藏自治区"] = {62.5, 4.2};
+		g_yongChuangYaoHuiZTKYPrice[L"西藏自治区"] = {75, 4.2};
 	}
 	//永创耀辉快递价格
 	{
@@ -665,22 +665,22 @@ void PrepareExpressPrice()
 		g_xinMaBangZTKYPrice[L"福建省"] = { 27, 1.3 };
 		g_xinMaBangZTKYPrice[L"广西壮族自治区"] = { 27, 1.3 };
 		g_xinMaBangZTKYPrice[L"四川省"] = { 23, 1.1 };
-		g_xinMaBangZTKYPrice[L"甘孜藏族自治州"] = { 23, 1.5 };
-		g_xinMaBangZTKYPrice[L"阿坝藏族羌族自治州"] = { 23, 1.5 };
-		g_xinMaBangZTKYPrice[L"凉山彝族自治州"] = { 23, 1.5 };
+		g_xinMaBangZTKYPrice[L"甘孜藏族自治州"] = { 52, 1.5 };
+		g_xinMaBangZTKYPrice[L"阿坝藏族羌族自治州"] = { 52, 1.5 };
+		g_xinMaBangZTKYPrice[L"凉山彝族自治州"] = { 52, 1.5 };
 		g_xinMaBangZTKYPrice[L"重庆"] = { 27, 1.2 };
 		g_xinMaBangZTKYPrice[L"云南省"] = { 27, 1.4 };
 		g_xinMaBangZTKYPrice[L"贵州省"] = { 27, 1.4 };
-		g_xinMaBangZTKYPrice[L"甘肃省"] = { 27, 3 };
+		g_xinMaBangZTKYPrice[L"甘肃省"] = { 35, 3 };
 		g_xinMaBangZTKYPrice[L"宁夏回族自治区"] = { 45, 2.8 };
-		g_xinMaBangZTKYPrice[L"青海省"] = { 27, 2.8 };
-		g_xinMaBangZTKYPrice[L"黑龙江省"] = { 27, 1.4 };
-		g_xinMaBangZTKYPrice[L"吉林省"] = { 27, 1.4 };
-		g_xinMaBangZTKYPrice[L"辽宁省"] = { 27, 1.4 };
+		g_xinMaBangZTKYPrice[L"青海省"] = { 45, 2.8 };
+		g_xinMaBangZTKYPrice[L"黑龙江省"] = { 37, 1.6 };
+		g_xinMaBangZTKYPrice[L"吉林省"] = { 37, 1.6 };
+		g_xinMaBangZTKYPrice[L"辽宁省"] = { 37, 1.6 };
 		g_xinMaBangZTKYPrice[L"内蒙古自治区"] = { 75, 3 };
-		g_xinMaBangZTKYPrice[L"海南省"] = { 27, 2.7 };
+		g_xinMaBangZTKYPrice[L"海南省"] = { 42, 2.7 };
 		g_xinMaBangZTKYPrice[L"新疆维吾尔自治区"] = { 85, 3.2 };
-		g_xinMaBangZTKYPrice[L"西藏自治区"] = { 65, 4.2 };
+		g_xinMaBangZTKYPrice[L"西藏自治区"] = { 75, 4.2 };
 	}
 	//颐麦科技中通快运
 	{
@@ -709,7 +709,7 @@ void PrepareExpressPrice()
 		g_yiMaiKeJiZTKYPrice[L"云南省"] = { 28, 1.5 };
 		g_yiMaiKeJiZTKYPrice[L"贵州省"] = { 28, 1.5 };
 		g_yiMaiKeJiZTKYPrice[L"甘肃省"] = { 28, 3 };
-		g_yiMaiKeJiZTKYPrice[L"青海省"] = { 28, 3 };
+		g_yiMaiKeJiZTKYPrice[L"青海省"] = { 75, 3 };
 		g_yiMaiKeJiZTKYPrice[L"黑龙江省"] = { 28, 1.8 };
 		g_yiMaiKeJiZTKYPrice[L"吉林省"] = { 28, 1.8 };
 		g_yiMaiKeJiZTKYPrice[L"辽宁省"] = { 28, 1.8 };
@@ -739,25 +739,26 @@ void PrepareExpressPrice()
 		g_miYaZTKYPrice[L"福建省"] = { 27.5, 1.3 };
 		g_miYaZTKYPrice[L"广西壮族自治区"] = { 27.5, 1.3 };
 		g_miYaZTKYPrice[L"四川省"] = { 22.5, 1 };
-		g_miYaZTKYPrice[L"甘孜藏族自治州"] = { 22.5, 1.4 };
-		g_miYaZTKYPrice[L"阿坝藏族羌族自治州"] = { 22.5, 1.4 };
-		g_miYaZTKYPrice[L"凉山彝族自治州"] = { 22.5, 1.4 };
+		g_miYaZTKYPrice[L"甘孜藏族自治州"] = { 50, 1.6 };
+		g_miYaZTKYPrice[L"阿坝藏族羌族自治州"] = { 50, 1.6 };
+		g_miYaZTKYPrice[L"凉山彝族自治州"] = { 50, 1.6 };
 		g_miYaZTKYPrice[L"重庆"] = { 27.5, 1.2 };
-		g_miYaZTKYPrice[L"云南省"] = { 27.5, 1.4 };
+		g_miYaZTKYPrice[L"云南省"] = { 32, 1.4 };
 		g_miYaZTKYPrice[L"贵州省"] = { 27.5, 1.4 };
-		g_miYaZTKYPrice[L"甘肃省"] = { 27.5, 3 };
+		g_miYaZTKYPrice[L"甘肃省"] = { 35, 3 };
 		g_miYaZTKYPrice[L"宁夏回族自治区"] = { 42.5, 2.8 };
-		g_miYaZTKYPrice[L"青海省"] = { 27.5, 2.8 };
-		g_miYaZTKYPrice[L"黑龙江省"] = { 27.5, 1.4 };
-		g_miYaZTKYPrice[L"吉林省"] = { 27.5, 1.4 };
-		g_miYaZTKYPrice[L"辽宁省"] = { 27.5, 1.4 };
+		g_miYaZTKYPrice[L"青海省"] = { 42.5, 2.8 };
+		g_miYaZTKYPrice[L"黑龙江省"] = { 37, 1.7 };
+		g_miYaZTKYPrice[L"吉林省"] = { 37, 1.7 };
+		g_miYaZTKYPrice[L"辽宁省"] = { 37, 1.7 };
 		g_miYaZTKYPrice[L"内蒙古自治区"] = { 72.5, 3 };
-		g_miYaZTKYPrice[L"海南省"] = { 27.5, 2.7 };
+		g_miYaZTKYPrice[L"海南省"] = { 42, 2.7 };
 		g_miYaZTKYPrice[L"新疆维吾尔自治区"] = { 82.5, 3.2 };
-		g_miYaZTKYPrice[L"西藏自治区"] = { 62.5, 4.2 };
+		g_miYaZTKYPrice[L"西藏自治区"] = { 72, 4.2 };
 	}
 	//七一酱园中通快运
 	{
+
 		g_qiYiJiangYuanZTKYPrice[L"上海"] = { 27.5, 1.3 };
 		g_qiYiJiangYuanZTKYPrice[L"北京"] = { 27.5, 1.3 };
 		g_qiYiJiangYuanZTKYPrice[L"河南省"] = { 27.5, 1.3 };
@@ -776,22 +777,22 @@ void PrepareExpressPrice()
 		g_qiYiJiangYuanZTKYPrice[L"福建省"] = { 27.5, 1.3 };
 		g_qiYiJiangYuanZTKYPrice[L"广西壮族自治区"] = { 27.5, 1.3 };
 		g_qiYiJiangYuanZTKYPrice[L"四川省"] = { 22.5, 1 };
-		g_qiYiJiangYuanZTKYPrice[L"甘孜藏族自治州"] = { 22.5, 1.4 };
-		g_qiYiJiangYuanZTKYPrice[L"阿坝藏族羌族自治州"] = { 22.5, 1.4 };
-		g_qiYiJiangYuanZTKYPrice[L"凉山彝族自治州"] = { 22.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"甘孜藏族自治州"] = { 50, 1.6 };
+		g_qiYiJiangYuanZTKYPrice[L"阿坝藏族羌族自治州"] = { 50, 1.6 };
+		g_qiYiJiangYuanZTKYPrice[L"凉山彝族自治州"] = { 50, 1.6 };
 		g_qiYiJiangYuanZTKYPrice[L"重庆"] = { 27.5, 1.2 };
-		g_qiYiJiangYuanZTKYPrice[L"云南省"] = { 27.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"云南省"] = { 32, 1.4 };
 		g_qiYiJiangYuanZTKYPrice[L"贵州省"] = { 27.5, 1.4 };
-		g_qiYiJiangYuanZTKYPrice[L"甘肃省"] = { 27.5, 3 };
+		g_qiYiJiangYuanZTKYPrice[L"甘肃省"] = { 35, 3 };
 		g_qiYiJiangYuanZTKYPrice[L"宁夏回族自治区"] = { 42.5, 2.8 };
-		g_qiYiJiangYuanZTKYPrice[L"青海省"] = { 27.5, 2.8 };
-		g_qiYiJiangYuanZTKYPrice[L"黑龙江省"] = { 27.5, 1.4 };
-		g_qiYiJiangYuanZTKYPrice[L"吉林省"] = { 27.5, 1.4 };
-		g_qiYiJiangYuanZTKYPrice[L"辽宁省"] = { 27.5, 1.4 };
+		g_qiYiJiangYuanZTKYPrice[L"青海省"] = { 42.5, 2.8 };
+		g_qiYiJiangYuanZTKYPrice[L"黑龙江省"] = { 37, 1.7 };
+		g_qiYiJiangYuanZTKYPrice[L"吉林省"] = { 37, 1.7 };
+		g_qiYiJiangYuanZTKYPrice[L"辽宁省"] = { 37, 1.7 };
 		g_qiYiJiangYuanZTKYPrice[L"内蒙古自治区"] = { 72.5, 3 };
-		g_qiYiJiangYuanZTKYPrice[L"海南省"] = { 27.5, 2.7 };
+		g_qiYiJiangYuanZTKYPrice[L"海南省"] = { 42, 2.7 };
 		g_qiYiJiangYuanZTKYPrice[L"新疆维吾尔自治区"] = { 82.5, 3.2 };
-		g_qiYiJiangYuanZTKYPrice[L"西藏自治区"] = { 62.5, 4.2 };
+		g_qiYiJiangYuanZTKYPrice[L"西藏自治区"] = { 72, 4.2 };
 	}
 	
 	//弥雅顺丰

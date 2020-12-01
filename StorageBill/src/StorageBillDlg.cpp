@@ -1387,6 +1387,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZYKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZYKYAuthData.end())
 							{
+								if(itB->strWuLiuDanHao == L"202047002771")
+									int a = 3;
+
 								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
 								if(chengbenMoney+DOUBLE_PRECISION  < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
@@ -2391,11 +2394,10 @@ double CStorageBillDlg::GetKYPrice(int nWeight, wstring strSheng, wstring strShi
 	std::map< std::wstring, sLargeExpressPriceInfo >::iterator it = mapPrice.find(strSheng);
 	if(it != mapPrice.end())
 	{
-		double price = 0;
-		price = nWeight * it->second.dXZPrice;
-		if(price < it->second.minPrice)
+		if(nWeight < 20)
 			return it->second.minPrice;
-		return price;
+		else 
+			return it->second.minPrice + (nWeight - 20)*it->second.dXZPrice;
 	}
 	return 0.0;
 }
