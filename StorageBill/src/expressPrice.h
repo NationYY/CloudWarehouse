@@ -38,3 +38,6 @@ extern std::map< std::wstring, sLargeExpressPriceInfo > g_qiYiJiangYuanZTKYPrice
 
 //----------------------------------成本核算价格用---------------------------------//
 extern std::map< std::wstring, sLargeExpressPriceInfo > g_chengBenZTKYPrice;
+
+//----------------------------------多多买菜---------------------------------------//
+extern std::map< std::wstring, sDuoDuoMaiCaiPriceInfo > g_duoDuoMaiCaiPrice;

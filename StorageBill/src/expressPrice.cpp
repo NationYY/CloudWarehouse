@@ -40,6 +40,9 @@ std::map< std::wstring, sLargeExpressPriceInfo > g_qiYiJiangYuanZTKYPrice;
 //----------------------------------成本核算价格用---------------------------------//
 std::map< std::wstring, sLargeExpressPriceInfo > g_chengBenZTKYPrice;
 
+//----------------------------------多多买菜---------------------------------------//
+std::map< std::wstring, sDuoDuoMaiCaiPriceInfo > g_duoDuoMaiCaiPrice;
+
 void PrepareExpressPrice()
 {
 	
@@ -1100,6 +1103,20 @@ void PrepareExpressPrice()
 		g_qiYiJiangYuanSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
 		g_qiYiJiangYuanSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
 		g_qiYiJiangYuanSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+	}
+	//多多买菜
+	{
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].strPinPai = L"聚象";
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.zxPaoHuo;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.szZhongHuo;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.tieBiao;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhTiJi;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhZhongLiang;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.qiBu;
+
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].strPinPai = L"星仔岛";
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].strPinPai = L"百知";
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].strPinPai = L"蜂献";
 	}
 }
 

@@ -102,6 +102,23 @@ struct sSalesInfo
 	}
 };
 
+struct sDuoDuoMaiCaiChuKuInfo
+{
+	std::wstring strHuoPinMingCheng;	//货品名称
+	int nShuLiang;						//货品数量
+	double dZhongLiang;			//重量
+	double dTiJi;				//体积
+};
+
+struct sDuoDuoMaiCaiRuKuInfo
+{
+	std::wstring strShenHeShiJian;		//审核时间
+	std::wstring strHuoPinMingCheng;	//货品名称
+	int nShuLiang;						//货品数量
+	double dZhongLiang;			//重量
+	double dTiJi;				//体积
+};
+
 struct sInStorageInfo
 {
 	std::wstring strHuoZhu;				//货主
@@ -145,6 +162,23 @@ struct sLargeExpressPriceInfo
 	double dXZPrice;	//续重费用
 };
  
+
+struct sDuoDuoMaiCaiPriceDetail
+{
+	double zxPaoHuo;
+	double szZhongHuo;
+	double tieBiao;
+	double fhTiJi;
+	double fhZhongLiang;
+	double qiBu;
+};
+
+struct sDuoDuoMaiCaiPriceInfo
+{
+	std::wstring strPinPai;
+	sDuoDuoMaiCaiPriceDetail biaoZhunPrice;
+	sDuoDuoMaiCaiPriceDetail BuDanPrice;
+};
 
 enum eExportTitle
 {

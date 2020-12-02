@@ -53,6 +53,7 @@ private:
 	bool Handle_HanTaiLang();
 	bool Handle_LaFengQing();
 	bool Handle_ZhiShanDianShang();
+	bool Handle_DuoDuoMaiCai();
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
@@ -76,6 +77,10 @@ private:
 	bool m_bYG;
 	bool m_bDuoDuoMaiCai;
 	thread_safe_queue<std::wstring> m_queueLog;
+
+	std::map< std::wstring, std::map< std::wstring, std::list<sDuoDuoMaiCaiChuKuInfo> > > m_mapDuoDuoMaiCaiChuKu;
+	std::map< std::wstring, std::list<sDuoDuoMaiCaiRuKuInfo> > m_mapDuoDuoMaiCaiRuKu;
+
 	std::map< std::wstring, std::list<sSalesInfo> > m_mapAllSalesInfo;
 	std::map< std::wstring, sSalesInfo* > m_mapTempSalesInfo;
 	std::map<std::wstring, sSFAuthData> m_mapSFAuthData;
