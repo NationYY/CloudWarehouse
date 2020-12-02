@@ -37,6 +37,7 @@ public:
 	afx_msg void OnBnClickedCreateBill();
 private:
 	void _LogicThread();
+	bool ParseDuoDuoMaiCaiALLData();
 	bool ParseALLData();
 	bool LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFail);
 	bool LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool checkFail);
@@ -50,6 +51,8 @@ private:
 	bool Handle_QiYiJiangYuan();
 	bool Handle_HaTeNengLiang();
 	bool Handle_HanTaiLang();
+	bool Handle_LaFengQing();
+	bool Handle_ZhiShanDianShang();
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
@@ -71,6 +74,7 @@ private:
 	bool m_bBSKD;
 	bool m_bZYKY;
 	bool m_bYG;
+	bool m_bDuoDuoMaiCai;
 	thread_safe_queue<std::wstring> m_queueLog;
 	std::map< std::wstring, std::list<sSalesInfo> > m_mapAllSalesInfo;
 	std::map< std::wstring, sSalesInfo* > m_mapTempSalesInfo;
@@ -101,4 +105,5 @@ public:
 	CButton m_checkYGZD;
 	bool m_bSFErrorPrice;
 	CButton m_checkZTKY;
+	CButton m_checkDuoDuoMaiCai;
 };

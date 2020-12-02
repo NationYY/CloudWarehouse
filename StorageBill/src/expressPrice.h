@@ -7,6 +7,9 @@ extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_qiYiJiangYuanBSP
 extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_xinMaBangBSPrice;
 extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_miYaBSPrice;
 extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_yongChuangYaoHuiKDPrice;
+extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_laFengQingKDPrice;
+extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_zhiShanBSKDPrice;
+extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_zhiShanQTKDPrice;
 //Բͨ
 extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_kunLunShanYTPrice;
 
