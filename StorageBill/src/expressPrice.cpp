@@ -1107,16 +1107,69 @@ void PrepareExpressPrice()
 	//多多买菜
 	{
 		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].strPinPai = L"聚象";
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.zxPaoHuo;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.szZhongHuo;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.tieBiao;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhTiJi;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhZhongLiang;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.qiBu;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.zxPaoHuo = 15;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhTiJi = 40;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.2;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.qiBu = 60;
+
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.zxPaoHuo = 30;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.zxZhongHuo = 50;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.fhTiJi = 80;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.fhZhongLiang = 0.4;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.qiBu = 150;
+
 
 		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].strPinPai = L"星仔岛";
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].tuiHuoMianFei = 30;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.zxPaoHuo = 15;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.fhTiJi = 35;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.18;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.qiBu = 50;
+
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.zxPaoHuo = 30;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.zxZhongHuo = 50;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.fhTiJi = 70;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.fhZhongLiang = 0.35;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.qiBu = 150;
+
+
 		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].strPinPai = L"百知";
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].tuiHuoMianFei = 30;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.zxPaoHuo = 7;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.fhTiJi = 30;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.15;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.qiBu = 50;
+
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.zxPaoHuo = 14;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.zxZhongHuo = 50;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.fhTiJi = 60;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.fhZhongLiang = 0.3;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.qiBu = 100;
+
 		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].strPinPai = L"蜂献";
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].tuiHuoMianFei = 30;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.zxPaoHuo = 15;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.fhTiJi = 40;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.13;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.qiBu = 50;
+
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.zxPaoHuo = 30;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.zxZhongHuo = 50;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.tieBiao = 0.2;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.fhTiJi = 80;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.fhZhongLiang = 0.26;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.qiBu = 100;
 	}
 }
 

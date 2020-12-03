@@ -166,7 +166,7 @@ struct sLargeExpressPriceInfo
 struct sDuoDuoMaiCaiPriceDetail
 {
 	double zxPaoHuo;
-	double szZhongHuo;
+	double zxZhongHuo;
 	double tieBiao;
 	double fhTiJi;
 	double fhZhongLiang;
@@ -178,6 +178,7 @@ struct sDuoDuoMaiCaiPriceInfo
 	std::wstring strPinPai;
 	sDuoDuoMaiCaiPriceDetail biaoZhunPrice;
 	sDuoDuoMaiCaiPriceDetail BuDanPrice;
+	double tuiHuoMianFei;
 };
 
 enum eExportTitle

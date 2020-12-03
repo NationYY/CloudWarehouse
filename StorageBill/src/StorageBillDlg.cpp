@@ -465,7 +465,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 			wsprintfW(szBuffer, L"%s 加载失败", wfileName.c_str());
 			THROW_ERROR(szBuffer);
 		}
-		return false;
+		return true;
 	}
 	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
 	if(detailSheet)
@@ -600,7 +600,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFai
 			wsprintfW(szBuffer, L"%s 加载失败", wfileName.c_str());
 			THROW_ERROR(szBuffer);
 		}
-		return false;
+		return true;
 	}
 	BasicExcelWorksheet* totalSheet = totalExcel.GetWorksheet(L"Sheet1");
 	if(totalSheet)
@@ -2362,7 +2362,7 @@ bool CStorageBillDlg::LoadSFData()
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
 				continue;
 			}
-			else if(_data.vaServices == L"转寄退回" || _data.vaServices == L"异地退回")
+			else if(_data.vaServices == L"转寄退回" || _data.vaServices == L"异地退回" || _data.vaServices == L"原单退回")
 			{
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())
