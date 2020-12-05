@@ -20,6 +20,8 @@ std::vector< std::list<sExpressPriceInfo> > g_yongChuangYaoHuiSFPrice;
 std::vector< std::list<sExpressPriceInfo> > g_miYaSFPrice;
 //七一酱园
 std::vector< std::list<sExpressPriceInfo> > g_qiYiJiangYuanSFPrice;
+//颐麦科技
+std::vector< std::list<sExpressPriceInfo> > g_yiMaiKeJiSFPrice;
 //----------------------------------------------------------------------------------//
 
 
@@ -1104,72 +1106,77 @@ void PrepareExpressPrice()
 		g_qiYiJiangYuanSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
 		g_qiYiJiangYuanSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
 	}
+	//颐麦科技顺丰
+	{
+		g_yiMaiKeJiSFPrice.resize(4);
+		g_yiMaiKeJiSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
+		g_yiMaiKeJiSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
+		g_yiMaiKeJiSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
+		g_yiMaiKeJiSFPrice[0].push_back({ 3, 0, 1, 9, 4.2 });
+
+		g_yiMaiKeJiSFPrice[1].push_back({ 0, 1, 1, 11, 0 });
+		g_yiMaiKeJiSFPrice[1].push_back({ 1, 2, 2, 14, 0 });
+		g_yiMaiKeJiSFPrice[1].push_back({ 2, 3, 3, 16, 0 });
+		g_yiMaiKeJiSFPrice[1].push_back({ 3, 0, 1, 10, 4.5 });
+
+		g_yiMaiKeJiSFPrice[2].push_back({ 0, 1, 1, 11, 0 });
+		g_yiMaiKeJiSFPrice[2].push_back({ 1, 2, 2, 15, 0 });
+		g_yiMaiKeJiSFPrice[2].push_back({ 2, 3, 3, 18.5, 0 });
+		g_yiMaiKeJiSFPrice[2].push_back({ 3, 0, 1, 10, 5.5 });
+
+		g_yiMaiKeJiSFPrice[3].push_back({ 0, 1, 1, 14, 0 });
+		g_yiMaiKeJiSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
+		g_yiMaiKeJiSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
+		g_yiMaiKeJiSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+	}
 	//多多买菜
 	{
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].strPinPai = L"聚象";
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.zxPaoHuo = 15;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhTiJi = 40;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.2;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice.qiBu = 60;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].strPinPai			= L"聚象";
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].isCM				= false;
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].zujin				= L"19";
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].tieBiao			= 0.2;	//抛货装卸价格,重货装卸价格,体积发货价格,重量发货价格,起步价
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].biaoZhunPrice		= sDuoDuoMaiCaiPriceDetail(15,	25,	40,	0.2,	60);
+		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice		= sDuoDuoMaiCaiPriceDetail(30,	50,	80,	0.4,	150);
 
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.zxPaoHuo = 30;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.zxZhongHuo = 50;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.fhTiJi = 80;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.fhZhongLiang = 0.4;
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].BuDanPrice.qiBu = 150;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].strPinPai		= L"星仔岛";
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].isCM			= false;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].zujin			= L"19";
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].tieBiao			= 0.1;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].tuiHuoMianFei	= 30;
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice	= sDuoDuoMaiCaiPriceDetail(15,	25,	35,	0.18,	50);
+		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice		= sDuoDuoMaiCaiPriceDetail(30,	50,	70,	0.35,	150);
+
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].strPinPai			= L"百知";
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].isCM				= false;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].zujin				= L"15";
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].tieBiao			= 0.2;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].tuiHuoMianFei		= 30;
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice		= sDuoDuoMaiCaiPriceDetail(7,	25,	30,	0.13,	50);
+		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice		= sDuoDuoMaiCaiPriceDetail(14,	50,	60,	0.3,	100);
+
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].strPinPai			= L"蜂献蜂业";
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].isCM				= false;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].zujin				= L"19";
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].tieBiao			= 0.2;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].tuiHuoMianFei		= 30;
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice		= sDuoDuoMaiCaiPriceDetail(15,	25,	40,	0.13,	50);
+		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice		= sDuoDuoMaiCaiPriceDetail(30,	50,	80,	0.26,	100);
+
+		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].strPinPai		= L"蓉城兵记";
+		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].isCM			= true;
+		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].zujin			= L"19";
+		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].tieBiao		= 0.2;
+		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].biaoZhunPrice = sDuoDuoMaiCaiPriceDetail(15,	25,	40,	0.2,	60);
+		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].BuDanPrice	= sDuoDuoMaiCaiPriceDetail(30,	50,	80,	0.4,	150);
 
 
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].strPinPai = L"星仔岛";
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].tuiHuoMianFei = 30;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.zxPaoHuo = 15;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.fhTiJi = 35;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.18;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].biaoZhunPrice.qiBu = 50;
+		g_duoDuoMaiCaiPrice[L"涌锐_多多买菜"].strPinPai			= L"涌锐";
+		g_duoDuoMaiCaiPrice[L"涌锐_多多买菜"].tieBiao			= 0.2;
+		g_duoDuoMaiCaiPrice[L"涌锐_多多买菜"].isCM				= true;
 
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.zxPaoHuo = 30;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.zxZhongHuo = 50;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.fhTiJi = 70;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.fhZhongLiang = 0.35;
-		g_duoDuoMaiCaiPrice[L"星仔岛_多多买菜"].BuDanPrice.qiBu = 150;
-
-
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].strPinPai = L"百知";
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].tuiHuoMianFei = 30;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.zxPaoHuo = 7;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.fhTiJi = 30;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.15;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].biaoZhunPrice.qiBu = 50;
-
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.zxPaoHuo = 14;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.zxZhongHuo = 50;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.fhTiJi = 60;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.fhZhongLiang = 0.3;
-		g_duoDuoMaiCaiPrice[L"百知_多多买菜"].BuDanPrice.qiBu = 100;
-
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].strPinPai = L"蜂献";
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].tuiHuoMianFei = 30;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.zxPaoHuo = 15;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.zxZhongHuo = 25;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.fhTiJi = 40;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.fhZhongLiang = 0.13;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].biaoZhunPrice.qiBu = 50;
-
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.zxPaoHuo = 30;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.zxZhongHuo = 50;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.tieBiao = 0.2;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.fhTiJi = 80;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.fhZhongLiang = 0.26;
-		g_duoDuoMaiCaiPrice[L"蜂献_多多买菜"].BuDanPrice.qiBu = 100;
+		g_duoDuoMaiCaiPrice[L"美琪森_多多买菜"].strPinPai		= L"美琪森";
+		g_duoDuoMaiCaiPrice[L"美琪森_多多买菜"].isCM			= true;
+		g_duoDuoMaiCaiPrice[L"美琪森_多多买菜"].tieBiao			= 0.2;
 	}
 }
 

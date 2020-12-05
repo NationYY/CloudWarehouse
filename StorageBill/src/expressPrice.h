@@ -20,6 +20,8 @@ extern std::vector< std::list<sExpressPriceInfo> > g_yongChuangYaoHuiSFPrice;
 extern std::vector< std::list<sExpressPriceInfo> > g_miYaSFPrice;
 //七一酱园
 extern std::vector< std::list<sExpressPriceInfo> > g_qiYiJiangYuanSFPrice;
+//颐麦科技
+extern std::vector< std::list<sExpressPriceInfo> > g_yiMaiKeJiSFPrice;
 //----------------------------------------------------------------------------------//
 
 //------------------------------------快运价格--------------------------------------//

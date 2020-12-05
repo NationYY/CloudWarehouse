@@ -69,6 +69,7 @@ private:
 	double GetKYPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, sLargeExpressPriceInfo >& mapPrice);
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
+	std::wstring GetLastDay(int year, int month);
 private:
 	boost::thread m_logicThread;
 	bool m_bExit;
@@ -82,7 +83,7 @@ private:
 
 	std::map< std::wstring, std::map< std::wstring, std::list<sDuoDuoMaiCaiChuKuInfo> > > m_mapDuoDuoMaiCaiChuKu;
 	std::map< std::wstring, std::list<sDuoDuoMaiCaiRuKuInfo> > m_mapDuoDuoMaiCaiRuKu;
-
+	std::map< std::wstring, std::map< std::wstring, std::list<sDuoDuoMaiCaiRuKuInfo> > > m_mapDuoDuoMaiCaiTuiHuo;
 	std::map< std::wstring, std::list<sSalesInfo> > m_mapAllSalesInfo;
 	std::map< std::wstring, sSalesInfo* > m_mapTempSalesInfo;
 	std::map<std::wstring, sSFAuthData> m_mapSFAuthData;

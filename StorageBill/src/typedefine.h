@@ -106,8 +106,14 @@ struct sDuoDuoMaiCaiChuKuInfo
 {
 	std::wstring strHuoPinMingCheng;	//货品名称
 	int nShuLiang;						//货品数量
+	bool isBuDan;				//是否补单
+	int nBoxCnt;				//箱数
 	double dZhongLiang;			//重量
 	double dTiJi;				//体积
+	sDuoDuoMaiCaiChuKuInfo():
+		nShuLiang(0), isBuDan(false), nBoxCnt(0), dZhongLiang(0.0), dTiJi(0.0)
+	{
+	}
 };
 
 struct sDuoDuoMaiCaiRuKuInfo
@@ -167,18 +173,34 @@ struct sDuoDuoMaiCaiPriceDetail
 {
 	double zxPaoHuo;
 	double zxZhongHuo;
-	double tieBiao;
 	double fhTiJi;
 	double fhZhongLiang;
 	double qiBu;
+	sDuoDuoMaiCaiPriceDetail() :
+		zxPaoHuo(0), zxZhongHuo(0), fhTiJi(0), fhZhongLiang(0), qiBu(0)
+	{
+
+	}
+	sDuoDuoMaiCaiPriceDetail(double _zxPaoHuo, double _zxZhongHuo, double _fhTiJi, double _fhZhongLiang, double _qiBu) :
+	 zxPaoHuo(_zxPaoHuo), zxZhongHuo(_zxZhongHuo), fhTiJi(_fhTiJi), fhZhongLiang(_fhZhongLiang), qiBu(_qiBu)
+	{
+	
+	}
 };
 
 struct sDuoDuoMaiCaiPriceInfo
 {
 	std::wstring strPinPai;
+	bool isCM;
 	sDuoDuoMaiCaiPriceDetail biaoZhunPrice;
 	sDuoDuoMaiCaiPriceDetail BuDanPrice;
+	double tieBiao;
 	double tuiHuoMianFei;
+	wstring zujin;
+	sDuoDuoMaiCaiPriceInfo():
+	 strPinPai(L""), isCM(false), tieBiao(0), tuiHuoMianFei(0), zujin(L"")
+	{
+	}
 };
 
 enum eExportTitle
