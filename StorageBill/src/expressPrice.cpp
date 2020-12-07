@@ -538,6 +538,8 @@ void PrepareExpressPrice()
 		g_chengBenZTKYPrice[L"广西壮族自治区"] = { 23, 1.1 };
 		g_chengBenZTKYPrice[L"四川省"] = { 20, 0.8 };
 		g_chengBenZTKYPrice[L"阿坝藏族羌族自治州"] = { 50, 1.5 };
+		g_chengBenZTKYPrice[L"甘孜藏族自治州"] = { 50, 1.5 };
+		g_chengBenZTKYPrice[L"凉山彝族自治州"] = { 50, 1.5 };
 		g_chengBenZTKYPrice[L"攀枝花市"] = { 20, 1 };
 
 		g_chengBenZTKYPrice[L"重庆"] = { 23, 1 };

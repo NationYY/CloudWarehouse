@@ -2770,7 +2770,10 @@ bool CStorageBillDlg::CompareWithBSKDData(std::wstring strHuoZhu, std::list<sSal
 			if(dBSWeight > dYCWeight && nBSWeight > nYCWeight)
 			{
 				if(dBSWeight - dYCWeight < 2)
+				{
 					itYCBegin->strZhongLiang = CFuncCommon::Double2WString(dBSWeight+DOUBLE_PRECISION, 2);
+					bsSheet->Cell(itBS->second.row, m_bskdHandleCol)->SetWString(L"1");
+				}
 				else
 				{
 					recordSheet->Cell(g_arrRecordRowIndex[3], 0)->SetWString(strHuoZhu.c_str());
