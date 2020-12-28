@@ -1657,7 +1657,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运")
+					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
 						double money = 0;
 						if(nWeight > 0)
@@ -1726,6 +1726,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 	CompareWithBSKDData(L"永创耀辉", listKunLunShanSales);
 	CompareWithZTKYData(L"永创耀辉", listKunLunShanSales);
 	//计算相关费用
+	
 	{
 		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
 		if(sheet)
@@ -1763,7 +1764,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
 				}
+				
 				double dZengZhi = 0;
+				
 				//计算物流费
 				{
 					if(itB->strWuLiuGongSi == L"顺丰热敏(线下)" || itB->strWuLiuGongSi == L"顺丰热敏(拼多多)")
@@ -1848,7 +1851,8 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
-					else if(itB->strWuLiuGongSi == L"百世快递(线下)" || itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+					else if(itB->strWuLiuGongSi == L"百世快递(线下)" || itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" ||
+						itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
 						map_key_wstring_val_int mapRet;
 						bool bChunShui = false;
@@ -1925,7 +1929,10 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 									}
 									++_itB;
 								}
-								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+								std::wstring aa = CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1);
+								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(aa.c_str()));
+								//aa = aa + L"\n";
+								//OutputDebugStringW(aa.c_str());
 							}
 						}
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
@@ -1966,6 +1973,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 						AddLog(szOut);
 					}
 				}
+				
 				sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(0.9 + DOUBLE_PRECISION, 1).c_str());
 				//计算增值费用
 				{
@@ -2159,7 +2167,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
-					else if(itB->strWuLiuGongSi == L"中通快递" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" )
+					else if(itB->strWuLiuGongSi == L"中通快递" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
 						double money = GetKDPrice(nWeight, itB->strSheng, g_yongChuangYaoHuiKDPrice, L"百世快递", itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -2335,7 +2343,7 @@ bool CStorageBillDlg::Handle_MiYaShiQi()
 
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
-					else if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)")
+					else if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)")
 					{
 						double money = 0;
 						if(nWeight > 0)
@@ -3031,7 +3039,7 @@ bool CStorageBillDlg::Handle_YiMaiKeJi()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" )
+					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
 						double money = 0;
 						if(nWeight > 0)
@@ -3145,7 +3153,7 @@ bool CStorageBillDlg::Handle_XinMaBang()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" )
+					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" )
 					{
 						double money = 0;
 						int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
@@ -3401,7 +3409,7 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
-					else if(itB->strWuLiuGongSi == L"中通快递" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)")
+					else if(itB->strWuLiuGongSi == L"中通快递" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
 						double money = GetKDPrice(nWeight, itB->strSheng, g_yongChuangYaoHuiKDPrice, L"百世快递", itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -3497,7 +3505,7 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)")
+					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)")
 					{
 						double money = 0;
 						if(nWeight > 0)
@@ -3805,7 +3813,7 @@ bool CStorageBillDlg::Handle_LaFengQing()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"顺丰热敏(线下)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快递(线下)")
+					if(itB->strWuLiuGongSi == L"顺丰热敏(线下)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快递(线下)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
 						double money = GetKDPrice(nWeight, itB->strSheng, g_laFengQingKDPrice, L"百世快递", itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
