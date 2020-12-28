@@ -1848,8 +1848,9 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 								}
 							}
 						}
+						std::wstring strmoney = CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1);
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(strmoney.c_str()));
 
-						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
 					else if(itB->strWuLiuGongSi == L"百世快递(线下)" || itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" ||
 						itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
@@ -1929,10 +1930,8 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 									}
 									++_itB;
 								}
-								std::wstring aa = CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1);
-								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(aa.c_str()));
-								//aa = aa + L"\n";
-								//OutputDebugStringW(aa.c_str());
+								std::wstring strmoney = CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1);
+								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(strmoney.c_str()));
 							}
 						}
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
