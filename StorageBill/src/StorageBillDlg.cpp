@@ -30,6 +30,8 @@ if(_pStr)\
 #define ZTKY_FILE_PATH L"./系统数据/"+m_strYM+L"/中通快运账单.xls"
 #define DUODUOMAICAI_DETAIL_FILE_PATH L"./系统数据/"+m_strYM+L"/多多买菜出库明细.xls"
 
+
+#define DUODUOMAICAI_PRICE_FILE L"./系统数据/DuoDuoMaiCai_Price.ini"
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世快递重量差异订单", L"中通快运重量差异订单", L"中通快运费用差异订单"};
 int g_arrRecordRowIndex[] ={0, 0, 0, 0, 0, 0};
 const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎", L"玖王", L"至善电商", L"辣风芹"};
@@ -294,13 +296,17 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 			sheet->Cell(nRecordRowIndex, 6)->SetWString(L"装卸费");
 			sheet->Cell(nRecordRowIndex, 7)->SetWString(L"箱数");
 			sheet->Cell(nRecordRowIndex, 8)->SetWString(L"贴标费");
+			sheet->Cell(nRecordRowIndex, 9)->SetWString(L"备注");
 			nRecordRowIndex++;
 			std::map< std::wstring, std::list<sDuoDuoMaiCaiChuKuInfo> >::iterator itB1 = itB->second.begin();
 			std::map< std::wstring, std::list<sDuoDuoMaiCaiChuKuInfo> >::iterator itE1 = itB->second.end();
 			while(itB1 != itE1)
 			{
 				if(itB1->second.begin()->isBuDan)
+				{
+					sheet->Cell(nRecordRowIndex, 9)->SetWString(L"补单");
 					pPrice = &pPriceInfo->BuDanPrice;
+				}
 				sheet->Cell(nRecordRowIndex, 0)->SetWString(itB1->first.c_str());
 				std::list<sDuoDuoMaiCaiChuKuInfo>::iterator itB2 = itB1->second.begin();
 				std::list<sDuoDuoMaiCaiChuKuInfo>::iterator itE2 = itB1->second.end();
@@ -484,6 +490,8 @@ void CStorageBillDlg::_LogicThread()
 		{
 			if(m_bDuoDuoMaiCai)
 			{
+				if(!LoadDuoDuoMaiCaiPrice())
+					goto __break_logic;
 				if(!ParseDuoDuoMaiCaiALLData())
 					goto __break_logic;
 				if(!Handle_DuoDuoMaiCai())
@@ -916,6 +924,101 @@ bool CStorageBillDlg::LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFai
 		wchar_t szBuffer[128] ={0};
 		wsprintfW(szBuffer, L"%s 加载失败", wfileName.c_str());
 		THROW_ERROR(szBuffer);
+	}
+	return true;
+}
+bool CStorageBillDlg::LoadDuoDuoMaiCaiPrice()
+{
+	std::list<wstring> listAllHuoZhu;
+	for(int i=0; i<200; ++i)
+	{
+		wchar_t szBuffer[128] = { 0 };
+		wchar_t szResult[128] = { 0 };
+		wsprintfW(szBuffer, L"HuoZhu%d", i+1);
+		GetPrivateProfileString(L"HuoZhu", szBuffer, L"", szResult, 128, DUODUOMAICAI_PRICE_FILE);
+		if(StrCmpW(szResult, L"") == 0)
+			break;
+		listAllHuoZhu.push_back(szResult);
+	}
+	std::list<wstring>::iterator itB = listAllHuoZhu.begin();
+	std::list<wstring>::iterator itE = listAllHuoZhu.end();
+	while(itB != itE)
+	{
+		wchar_t szBuffer[128] = { 0 };
+		wchar_t szDianPu[128] = { 0 };
+		wchar_t szTijiCM[128] = { 0 };
+		wchar_t szZuJin[128] = { 0 };
+		wchar_t szTieBiaoFeiYong[128] = { 0 };
+		wchar_t szTuiHuoMianDan[128] = { 0 };
+		wchar_t szBiaoZhun_PaoHuoZhuangXie[128] = { 0 };
+		wchar_t szBiaoZhun_ZhongHuoZhuangXie[128] = { 0 };
+		wchar_t szBiaoZhun_TiJiFaHuo[128] = { 0 };
+		wchar_t szBiaoZhun_ZhongLiangFaHuo[128] = { 0 };
+		wchar_t szBiaoZhun_FaHuoQiBuJia[128] = { 0 };
+
+		wchar_t szBuDan_PaoHuoZhuangXie[128] = { 0 };
+		wchar_t szBuDan_ZhongHuoZhuangXie[128] = { 0 };
+		wchar_t szBuDan_TiJiFaHuo[128] = { 0 };
+		wchar_t szBuDan_ZhongLiangFaHuo[128] = { 0 };
+		wchar_t szBuDan_FaHuoQiBuJia[128] = { 0 };
+		wsprintfW(szBuffer, L"%s_店铺名称", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szDianPu, 128, DUODUOMAICAI_PRICE_FILE);
+		if(StrCmpW(szDianPu, L"") == 0)
+		{
+			wchar_t szBuffer[128] = { 0 };
+			wsprintfW(szBuffer, L"多多买菜 未找到货主详细价格%s", itB->c_str());
+			THROW_ERROR(szBuffer);
+		}
+		wsprintfW(szBuffer, L"%s_体积立方", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szTijiCM, 128, DUODUOMAICAI_PRICE_FILE);
+
+		wsprintfW(szBuffer, L"%s_租金", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szZuJin, 128, DUODUOMAICAI_PRICE_FILE);
+
+		wsprintfW(szBuffer, L"%s_贴标费用", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szTieBiaoFeiYong, 128, DUODUOMAICAI_PRICE_FILE);
+
+		wsprintfW(szBuffer, L"%s_退货免单费", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szTuiHuoMianDan, 128, DUODUOMAICAI_PRICE_FILE);
+
+		wsprintfW(szBuffer, L"%s_标准_抛货装卸价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBiaoZhun_PaoHuoZhuangXie, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_标准_重货装卸价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBiaoZhun_ZhongHuoZhuangXie, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_标准_体积发货价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBiaoZhun_TiJiFaHuo, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_标准_重量发货价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBiaoZhun_ZhongLiangFaHuo, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_标准_发货起步价", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBiaoZhun_FaHuoQiBuJia, 128, DUODUOMAICAI_PRICE_FILE);
+
+		wsprintfW(szBuffer, L"%s_补单_抛货装卸价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBuDan_PaoHuoZhuangXie, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_补单_重货装卸价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBuDan_ZhongHuoZhuangXie, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_补单_体积发货价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBuDan_TiJiFaHuo, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_补单_重量发货价格", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBuDan_ZhongLiangFaHuo, 128, DUODUOMAICAI_PRICE_FILE);
+		wsprintfW(szBuffer, L"%s_补单_发货起步价", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szBuDan_FaHuoQiBuJia, 128, DUODUOMAICAI_PRICE_FILE);
+
+		g_duoDuoMaiCaiPrice[szDianPu].strPinPai = itB->c_str();
+		g_duoDuoMaiCaiPrice[szDianPu].isCM = (StrCmpW(szTijiCM, L"1") == 0);
+		g_duoDuoMaiCaiPrice[szDianPu].zujin = szZuJin;
+		g_duoDuoMaiCaiPrice[szDianPu].tieBiao = _wtof(szTieBiaoFeiYong);
+		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.zxPaoHuo  = _wtof(szBiaoZhun_PaoHuoZhuangXie);
+		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.zxZhongHuo  = _wtof(szBiaoZhun_ZhongHuoZhuangXie);
+		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.fhTiJi  = _wtof(szBiaoZhun_TiJiFaHuo);
+		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.fhZhongLiang  = _wtof(szBiaoZhun_ZhongLiangFaHuo);
+		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.qiBu  = _wtof(szBiaoZhun_FaHuoQiBuJia);
+
+		g_duoDuoMaiCaiPrice[szDianPu].BuDanPrice.zxPaoHuo = _wtof(szBuDan_PaoHuoZhuangXie);
+		g_duoDuoMaiCaiPrice[szDianPu].BuDanPrice.zxZhongHuo = _wtof(szBuDan_ZhongHuoZhuangXie);
+		g_duoDuoMaiCaiPrice[szDianPu].BuDanPrice.fhTiJi = _wtof(szBuDan_TiJiFaHuo);
+		g_duoDuoMaiCaiPrice[szDianPu].BuDanPrice.fhZhongLiang = _wtof(szBuDan_ZhongLiangFaHuo);
+		g_duoDuoMaiCaiPrice[szDianPu].BuDanPrice.qiBu = _wtof(szBuDan_FaHuoQiBuJia);
+		++itB;
 	}
 	return true;
 }

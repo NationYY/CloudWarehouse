@@ -37,6 +37,7 @@ public:
 	afx_msg void OnBnClickedCreateBill();
 private:
 	void _LogicThread();
+	bool LoadDuoDuoMaiCaiPrice();
 	bool ParseDuoDuoMaiCaiALLData();
 	bool ParseALLData();
 	bool LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFail);

@@ -1133,7 +1133,7 @@ void PrepareExpressPrice()
 	}
 	//多多买菜
 	{
-		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].strPinPai			= L"聚象";
+		/*g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].strPinPai			= L"聚象";
 		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].isCM				= false;
 		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].zujin				= L"19";
 		g_duoDuoMaiCaiPrice[L"聚象_多多买菜"].tieBiao			= 0.2;	//抛货装卸价格,重货装卸价格,体积发货价格,重量发货价格,起步价
@@ -1169,16 +1169,7 @@ void PrepareExpressPrice()
 		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].zujin			= L"19";
 		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].tieBiao		= 0.2;
 		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].biaoZhunPrice = sDuoDuoMaiCaiPriceDetail(15,	25,	40,	0.2,	60);
-		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].BuDanPrice	= sDuoDuoMaiCaiPriceDetail(30,	50,	80,	0.4,	150);
-
-
-		g_duoDuoMaiCaiPrice[L"涌锐_多多买菜"].strPinPai			= L"涌锐";
-		g_duoDuoMaiCaiPrice[L"涌锐_多多买菜"].tieBiao			= 0.2;
-		g_duoDuoMaiCaiPrice[L"涌锐_多多买菜"].isCM				= true;
-
-		g_duoDuoMaiCaiPrice[L"美琪森_多多买菜"].strPinPai		= L"美琪森";
-		g_duoDuoMaiCaiPrice[L"美琪森_多多买菜"].isCM			= true;
-		g_duoDuoMaiCaiPrice[L"美琪森_多多买菜"].tieBiao			= 0.2;
+		g_duoDuoMaiCaiPrice[L"蓉城兵记_多多买菜"].BuDanPrice	= sDuoDuoMaiCaiPriceDetail(30,	50,	80,	0.4,	150);*/
 	}
 }
 
