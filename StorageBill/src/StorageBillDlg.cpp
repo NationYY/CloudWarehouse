@@ -269,7 +269,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 					if(pPriceInfo->biaoZhunPrice.zxPaoHuo > DOUBLE_PRECISION)
 						sheet->Cell(nRecordRowIndex, 5)->SetDouble(dTiJi*itRB->nShuLiang*pPriceInfo->biaoZhunPrice.zxPaoHuo);
 					else
-						sheet->Cell(nRecordRowIndex, 5)->SetDouble(0);
+						sheet->Cell(nRecordRowIndex, 5)->SetDouble(itRB->dZhongLiang*itRB->nShuLiang/1000*pPriceInfo->biaoZhunPrice.zxZhongHuo);
 				}
 				else
 				{
@@ -277,7 +277,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 					if(pPriceInfo->biaoZhunPrice.zxZhongHuo > DOUBLE_PRECISION)
 						sheet->Cell(nRecordRowIndex, 5)->SetDouble(itRB->dZhongLiang*itRB->nShuLiang/1000*pPriceInfo->biaoZhunPrice.zxZhongHuo);
 					else
-						sheet->Cell(nRecordRowIndex, 5)->SetDouble(0);
+						sheet->Cell(nRecordRowIndex, 5)->SetDouble(dTiJi*itRB->nShuLiang*pPriceInfo->biaoZhunPrice.zxPaoHuo);
 				}
 				nRecordRowIndex++;
 				++itRB;
@@ -341,7 +341,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 						if(pPrice->zxPaoHuo > DOUBLE_PRECISION)
 							sheet->Cell(nRecordRowIndex, 6)->SetDouble(dTiJi*pPrice->zxPaoHuo * 2);
 						else
-							sheet->Cell(nRecordRowIndex, 6)->SetDouble(0);
+							sheet->Cell(nRecordRowIndex, 6)->SetDouble(itB2->dZhongLiang / 1000 * pPrice->zxZhongHuo * 2);
 					}
 					else
 					{
@@ -349,7 +349,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 						if(pPrice->zxZhongHuo > DOUBLE_PRECISION)
 							sheet->Cell(nRecordRowIndex, 6)->SetDouble(itB2->dZhongLiang / 1000 * pPrice->zxZhongHuo * 2);
 						else
-							sheet->Cell(nRecordRowIndex, 6)->SetDouble(0);
+							sheet->Cell(nRecordRowIndex, 6)->SetDouble(dTiJi*pPrice->zxPaoHuo * 2);
 					}
 					sheet->Cell(fhRowIndex, 5)->SetDouble(max(pPrice->qiBu,shf));
 					nRecordRowIndex++;
