@@ -29,8 +29,7 @@ if(_pStr)\
 #define BSKD_FILE_PATH L"./系统数据/"+m_strYM+L"/百世快递账单.xls"
 #define ZTKY_FILE_PATH L"./系统数据/"+m_strYM+L"/中通快运账单.xls"
 #define DUODUOMAICAI_DETAIL_FILE_PATH L"./系统数据/"+m_strYM+L"/多多买菜出库明细.xls"
-
-
+#define DUODUOMAICAI_IN_STORAGE_PATH L"./系统数据/"+m_strYM+L"/多多买菜入库明细账.xls"
 #define DUODUOMAICAI_PRICE_FILE L"./系统数据/DuoDuoMaiCai_Price.ini"
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世快递重量差异订单", L"中通快运重量差异订单", L"中通快运费用差异订单"};
 int g_arrRecordRowIndex[] ={0, 0, 0, 0, 0, 0};
@@ -969,7 +968,7 @@ bool CStorageBillDlg::LoadDuoDuoMaiCaiPrice()
 			wsprintfW(szBuffer, L"多多买菜 未找到货主详细价格%s", itB->c_str());
 			THROW_ERROR(szBuffer);
 		}
-		wsprintfW(szBuffer, L"%s_体积立方", itB->c_str());
+		wsprintfW(szBuffer, L"%s_体积厘米", itB->c_str());
 		GetPrivateProfileString(L"Price", szBuffer, L"", szTijiCM, 128, DUODUOMAICAI_PRICE_FILE);
 
 		wsprintfW(szBuffer, L"%s_租金", itB->c_str());
@@ -1132,7 +1131,7 @@ bool CStorageBillDlg::ParseDuoDuoMaiCaiALLData()
 	}
 	{
 		BasicExcel excel;
-		std::wstring strFileName = IN_STORAGE_PATH;
+		std::wstring strFileName = DUODUOMAICAI_IN_STORAGE_PATH;
 		std::string fileName = CFuncCommon::WString2String(strFileName.c_str());
 		if(!excel.Load(fileName.c_str()))
 		{
