@@ -284,7 +284,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 			}
 		}
 		nRecordRowIndex++;
-		sDuoDuoMaiCaiPriceDetail* pPrice = &pPriceInfo->biaoZhunPrice;
+		sDuoDuoMaiCaiPriceDetail* pPrice = NULL;
 		{
 			sheet->Cell(nRecordRowIndex, 0)->SetWString(L"发货时间");
 			sheet->Cell(nRecordRowIndex, 1)->SetWString(L"货品名称");
@@ -306,6 +306,8 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 					sheet->Cell(nRecordRowIndex, 9)->SetWString(L"补单");
 					pPrice = &pPriceInfo->BuDanPrice;
 				}
+				else
+					pPrice = &pPriceInfo->biaoZhunPrice;
 				sheet->Cell(nRecordRowIndex, 0)->SetWString(itB1->first.c_str());
 				std::list<sDuoDuoMaiCaiChuKuInfo>::iterator itB2 = itB1->second.begin();
 				std::list<sDuoDuoMaiCaiChuKuInfo>::iterator itE2 = itB1->second.end();
@@ -439,6 +441,9 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 		sheet->Cell(nRecordRowIndex, 2)->SetWString(L"结算时间");
 		sheet->Cell(nRecordRowIndex, 3)->SetWString(L"费用(元)");
 		nRecordRowIndex++;
+
+		sheet->Cell(nRecordRowIndex, 0)->SetInteger(pPriceInfo->nZuiXiaoMianJi);
+
 		sheet->Cell(nRecordRowIndex, 1)->SetWString((m_strYM + L"01").c_str());
 		wstring lastDay;
 		time_t tNow = time(NULL);
@@ -947,6 +952,7 @@ bool CStorageBillDlg::LoadDuoDuoMaiCaiPrice()
 		wchar_t szDianPu[128] = { 0 };
 		wchar_t szTijiCM[128] = { 0 };
 		wchar_t szZuJin[128] = { 0 };
+		wchar_t szZuiXiaoMianJi[128] = {};
 		wchar_t szTieBiaoFeiYong[128] = { 0 };
 		wchar_t szTuiHuoMianDan[128] = { 0 };
 		wchar_t szBiaoZhun_PaoHuoZhuangXie[128] = { 0 };
@@ -960,6 +966,7 @@ bool CStorageBillDlg::LoadDuoDuoMaiCaiPrice()
 		wchar_t szBuDan_TiJiFaHuo[128] = { 0 };
 		wchar_t szBuDan_ZhongLiangFaHuo[128] = { 0 };
 		wchar_t szBuDan_FaHuoQiBuJia[128] = { 0 };
+
 		wsprintfW(szBuffer, L"%s_店铺名称", itB->c_str());
 		GetPrivateProfileString(L"Price", szBuffer, L"", szDianPu, 128, DUODUOMAICAI_PRICE_FILE);
 		if(StrCmpW(szDianPu, L"") == 0)
@@ -973,6 +980,9 @@ bool CStorageBillDlg::LoadDuoDuoMaiCaiPrice()
 
 		wsprintfW(szBuffer, L"%s_租金", itB->c_str());
 		GetPrivateProfileString(L"Price", szBuffer, L"", szZuJin, 128, DUODUOMAICAI_PRICE_FILE);
+
+		wsprintfW(szBuffer, L"%s_最小面积", itB->c_str());
+		GetPrivateProfileString(L"Price", szBuffer, L"", szZuiXiaoMianJi, 128, DUODUOMAICAI_PRICE_FILE);
 
 		wsprintfW(szBuffer, L"%s_贴标费用", itB->c_str());
 		GetPrivateProfileString(L"Price", szBuffer, L"", szTieBiaoFeiYong, 128, DUODUOMAICAI_PRICE_FILE);
@@ -1006,6 +1016,8 @@ bool CStorageBillDlg::LoadDuoDuoMaiCaiPrice()
 		g_duoDuoMaiCaiPrice[szDianPu].isCM = (StrCmpW(szTijiCM, L"1") == 0);
 		g_duoDuoMaiCaiPrice[szDianPu].zujin = szZuJin;
 		g_duoDuoMaiCaiPrice[szDianPu].tieBiao = _wtof(szTieBiaoFeiYong);
+		g_duoDuoMaiCaiPrice[szDianPu].tuiHuoMianFei = _wtof(szTuiHuoMianDan);
+		g_duoDuoMaiCaiPrice[szDianPu].nZuiXiaoMianJi = _wtoi(szZuiXiaoMianJi);
 		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.zxPaoHuo  = _wtof(szBiaoZhun_PaoHuoZhuangXie);
 		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.zxZhongHuo  = _wtof(szBiaoZhun_ZhongHuoZhuangXie);
 		g_duoDuoMaiCaiPrice[szDianPu].biaoZhunPrice.fhTiJi  = _wtof(szBiaoZhun_TiJiFaHuo);
@@ -1064,7 +1076,7 @@ bool CStorageBillDlg::ParseDuoDuoMaiCaiALLData()
 					nZhongLiang = c;
 				else if(strTitle == L"货品总体积")
 					nTiJi = c;
-				else if(strTitle == L"接单时间")
+				else if(strTitle == L"发货时间")
 					nJieDanShiJian = c;
 				else if(strTitle == L"打印备注")
 					nDaYinBeiZhu = c;

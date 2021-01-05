@@ -197,8 +197,9 @@ struct sDuoDuoMaiCaiPriceInfo
 	double tieBiao;
 	double tuiHuoMianFei;
 	wstring zujin;
+	int nZuiXiaoMianJi;
 	sDuoDuoMaiCaiPriceInfo():
-	 strPinPai(L""), isCM(false), tieBiao(0), tuiHuoMianFei(0), zujin(L"")
+	 strPinPai(L""), isCM(false), tieBiao(0), tuiHuoMianFei(0), zujin(L""), nZuiXiaoMianJi(0)
 	{
 	}
 };
