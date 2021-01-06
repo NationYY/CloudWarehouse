@@ -225,6 +225,7 @@ void CStorageBillDlg::FillKDWeight()
 
 bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 {
+	std::wstring strHuiZong = L"";
 	std::map< std::wstring, std::map< std::wstring, std::list<sDuoDuoMaiCaiChuKuInfo> > >::iterator itB = m_mapDuoDuoMaiCaiChuKu.begin();
 	std::map< std::wstring, std::map< std::wstring, std::list<sDuoDuoMaiCaiChuKuInfo> > >::iterator itE = m_mapDuoDuoMaiCaiChuKu.end();
 	while(itB != itE)
@@ -234,6 +235,10 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 		excel.AddWorksheet(L"费用明细");
 		
 		wstring fileName = L"./Export_" + m_strYM + L"/" + itB->first + L"_" + m_strYM + L"对账单.xls";
+		if(strHuiZong == L"")
+			strHuiZong = L"=[" + itB->first + L"_" + m_strYM + L"对账单.xls" + L"]费用明细!$B$";
+		else
+			strHuiZong = strHuiZong + L"+[" + itB->first + L"_" + m_strYM + L"对账单.xls" + L"]费用明细!$B$";
 		string _file = CFuncCommon::WString2String(fileName.c_str());
 		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"费用明细");
 		int nRecordRowIndex = 0;
@@ -258,7 +263,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 				sheet->Cell(nRecordRowIndex, 3)->SetWString(CFuncCommon::Double2WString(itRB->dZhongLiang*itRB->nShuLiang+DOUBLE_PRECISION, 4).c_str());
 				double dTiJiCheck = itRB->dTiJi;
 				double dTiJi = itRB->dTiJi;
-				if(pPriceInfo->isCM)
+				if(itRB->dTiJi > 100)
 					dTiJi = itRB->dTiJi/1000000;
 				else
 					dTiJiCheck = itRB->dTiJi*100*100*100;
@@ -329,7 +334,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 					}
 					double dTiJiCheck = itB2->dTiJi;
 					double dTiJi = itB2->dTiJi;
-					if(pPriceInfo->isCM)
+					if(itB2->dTiJi > 100)
 						dTiJi = itB2->dTiJi / 1000000;
 					else
 						dTiJiCheck = itB2->dTiJi * 100 * 100 * 100;
@@ -398,7 +403,7 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 						sheet->Cell(nRecordRowIndex, 3)->SetWString(CFuncCommon::Double2WString(itRB->dZhongLiang*itRB->nShuLiang + DOUBLE_PRECISION, 4).c_str());
 						double dTiJiCheck = itRB->dTiJi;
 						double dTiJi = itRB->dTiJi;
-						if(pPriceInfo->isCM)
+						if(itRB->dTiJi > 100)
 							dTiJi = itRB->dTiJi / 1000000;
 						else
 							dTiJiCheck = itRB->dTiJi * 100 * 100 * 100;
@@ -462,12 +467,23 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 		nRecordRowIndex++;
 		sheet->Cell(nRecordRowIndex, 0)->SetWString(L"合计");
 		sheet->Cell(nRecordRowIndex++, 1)->SetWString(gs.c_str());
+		wchar_t ws[33];
+		strHuiZong = strHuiZong + _itow(nRecordRowIndex, ws, 10);
 		excel.SaveAs(_file.c_str());
 		wchar_t szBuffer[128] = { 0 };
 		wsprintfW(szBuffer, L"%s 账单生成成功", itB->first.c_str());
 		AddLog(szBuffer);
 		++itB;
 	}
+
+	BasicExcel _excel;
+	_excel.AddWorksheet(L"汇总");
+
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"汇总.xls";
+	string _file = CFuncCommon::WString2String(fileName.c_str());
+	BasicExcelWorksheet* _sheet = _excel.GetWorksheet(L"汇总");
+	_sheet->Cell(0, 0)->SetWString(strHuiZong.c_str());
+	_excel.SaveAs(_file.c_str());
 	return true;
 }
 
