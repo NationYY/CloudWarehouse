@@ -716,6 +716,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 		}
 		return true;
 	}
+	std::set<int> setNoZL;
 	BasicExcelWorksheet* detailSheet = detailExcel.GetWorksheet(L"Sheet1");
 	if(detailSheet)
 	{
@@ -770,7 +771,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 			{
 				continue;
 				wchar_t szBuffer[128] ={0};
-				wsprintfW(szBuffer, L"%s 未找到单号%s", wfileName.c_str(), strWuLiuDanHao.c_str());
+				wsprintfW(szBuffer, L"%s 未找到单号%s 行数=%d", wfileName.c_str(), strWuLiuDanHao.c_str(), r);
 				THROW_ERROR(szBuffer);
 			}
 			double dZSL = detailSheet->Cell(r, nHuoPinZongShuLiang)->GetDouble();
@@ -844,9 +845,15 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 							break;
 						default:
 							{
-								wchar_t szBuffer[128] = { 0 };
-								wsprintfW(szBuffer, L"辣风芹未记录重量 %s %d袋", strWuLiuDanHao.c_str(), nCnt);
-								AddLog(szBuffer);
+								std::set<int>::iterator itNZL = setNoZL.find(nCnt);
+								if(itNZL == setNoZL.end())
+								{
+									wchar_t szBuffer[128] = { 0 };
+									wsprintfW(szBuffer, L"辣风芹未记录重量 %s %d袋", strWuLiuDanHao.c_str(), nCnt);
+									AddLog(szBuffer);
+									setNoZL.insert(nCnt);
+								}
+							
 							}
 							break;
 						}
@@ -1424,7 +1431,7 @@ bool CStorageBillDlg::ParseALLData()
 			if(it == m_mapTempSalesInfo.end())
 			{
 				wchar_t szBuffer[128] = { 0 };
-				wsprintfW(szBuffer, L"快运出库重量 未找到单号%s", strWuLiuDanHao.c_str());
+				wsprintfW(szBuffer, L"快运出库重量 未找到单号%s 行数=%d", strWuLiuDanHao.c_str(), r);
 				THROW_ERROR(szBuffer);
 			}
 			it->second->strZhongLiang = CFuncCommon::Double2WString(dZhongLiang+DOUBLE_PRECISION, 2);
