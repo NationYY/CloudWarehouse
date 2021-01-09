@@ -846,7 +846,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 							{
 								wchar_t szBuffer[128] = { 0 };
 								wsprintfW(szBuffer, L"辣风芹未记录重量 %s %d袋", strWuLiuDanHao.c_str(), nCnt);
-								THROW_ERROR(szBuffer);
+								AddLog(szBuffer);
 							}
 							break;
 						}
