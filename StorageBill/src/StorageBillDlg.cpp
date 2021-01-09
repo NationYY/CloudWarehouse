@@ -808,6 +808,55 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 				it->second->bKunLunShan = true;
 			if(strHuoPinMingCheng != L"杏汁180ml*1罐" && strHuoPinMingCheng != L"番茄汁180ml*1罐")
 				it->second->bChaiFen = false;
+
+			if(it->second->strHuoZhu == L"辣风芹")
+			{
+				if(it->second->strWuLiuGongSi == L"百世快递(线下)" || it->second->strWuLiuGongSi == L"百世线下(分拨)" || it->second->strWuLiuGongSi == L"百世快递(菜鸟)" || it->second->strWuLiuGongSi == L"百世快递(拼多多)" || it->second->strWuLiuGongSi == L"韵达快递(菜鸟)" || it->second->strWuLiuGongSi == L"韵达快递(拼多多)")
+				{
+					if(strHuoPinMingCheng == L"辣风芹炒米粉")
+					{
+						int nCnt = _wtoi(strHuoPinShuLiang.c_str());
+						switch(nCnt)
+						{
+						case 1:
+							it->second->strZhongLiang = L"0.5430";
+							break;
+						case 2:
+							it->second->strZhongLiang = L"0.9880";
+							break;
+						case 3:
+							it->second->strZhongLiang = L"1.4850";
+							break;
+						case 4:
+							it->second->strZhongLiang = L"1.9250";
+							break;
+						case 5:
+							it->second->strZhongLiang = L"2.3630";
+							break;
+						case 6:
+							it->second->strZhongLiang = L"2.8100";
+							break;
+						case 8:
+							it->second->strZhongLiang = L"3.9440";
+							break;
+						case 10:
+							it->second->strZhongLiang = L"4.7320";
+							break;
+						default:
+							{
+								wchar_t szBuffer[128] = { 0 };
+								wsprintfW(szBuffer, L"辣风芹未记录重量 %s %d袋", strWuLiuDanHao.c_str(), nCnt);
+								THROW_ERROR(szBuffer);
+							}
+							break;
+						}
+					}
+					else if(strHuoPinMingCheng == L"赠品")
+						it->second->strZhongLiang = L"1.0000";
+				}
+			}
+
+
 			int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
 			std::map< std::wstring, int >::iterator itBJ = m_mapBaoJiaJinE.find(strHuoPinMingCheng);
 			if(itBJ != m_mapBaoJiaJinE.end())
@@ -1333,7 +1382,7 @@ bool CStorageBillDlg::ParseALLData()
 					itTmpB->second->strZhongLiang = L"3.5400";
 				
 			}
-		}
+		}		
 		++itTmpB;
 	}
 
