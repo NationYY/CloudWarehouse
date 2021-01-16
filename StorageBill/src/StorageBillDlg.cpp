@@ -2118,10 +2118,18 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 								std::wstring strmoney = CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1);
 								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(strmoney.c_str()));
 							}
+							else
+							{
+								double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_kunLunShanYTPrice, L"圆通快递", itB->strWuLiuDanHao);
+								std::wstring strmoney = CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1);
+								dHaoCaiFei += 0.9;
+								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(strmoney.c_str()));
+							}
 						}
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
+							bool bSL = false;
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
 								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
@@ -2142,6 +2150,21 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 								if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
 								{
 									dZengZhi += itZTKY->second.shanglowPay;
+									if(strBeiZhu == L"")
+										strBeiZhu = strBeiZhu + L"上楼";
+									else
+										strBeiZhu = strBeiZhu + L" | 上楼";
+									bSL = true;
+								}
+							}
+							if(!bSL)
+							{
+								if(nWeight > 50)
+								{
+									if(nWeight < 120)
+										dZengZhi += (nWeight - 50)*0.1 + 10;
+									else
+										dZengZhi += (nWeight - 50)*0.1 + 30;
 									if(strBeiZhu == L"")
 										strBeiZhu = strBeiZhu + L"上楼";
 									else
@@ -2368,6 +2391,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 
+						bool bSL = false;
 						std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 						if(itZTKY != m_mapZTKYAuthData.end())
 						{
@@ -2388,6 +2412,21 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
 							{
 								dZengZhi += itZTKY->second.shanglowPay;
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"上楼";
+								else
+									strBeiZhu = strBeiZhu + L" | 上楼";
+								bSL = true;
+							}
+						}
+						if(!bSL)
+						{
+							if(nWeight > 50)
+							{
+								if(nWeight < 120)
+									dZengZhi += (nWeight - 50)*0.1 + 10;
+								else
+									dZengZhi += (nWeight - 50)*0.1 + 30;
 								if(strBeiZhu == L"")
 									strBeiZhu = strBeiZhu + L"上楼";
 								else
@@ -2600,12 +2639,42 @@ bool CStorageBillDlg::Handle_MiYaShiQi()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
+							bool bSL = false;
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.shanglowPay)
+								{
+									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
+									recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"弥雅食器");
+									recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou - itZTKY->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
+									g_arrRecordRowIndex[5]++;
+
+									BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
+									if(ztSheet)
+										ztSheet->Cell(itZTKY->second.row, m_ztkyHandleCol)->SetWString(L"价格异常");
+								}
 								if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
 								{
 									dZengZhi += itZTKY->second.shanglowPay;
+									if(strBeiZhu == L"")
+										strBeiZhu = strBeiZhu + L"上楼";
+									else
+										strBeiZhu = strBeiZhu + L" | 上楼";
+									bSL = true;
+								}
+							}
+							if(!bSL)
+							{
+								if(nWeight > 50)
+								{
+									if(nWeight < 120)
+										dZengZhi += (nWeight - 50)*0.1 + 10;
+									else
+										dZengZhi += (nWeight - 50)*0.1 + 30;
 									if(strBeiZhu == L"")
 										strBeiZhu = strBeiZhu + L"上楼";
 									else
@@ -3304,12 +3373,42 @@ bool CStorageBillDlg::Handle_YiMaiKeJi()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
+							bool bSL = false;
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.shanglowPay)
+								{
+									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
+									recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"颐麦科技");
+									recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou - itZTKY->second.shanglowPay + DOUBLE_PRECISION, 1).c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
+									g_arrRecordRowIndex[5]++;
+
+									BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
+									if(ztSheet)
+										ztSheet->Cell(itZTKY->second.row, m_ztkyHandleCol)->SetWString(L"价格异常");
+								}
 								if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
 								{
 									dZengZhi += itZTKY->second.shanglowPay;
+									if(strBeiZhu == L"")
+										strBeiZhu = strBeiZhu + L"上楼";
+									else
+										strBeiZhu = strBeiZhu + L" | 上楼";
+									bSL = true;
+								}
+							}
+							if(!bSL)
+							{
+								if(nWeight > 50)
+								{
+									if(nWeight < 120)
+										dZengZhi += (nWeight - 50)*0.1 + 10;
+									else
+										dZengZhi += (nWeight - 50)*0.1 + 30;
 									if(strBeiZhu == L"")
 										strBeiZhu = strBeiZhu + L"上楼";
 									else
@@ -3425,6 +3524,7 @@ bool CStorageBillDlg::Handle_XinMaBang()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
+							bool bSL = false;
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
@@ -3450,9 +3550,10 @@ bool CStorageBillDlg::Handle_XinMaBang()
 										strBeiZhu = strBeiZhu + L"上楼";
 									else
 										strBeiZhu = strBeiZhu + L" | 上楼";
+									bSL = true;
 								}
 							}
-							else
+							if(!bSL)
 							{
 								if(nWeight > 50)
 								{
@@ -3460,11 +3561,11 @@ bool CStorageBillDlg::Handle_XinMaBang()
 										dZengZhi += (nWeight - 50)*0.1 + 10;
 									else
 										dZengZhi += (nWeight - 50)*0.1 + 30;
+									if(strBeiZhu == L"")
+										strBeiZhu = strBeiZhu + L"上楼";
+									else
+										strBeiZhu = strBeiZhu + L" | 上楼";
 								}
-								if(strBeiZhu == L"")
-									strBeiZhu = strBeiZhu + L"上楼";
-								else
-									strBeiZhu = strBeiZhu + L" | 上楼";
 							}
 						}
 					}
@@ -3635,6 +3736,7 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 
 						std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
+						bool bSL = false;
 						if(itZTKY != m_mapZTKYAuthData.end())
 						{
 							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
@@ -3658,9 +3760,10 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 									strBeiZhu = strBeiZhu + L"上楼";
 								else
 									strBeiZhu = strBeiZhu + L" | 上楼";
+								bSL = true;
 							}
 						}
-						else
+						if(!bSL)
 						{
 							if(nWeight > 50)
 							{
@@ -3668,11 +3771,11 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 									dZengZhi += (nWeight - 50)*0.1 + 10;
 								else
 									dZengZhi += (nWeight - 50)*0.1 + 30;
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"上楼";
+								else
+									strBeiZhu = strBeiZhu + L" | 上楼";
 							}
-							if(strBeiZhu == L"")
-								strBeiZhu = strBeiZhu + L"上楼";
-							else
-								strBeiZhu = strBeiZhu + L" | 上楼";
 						}
 					}
 					else if(itB->strWuLiuGongSi == L"百世线下(分拨)")
@@ -3879,6 +3982,7 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
+							bool bSL = false;
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
@@ -3900,6 +4004,21 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 								if(itZTKY->second.shanglowPay > DOUBLE_PRECISION)
 								{
 									dZengZhi += itZTKY->second.shanglowPay;
+									if(strBeiZhu == L"")
+										strBeiZhu = strBeiZhu + L"上楼";
+									else
+										strBeiZhu = strBeiZhu + L" | 上楼";
+									bSL = true;
+								}
+							}
+							if(!bSL)
+							{
+								if(nWeight > 50)
+								{
+									if(nWeight < 120)
+										dZengZhi += (nWeight - 50)*0.1 + 10;
+									else
+										dZengZhi += (nWeight - 50)*0.1 + 30;
 									if(strBeiZhu == L"")
 										strBeiZhu = strBeiZhu + L"上楼";
 									else
@@ -4031,6 +4150,7 @@ bool CStorageBillDlg::Handle_WeiFuKang()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
+							bool bSL = false;
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
@@ -4056,9 +4176,10 @@ bool CStorageBillDlg::Handle_WeiFuKang()
 										strBeiZhu = strBeiZhu + L"上楼";
 									else
 										strBeiZhu = strBeiZhu + L" | 上楼";
+									bSL = true;
 								}
 							}
-							else
+							if(!bSL)
 							{
 								if(nWeight > 50)
 								{
@@ -4066,11 +4187,11 @@ bool CStorageBillDlg::Handle_WeiFuKang()
 										dZengZhi += (nWeight - 50)*0.1 + 10;
 									else
 										dZengZhi += (nWeight - 50)*0.1 + 30;
+									if(strBeiZhu == L"")
+										strBeiZhu = strBeiZhu + L"上楼";
+									else
+										strBeiZhu = strBeiZhu + L" | 上楼";
 								}
-								if(strBeiZhu == L"")
-									strBeiZhu = strBeiZhu + L"上楼";
-								else
-									strBeiZhu = strBeiZhu + L" | 上楼";
 							}
 						}
 					}
@@ -4161,6 +4282,7 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
+							bool bSL = false;
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
@@ -4186,9 +4308,10 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang()
 										strBeiZhu = strBeiZhu + L"上楼";
 									else
 										strBeiZhu = strBeiZhu + L" | 上楼";
+									bSL = true;
 								}
 							}
-							else
+							if(!bSL)
 							{
 								if(nWeight > 50)
 								{
@@ -4196,11 +4319,11 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang()
 										dZengZhi += (nWeight - 50)*0.1 + 10;
 									else
 										dZengZhi += (nWeight - 50)*0.1 + 30;
+									if(strBeiZhu == L"")
+										strBeiZhu = strBeiZhu + L"上楼";
+									else
+										strBeiZhu = strBeiZhu + L" | 上楼";
 								}
-								if(strBeiZhu == L"")
-									strBeiZhu = strBeiZhu + L"上楼";
-								else
-									strBeiZhu = strBeiZhu + L" | 上楼";
 							}
 						}
 					}
