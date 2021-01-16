@@ -14,6 +14,7 @@
 #include <list>
 #include <set>
 #include <vector>
+#include <shlwapi.h>
 
 using namespace YCompoundFiles;
 using namespace YExcel;
@@ -52,16 +53,20 @@ struct SDingDanInfo
 	wstring strBeiZhu;
 	wstring strDaYinBeiZhu;
 	std::map<std::wstring, int> mapGoodsInfo;
+	wstring strZhuanJianZhuYi;
 	SDingDanInfo()
 	{
-		strWuLiuDanHao = strShouJianRen = strShouJianRenDianHua = strShouJianRedDiZhi = strBeiZhu = strDaYinBeiZhu = L"";
+		strWuLiuDanHao = strShouJianRen = strShouJianRenDianHua = strShouJianRedDiZhi = strBeiZhu = strDaYinBeiZhu = strZhuanJianZhuYi = L"";
 		dWeight = 0.0;
 		nBoxCnt = nHuoPinShuLiang = 0;
 	}
 };
 std::map<wstring, SWeightInfo> mapWeighInfo;
+std::map<wstring, wstring> mapPingTaiInfo;
+std::map<wstring, wstring> mapDianPuInfo;
 void LoadConfig()
 {
+
 	mapWeighInfo.clear();
 	for(int i = 0; i < 200; ++i)
 	{
@@ -103,6 +108,58 @@ void LoadConfig()
 		info.eachWeight = _wtof(szEachWeight);
 		mapWeighInfo[info.szName] = info;
 	}
+	for(int i = 0; i < 50; ++i)
+	{
+		wchar_t szBuffer[128] = { 0 };
+		wchar_t szInfo[256] = { 0 };
+		wsprintfW(szBuffer, L"平台%d", i + 1);
+		GetPrivateProfileString(L"base_info", szBuffer, L"", szInfo, 256, L"./config.ini");
+		int nLen = wcslen(szInfo);
+		if(nLen == 0)
+			break;
+		wchar_t szPingTai[128] = { 0 };
+		wchar_t szMiaoShu[128] = { 0 };
+		for(int i=0; i<nLen; ++i)
+		{
+			if(szInfo[i] == L';')
+			{
+				if(i == nLen-1)
+					memcpy(szPingTai, szInfo, sizeof(wchar_t)*i);
+				else
+				{
+					memcpy(szPingTai, szInfo, sizeof(wchar_t)*i);
+					memcpy(szMiaoShu, szInfo+i+1, sizeof(wchar_t)*(nLen-i));
+				}
+				mapPingTaiInfo[szPingTai] = szMiaoShu;
+			}
+		}
+	}
+	for(int i = 0; i < 100; ++i)
+	{
+		wchar_t szBuffer[128] = { 0 };
+		wchar_t szInfo[256] = { 0 };
+		wsprintfW(szBuffer, L"店铺%d", i + 1);
+		GetPrivateProfileString(L"base_info", szBuffer, L"", szInfo, 256, L"./config.ini");
+		int nLen = wcslen(szInfo);
+		if(nLen == 0)
+			break;
+		wchar_t szDianPu[128] = { 0 };
+		wchar_t szPingTai[128] = { 0 };
+		for(int i = 0; i < nLen; ++i)
+		{
+			if(szInfo[i] == L';')
+			{
+				if(i == nLen - 1)
+					memcpy(szDianPu, szInfo, sizeof(wchar_t)*i);
+				else
+				{
+					memcpy(szDianPu, szInfo, sizeof(wchar_t)*i);
+					memcpy(szPingTai, szInfo + i + 1, sizeof(wchar_t)*(nLen - i));
+				}
+				mapDianPuInfo[szDianPu] = szPingTai;
+			}
+		}
+	}
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -131,6 +188,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		int nShouJianRenDiZhi = -1;
 		int nBeiZhu = -1;
 		int nDaYinBeiZhu = -1;
+		int nDianPu = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
 			BasicExcelCell* cell = saleDetailSheet->Cell(0, c);
@@ -154,10 +212,11 @@ int _tmain(int argc, _TCHAR* argv[])
 				nBeiZhu = c;
 			else if(strTitle == L"打印备注")
 				nDaYinBeiZhu = c;
-			
+			else if(strTitle == L"店铺")
+				nDianPu = c;
 		}
 		if(nHuoPinMingCheng == -1 || nWuLiuBianHao == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nShouJianRen == -1
-			|| nShouJianRenShouJi == -1 || nShouJianRenDiZhi == -1 || nBeiZhu == -1 || nDaYinBeiZhu == -1)
+			|| nShouJianRenShouJi == -1 || nShouJianRenDiZhi == -1 || nBeiZhu == -1 || nDaYinBeiZhu == -1 || nDianPu == -1)
 		{
 			THROW_ERROR(L"销售出库明细 有标题未找到");
 		}
@@ -174,6 +233,23 @@ int _tmain(int argc, _TCHAR* argv[])
 				mapDingDanInfo[strWuLiuDanHao] = tempInfo;
 				it = mapDingDanInfo.find(strWuLiuDanHao);
 			}
+			wstring strDianPu;
+			SHEET_CELL_STRING(saleDetailSheet, r, nDianPu, strDianPu);
+			std::map<wstring, wstring>::iterator itDianPu = mapDianPuInfo.find(strDianPu);
+			if(itDianPu == mapDianPuInfo.end())
+			{
+				wchar_t szBuffer[128] = { 0 };
+				wsprintf(szBuffer, L"未找到店铺信息 [%s]", strDianPu.c_str());
+				THROW_ERROR(szBuffer);
+			}
+			std::map<wstring, wstring>::iterator itPingTai = mapPingTaiInfo.find(itDianPu->second);
+			if(itPingTai == mapPingTaiInfo.end())
+			{
+				wchar_t szBuffer[128] = { 0 };
+				wsprintf(szBuffer, L"未找到平台信息 [%s]", itDianPu->second.c_str());
+				THROW_ERROR(szBuffer);
+			}
+			it->second.strZhuanJianZhuYi = itPingTai->second;
 			SHEET_CELL_INT(saleDetailSheet, r, nHuoPinZongShuLiang, it->second.nHuoPinShuLiang);
 			SHEET_CELL_STRING(saleDetailSheet, r, nShouJianRen, it->second.strShouJianRen);
 
@@ -202,13 +278,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			sheet->Cell(0, 0)->SetWString(L"货品名称");
 			sheet->Cell(0, 1)->SetWString(L"物流编号");
-			sheet->Cell(0, 2)->SetWString(L"收件人");
-			sheet->Cell(0, 3)->SetWString(L"收件人地址");
-			sheet->Cell(0, 4)->SetWString(L"收件人手机号");
-			sheet->Cell(0, 5)->SetWString(L"重量");
-			sheet->Cell(0, 6)->SetWString(L"箱数");
-			sheet->Cell(0, 7)->SetWString(L"中通不用管这列");
-			sheet->Cell(0, 8)->SetWString(L"客服备注");
+			sheet->Cell(0, 2)->SetWString(L"转件注意");
+			sheet->Cell(0, 3)->SetWString(L"收件人");
+			sheet->Cell(0, 4)->SetWString(L"收件人地址");
+			sheet->Cell(0, 5)->SetWString(L"收件人手机号");
+			sheet->Cell(0, 6)->SetWString(L"重量");
+			sheet->Cell(0, 7)->SetWString(L"箱数");
+			sheet->Cell(0, 8)->SetWString(L"中通不用管这列");
+			sheet->Cell(0, 9)->SetWString(L"客服备注");
 			int rowIndex = 1;
 			std::map<wstring, SDingDanInfo>::iterator itB = mapDingDanInfo.begin();
 			std::map<wstring, SDingDanInfo>::iterator itE = mapDingDanInfo.end();
@@ -332,17 +409,18 @@ reCheckWeight:
 				}
 				sheet->Cell(rowIndex, 0)->SetWString(szBeiZhu.c_str());
 				sheet->Cell(rowIndex, 1)->SetWString(itB->first.c_str());
-				sheet->Cell(rowIndex, 2)->SetWString(itB->second.strShouJianRen.c_str());
-				sheet->Cell(rowIndex, 3)->SetWString(itB->second.strShouJianRedDiZhi.c_str());
-				sheet->Cell(rowIndex, 4)->SetWString(itB->second.strShouJianRenDianHua.c_str());
+				sheet->Cell(rowIndex, 2)->SetWString(itB->second.strZhuanJianZhuYi.c_str());
+				sheet->Cell(rowIndex, 3)->SetWString(itB->second.strShouJianRen.c_str());
+				sheet->Cell(rowIndex, 4)->SetWString(itB->second.strShouJianRedDiZhi.c_str());
+				sheet->Cell(rowIndex, 5)->SetWString(itB->second.strShouJianRenDianHua.c_str());
 				int nZhongLiang = (int)ceil(dZhongLiang);
-				sheet->Cell(rowIndex, 5)->SetInteger(nZhongLiang);
+				sheet->Cell(rowIndex, 6)->SetInteger(nZhongLiang);
 
 				if(bZhengXiang)
-					sheet->Cell(rowIndex, 6)->SetInteger(nXiangShu);
+					sheet->Cell(rowIndex, 7)->SetInteger(nXiangShu);
 				else
-					sheet->Cell(rowIndex, 6)->SetInteger(0);	
-				sheet->Cell(rowIndex, 7)->SetWString(szName.c_str());
+					sheet->Cell(rowIndex, 7)->SetInteger(0);	
+				sheet->Cell(rowIndex, 8)->SetWString(szName.c_str());
 				wstring strBZ = itB->second.strBeiZhu;
 				if(itB->second.strDaYinBeiZhu != L"")
 				{
@@ -350,7 +428,7 @@ reCheckWeight:
 						strBZ += L"|";
 					strBZ += itB->second.strDaYinBeiZhu;
 				}
-				sheet->Cell(rowIndex, 8)->SetWString(strBZ.c_str());
+				sheet->Cell(rowIndex, 9)->SetWString(strBZ.c_str());
 				rowIndex++;
 				++itB;
 			}

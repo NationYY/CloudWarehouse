@@ -55,6 +55,7 @@ private:
 	bool Handle_LaFengQing();
 	bool Handle_ZhiShanDianShang();
 	bool Handle_DuoDuoMaiCai();
+	bool Handle_WeiFuKang();
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
@@ -66,7 +67,7 @@ private:
 	bool CompareWithZTKYData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
 	double GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice, wstring danhao);
-	double GetKDPrice(int nWeight, wstring strSheng, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice, wstring strKuDiType, wstring danhao);
+	double GetKDPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice, wstring strKuDiType, wstring danhao);
 	double GetKYPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, sLargeExpressPriceInfo >& mapPrice);
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
@@ -89,7 +90,7 @@ private:
 	std::map< std::wstring, sSalesInfo* > m_mapTempSalesInfo;
 	std::map<std::wstring, sSFAuthData> m_mapSFAuthData;
 	std::map<std::wstring, sBSKDAuthData> m_mapBSKDAuthData;
-	std::map<std::wstring, sZTKYAuthData> m_mapZYKYAuthData;
+	std::map<std::wstring, sZTKYAuthData> m_mapZTKYAuthData;
 	std::map< std::wstring, std::set<std::wstring> > m_mapYCNeedSFHandle;
 	std::map< std::wstring, std::map<std::wstring, sInStorageInfo> > m_mapInStorageInfo;
 	std::map< std::wstring, int > m_mapBaoJiaJinE;
