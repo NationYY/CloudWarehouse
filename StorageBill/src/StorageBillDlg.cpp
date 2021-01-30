@@ -852,6 +852,8 @@ bool CStorageBillDlg::LoadXiaoShouChuKuMingXi(std::wstring wfileName, bool check
 
 
 			int nBjsl = _wtoi(strHuoPinShuLiang.c_str());
+			if(strWuLiuDanHao == L"SF1038081448912")
+				int a = 3;
 			std::map< std::wstring, int >::iterator itBJ = m_mapBaoJiaJinE.find(strHuoPinMingCheng);
 			if(itBJ != m_mapBaoJiaJinE.end())
 				it->second->nBaoJiaJinE += itBJ->second*nBjsl;
@@ -954,6 +956,8 @@ bool CStorageBillDlg::LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFai
 			SHEET_CELL_STRING(totalSheet, r, nWuLiuGongSi, _data.strWuLiuGongSi);
 			SHEET_CELL_STRING(totalSheet, r, nWuLiuDanHao, _data.strWuLiuDanHao);
 			if(_data.strWuLiuDanHao == L"557032185722055")
+				int a = 3;
+			if(_data.strWuLiuDanHao == L"SF1038081448912")
 				int a = 3;
 			SHEET_CELL_STRING(totalSheet, r, nShouJianRenDiZhi, _data.strShouJianRenDiZhi);
 			SHEET_CELL_STRING(totalSheet, r, nYuanShiDanHao, _data.strYuanShiDanHao);
@@ -1419,7 +1423,8 @@ bool CStorageBillDlg::ParseALLData()
 			{
 				wchar_t szBuffer[128] = { 0 };
 				wsprintfW(szBuffer, L"快运出库重量 未找到单号%s 行数=%d", strWuLiuDanHao.c_str(), r);
-				THROW_ERROR(szBuffer);
+				AddLog(szBuffer);
+				continue;
 			}
 			it->second->strZhongLiang = CFuncCommon::Double2WString(dZhongLiang+DOUBLE_PRECISION, 2);
 		}
@@ -2299,6 +2304,8 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 							++_itB;
 						}
 					}
+					if(itB->strWuLiuDanHao == L"SF1038081448912")
+						int a = 3;
 					if(itB->strWuLiuGongSi == L"顺丰热敏(线下)" || itB->strWuLiuGongSi == L"顺丰热敏(拼多多)")
 					{
 						dHaoCaiFei += (dHaoCaiCnt*5);
