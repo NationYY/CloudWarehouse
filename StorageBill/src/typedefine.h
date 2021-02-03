@@ -10,6 +10,7 @@ struct sSFAuthData
 	wstring vaServices;
 	wstring needPay;
 	wstring backPay;
+	wstring djPay;
 	wstring bjPay;
 	wstring type;
 	bool bHandle;
@@ -23,7 +24,8 @@ struct sSFAuthData
 		needPay(L""),
 		bjPay(L""),
 		row(-1),
-		type(L"")
+		type(L""),
+		djPay(L"")
 	{
 	}
 };
@@ -125,6 +127,13 @@ struct sDuoDuoMaiCaiRuKuInfo
 	double dTiJi;				//体积
 };
 
+struct sDuoDuoMaiCaiDiaoBoInfo
+{
+	std::wstring strChuKuShiJian;		//出库时间
+	std::wstring strHuoPinMingCheng;	//货品名称
+	int nShuLiang;						//货品数量
+};
+
 struct sInStorageInfo
 {
 	std::wstring strHuoZhu;				//货主
@@ -139,7 +148,7 @@ struct sInStorageInfo
 	}
 };
 
-//快递价格SF1031574654216
+//快递价格
 struct sExpressPriceInfo
 {
 	int nMinZL;			//最小重量 大于等于
@@ -164,8 +173,19 @@ struct sExpressPriceInfo
 //快运价格
 struct sLargeExpressPriceInfo
 {
-	double minPrice;	//起步价
+	int nMinZL;			//最小重量 大于等于
+	int nMaxZL;			//最大重量 小于
+	int nFirstZL;		//首重
+	double dFirstPrice;	//首重费用
 	double dXZPrice;	//续重费用
+	sLargeExpressPriceInfo(int _nMinZL, int _nMaxZL, int _nFirstZL, double _dFirstPrice, double _dXZPrice, double _dFirstCommission = 0.0, double _dXZCommission = 0.0)
+	{
+		nMinZL = _nMinZL;
+		nMaxZL = _nMaxZL;
+		nFirstZL = _nFirstZL;
+		dFirstPrice = _dFirstPrice;
+		dXZPrice = _dXZPrice;
+	}
 };
  
 
@@ -198,8 +218,13 @@ struct sDuoDuoMaiCaiPriceInfo
 	double tuiHuoMianFei;
 	wstring zujin;
 	int nZuiXiaoMianJi;
+	double dbZHzxf;	//调拨重货装卸费
+	double dbPHzxf;	//调拨泡货装卸费
+	double thZHPrice;//退货重货费
+	double thPHPrice;//退货泡货费
 	sDuoDuoMaiCaiPriceInfo():
-	 strPinPai(L""), isCM(false), tieBiao(0), tuiHuoMianFei(0), zujin(L""), nZuiXiaoMianJi(0)
+	 strPinPai(L""), isCM(false), tieBiao(0), tuiHuoMianFei(0), zujin(L""), nZuiXiaoMianJi(0), dbZHzxf(0),
+	 dbPHzxf(0), thZHPrice(0), thPHPrice(0)
 	{
 	}
 };
@@ -226,6 +251,16 @@ enum eExportTitle
 	eET_ZengZhiFeiYong,
 	eET_BeiZhu,
 	eET_KeFuBeiZhu,
+};
+
+struct sDuoDuoMaiCaiChanPinXinXi
+{
+	double zl;
+	double tj;
+	sDuoDuoMaiCaiChanPinXinXi() :
+	 zl(0), tj(0)
+	{
+	}
 };
 
 
