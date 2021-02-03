@@ -1834,6 +1834,68 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 			sheet->Cell(nRecordRowIndex, eET_WuLiuDanHao)->SetWString(itB->strWuLiuDanHao.c_str());
 			sheet->Cell(nRecordRowIndex, eET_YuanShiDanHao)->SetWString(itB->strYuanShiDanHao.c_str());
 			sheet->Cell(nRecordRowIndex, eET_DianPu)->SetWString(itB->strDianPu.c_str());
+			if(strHuoZhu == L"静心阁" && IsZero(itB->strZhongLiang))
+			{
+				double zl = 0;
+				map_key_wstring_val_int mapRet;
+				if(CFuncCommon::ParseKeyWStringInt(itB->strHuoPinMingXi, mapRet))
+				{
+					map_key_wstring_val_int::iterator _itB = mapRet.begin();
+					map_key_wstring_val_int::iterator _itE = mapRet.end();
+					while(_itB != _itE)
+					{
+						if(_itB->first == L"云阅读-大头儿子和小头爸爸写信和读信")
+						{
+							zl += (1*_itB->second);
+						}
+						else if(_itB->first == L"云阅读快乐读书吧-神笔马良七色花跟我一起玩儿愿望的实现二年级下册4本套装")
+						{
+							zl += (1*_itB->second);
+						}
+						else if(_itB->first == L"云阅读-二年级上册5本套装")
+						{
+							zl += (1*_itB->second);
+						}
+						else
+						{
+							wchar_t szBuffer[128] = { 0 };
+							wsprintfW(szBuffer, L"静心阁找不到书本名 单号=%s %s", itB->strWuLiuDanHao.c_str(), _itB->first.c_str());
+							AddLog(szBuffer);
+						}
+						++_itB;
+					}
+					itB->strZhongLiang = CFuncCommon::Double2WString(zl, 4);
+				}
+			}
+			if(strHuoZhu == L"阔伟电商" && IsZero(itB->strZhongLiang))
+			{
+				double zl = 0;
+				map_key_wstring_val_int mapRet;
+				if(CFuncCommon::ParseKeyWStringInt(itB->strHuoPinMingXi, mapRet))
+				{
+					map_key_wstring_val_int::iterator _itB = mapRet.begin();
+					map_key_wstring_val_int::iterator _itE = mapRet.end();
+					while(_itB != _itE)
+					{
+						if(_itB->first == L"宜五曲酒（白）纯粮食酿造500ml单瓶")
+						{
+							zl += (1.05*_itB->second);
+						}
+						else if(_itB->first == L"宜五曲酒（红）纯粮食酿造500ml单瓶")
+						{
+							zl += (1.05*_itB->second);
+						}
+						else
+						{
+							wchar_t szBuffer[128] = { 0 };
+							wsprintfW(szBuffer, L"阔伟电商找不到产品名 单号=%s %s", itB->strWuLiuDanHao.c_str(), _itB->first.c_str());
+							AddLog(szBuffer);
+						}
+						++_itB;
+					}
+					itB->strZhongLiang = CFuncCommon::Double2WString(zl, 4);
+				}
+			}
 			sheet->Cell(nRecordRowIndex, eET_ZhongLiang)->SetWString(itB->strZhongLiang.c_str());
 			sheet->Cell(nRecordRowIndex, eET_FaHuoShiJian)->SetWString(itB->strFaHuoShijian.c_str());
 			sheet->Cell(nRecordRowIndex, eET_HuoPinZongShuLiang)->SetWString(itB->strHuoPinZongShuLiang.c_str());
