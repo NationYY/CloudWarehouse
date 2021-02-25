@@ -59,6 +59,7 @@ private:
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
+	bool CheckZTKYMore();
 	bool IsZhengShu(std::wstring number);
 	bool IsZero(std::wstring number);
 	void FillKDWeight();
@@ -80,6 +81,7 @@ private:
 	bool m_bBSKD;
 	bool m_bZYKY;
 	bool m_bYG;
+	bool m_bZYKYMore;
 	bool m_bDuoDuoMaiCai;
 	thread_safe_queue<std::wstring> m_queueLog;
 
@@ -116,4 +118,8 @@ public:
 	bool m_bSFErrorPrice;
 	CButton m_checkZTKY;
 	CButton m_checkDuoDuoMaiCai;
+	CButton m_checkZTKYMore;
+	afx_msg void OnBnClickedCheckZTKYMore();
+	afx_msg void OnBnClickedCheckDDMC();
+	afx_msg void OnBnClickedCheckYG();
 };
