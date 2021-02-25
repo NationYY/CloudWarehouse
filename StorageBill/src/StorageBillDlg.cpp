@@ -1846,15 +1846,15 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 					{
 						if(_itB->first == L"云阅读-大头儿子和小头爸爸写信和读信")
 						{
-							zl += (1*_itB->second);
+							zl += (0.2*_itB->second);
 						}
 						else if(_itB->first == L"云阅读快乐读书吧-神笔马良七色花跟我一起玩儿愿望的实现二年级下册4本套装")
 						{
-							zl += (1*_itB->second);
+							zl += ((0.5+0.03)*_itB->second);
 						}
 						else if(_itB->first == L"云阅读-二年级上册5本套装")
 						{
-							zl += (1*_itB->second);
+							zl += ((0.6+0.03)*_itB->second);
 						}
 						else
 						{
@@ -1864,6 +1864,8 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 						}
 						++_itB;
 					}
+					if(zl > DOUBLE_PRECISION)
+						zl += 0.03;
 					itB->strZhongLiang = CFuncCommon::Double2WString(zl, 4);
 				}
 			}
@@ -4189,8 +4191,6 @@ bool CStorageBillDlg::Handle_JingXinGe()
 					nZhongLiang += 1;
 					nZhongLiang += DOUBLE_PRECISION;
 					nWeight = int(nZhongLiang);
-					if(nWeight < 3)
-						nWeight = 3;
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
@@ -4200,11 +4200,7 @@ bool CStorageBillDlg::Handle_JingXinGe()
 					if(IsZero(itB->strZhongLiang))
 						nWeight = 0;
 					else
-					{
 						nWeight = _wtoi(itB->strZhongLiang.c_str());
-						if(nWeight < 3)
-							nWeight = 3;
-					}
 					wchar_t szWeight[10] = { 0 };
 					_itow_s(nWeight, szWeight, 10);
 					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
