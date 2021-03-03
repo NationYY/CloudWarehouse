@@ -620,7 +620,6 @@ void CStorageBillDlg::_LogicThread()
 					goto __break_logic;
 				if(m_bZYKYMore)
 				{
-<<<<<<< HEAD
 					CheckZTKYMore();
 				}
 				else
@@ -651,39 +650,6 @@ void CStorageBillDlg::_LogicThread()
 						if(!Handle_WeiFuKang())
 							goto __break_logic;
 					}
-=======
-					if(!Handle_MiYaShiQi())
-						goto __break_logic;
-					if(!Handle_TaiFuShangMao())
-						goto __break_logic;
-					if(!Handle_YiMaiKeJi())
-						goto __break_logic;
-					if(!Handle_XinMaBang())
-						goto __break_logic;
-					if(!Handle_ShuoGuoLiuXiang())
-						goto __break_logic;
-					if(!Handle_QuLvShouNa())
-						goto __break_logic;
-					if(!Handle_JingXinGe())
-						goto __break_logic;
-					if(!Handle_QiYiJiangYuan())
-						goto __break_logic;
-					if(!Handle_HanTaiLang())
-						goto __break_logic;
-					if(!Handle_HaTeNengLiang())
-						goto __break_logic;
-					if(!Handle_LaFengQing())
-						goto __break_logic;
-					if(!Handle_ZhiShanDianShang())
-						goto __break_logic;
-					if(!Handle_WeiFuKang())
-						goto __break_logic;
-					if(!Handle_KunLunShanShuiKa())
-						goto __break_logic;
-					if(!Handle_KuoWeiDianShang())
-						goto __break_logic;
-					
->>>>>>> 92a86633d984cafd4a7fb3632c77d41e5801d57e
 				}
 				wstring filePath = L"./Export_" + m_strYM + L"/" + L"compare_record.xls";
 				string _filePath = CFuncCommon::WString2String(filePath.c_str());
@@ -1597,7 +1563,7 @@ bool CStorageBillDlg::ParseALLData()
 				if(itTmpB->second->strWuLiuGongSi.find(L"快运") == std::string::npos && IsZero(itTmpB->second->strZhongLiang))
 				{
 					if(itTmpB->second->strHuoPinMingXi == L"昆仑山矿泉水K4-4L@1")
-						itTmpB->second->strZhongLiang = L"17.90";
+						itTmpB->second->strZhongLiang = L"18";
 					else if(itTmpB->second->strHuoPinMingXi == L"昆仑山矿泉水K12-510ml（小包装）@1")
 						itTmpB->second->strZhongLiang = L"6.90";
 					else if(itTmpB->second->strHuoPinMingXi == L"昆仑山矿泉水K24-350mL（大包装）@1")
