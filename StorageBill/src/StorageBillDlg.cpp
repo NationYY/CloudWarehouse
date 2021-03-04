@@ -312,9 +312,16 @@ bool CStorageBillDlg::Handle_DuoDuoMaiCai()
 			std::map< std::wstring, std::list<sDuoDuoMaiCaiChuKuInfo> >::iterator itE1 = itB->second.end();
 			while(itB1 != itE1)
 			{
+				bool bHaveBeiZhu = false;
+				if(itB1->second.begin()->strKeFuBeiZhu != L"")
+				{
+					sheet->Cell(nRecordRowIndex, 9)->SetWString(itB1->second.begin()->strKeFuBeiZhu.c_str());
+					bHaveBeiZhu = true;
+				}
 				if(itB1->second.begin()->isBuDan)
 				{
-					sheet->Cell(nRecordRowIndex, 9)->SetWString(L"补单");
+					if(!bHaveBeiZhu)
+						sheet->Cell(nRecordRowIndex, 9)->SetWString(L"补单");
 					pPrice = &pPriceInfo->BuDanPrice;
 				}
 				else
@@ -604,6 +611,11 @@ void CStorageBillDlg::_LogicThread()
 				if(!Handle_DuoDuoMaiCai())
 					goto __break_logic;
 				AddLog(L"多多买菜账单生成完成");
+
+				AddLog(L"冰露水价格另算");
+				AddLog(L"放心食品一箱2");
+				AddLog(L"蔬菜协助入库0.05一份");
+				AddLog(L"冰露协助入库500件以下0.2一件,以上0.1");
 			}
 			else
 			{
@@ -659,6 +671,7 @@ void CStorageBillDlg::_LogicThread()
 				m_ztkyExcel.Save();
 				AddLog(L"账单生成完成");
 				AddLog(L"顺丰 整件酒包装盒");
+				AddLog(L"春节快递加价");
 			}
 		}
 	__break_logic:
@@ -1245,6 +1258,7 @@ bool CStorageBillDlg::ParseDuoDuoMaiCaiALLData()
 			int nTiJi = -1;
 			int nJieDanShiJian = -1;
 			int nDaYinBeiZhu = -1;
+			int nKeFuBeiZhu = -1;
 			for(size_t c = 0; c < maxCols; ++c)
 			{
 				BasicExcelCell* cell = sheet->Cell(0, c);
@@ -1265,9 +1279,11 @@ bool CStorageBillDlg::ParseDuoDuoMaiCaiALLData()
 					nJieDanShiJian = c;
 				else if(strTitle == L"打印备注")
 					nDaYinBeiZhu = c;
+				else if(strTitle == L"客服备注")
+					nKeFuBeiZhu = c;
 				
 			}
-			if(nHuoZhu == -1 || nDianPu == -1 || nHuoPinMingCheng == -1 || nHuoPinShuLiang == -1 || nZhongLiang == -1 || nTiJi == -1 || nJieDanShiJian == -1)
+			if(nHuoZhu == -1 || nDianPu == -1 || nHuoPinMingCheng == -1 || nHuoPinShuLiang == -1 || nZhongLiang == -1 || nTiJi == -1 || nJieDanShiJian == -1 || nKeFuBeiZhu == -1)
 			{
 				wchar_t szBuffer[128] = { 0 };
 				wsprintfW(szBuffer, L"%s 有标题未找到", strFileName.c_str());
@@ -1294,6 +1310,7 @@ bool CStorageBillDlg::ParseDuoDuoMaiCaiALLData()
 					}
 					sDuoDuoMaiCaiChuKuInfo data;
 					SHEET_CELL_STRING(sheet, r, nHuoPinMingCheng, data.strHuoPinMingCheng);
+					SHEET_CELL_STRING(sheet, r, nKeFuBeiZhu, data.strKeFuBeiZhu);
 					SHEET_CELL_INT(sheet, r, nHuoPinShuLiang, data.nShuLiang);
 					SHEET_CELL_DOUBLE(sheet, r, nZhongLiang, data.dZhongLiang);
 					SHEET_CELL_DOUBLE(sheet, r, nTiJi, data.dTiJi);
@@ -3238,7 +3255,7 @@ bool CStorageBillDlg::LoadSFData()
 			std::set<std::wstring>::iterator itLiveCheck = m_setSFCangKuData.find(_data.number);
 			if(itLiveCheck != m_setSFCangKuData.end())
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
-			if(_data.vaServices == L"保价" || _data.vaServices == L"特安" || _data.vaServices == L"易碎保" || _data.vaServices == L"包装服务")
+			if(_data.vaServices == L"保价" || _data.vaServices == L"特安" || _data.vaServices == L"易碎保" || _data.vaServices == L"包装服务" || _data.vaServices == L"资源调节费")
 			{
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())

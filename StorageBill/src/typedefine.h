@@ -112,8 +112,9 @@ struct sDuoDuoMaiCaiChuKuInfo
 	int nBoxCnt;				//箱数
 	double dZhongLiang;			//重量
 	double dTiJi;				//体积
+	std::wstring strKeFuBeiZhu;	//客服备注
 	sDuoDuoMaiCaiChuKuInfo():
-		nShuLiang(0), isBuDan(false), nBoxCnt(0), dZhongLiang(0.0), dTiJi(0.0)
+		nShuLiang(0), isBuDan(false), nBoxCnt(0), dZhongLiang(0.0), dTiJi(0.0), strKeFuBeiZhu(L"")
 	{
 	}
 };
