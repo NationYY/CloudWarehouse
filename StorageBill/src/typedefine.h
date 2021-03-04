@@ -252,6 +252,9 @@ enum eExportTitle
 	eET_ZengZhiFeiYong,
 	eET_BeiZhu,
 	eET_KeFuBeiZhu,
+	eET_KunLunShanShuiKa_510_24,
+	eET_KunLunShanShuiKa_4_4,
+	eET_KunLunShanShuiKa_510_12,
 };
 
 struct sDuoDuoMaiCaiChanPinXinXi

@@ -661,6 +661,16 @@ void CStorageBillDlg::_LogicThread()
 							goto __break_logic;
 						if(!Handle_WeiFuKang())
 							goto __break_logic;
+						if(!Handle_ShuoGuoLiuXiang())
+							goto __break_logic;
+						if(!Handle_JingXinGe())
+							goto __break_logic;
+						if(!Handle_KunLunShanShuiKa())
+							goto __break_logic;
+						if(!Handle_KuoWeiDianShang())
+							goto __break_logic;
+						if(!Handle_QuLvShouNa())
+							goto __break_logic;
 					}
 				}
 				wstring filePath = L"./Export_" + m_strYM + L"/" + L"compare_record.xls";
@@ -1849,6 +1859,13 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 		sheet->Cell(0, eET_ZengZhiFeiYong)->SetWString(L"增值费用");
 		sheet->Cell(0, eET_BeiZhu)->SetWString(L"备注");
 		sheet->Cell(0, eET_KeFuBeiZhu)->SetWString(L"客服备注");
+		if(StrCmpW(szHuoZhu, L"昆仑山水卡") == 0 )
+		{
+			sheet->Cell(0, eET_KunLunShanShuiKa_510_24)->SetWString(L"510*24");
+			sheet->Cell(0, eET_KunLunShanShuiKa_4_4)->SetWString(L"4*4");
+			sheet->Cell(0, eET_KunLunShanShuiKa_510_12)->SetWString(L"510*12");
+		}
+
 		std::list<sSalesInfo>::iterator itB = listSalesInfo.begin();
 		std::list<sSalesInfo>::iterator itE = listSalesInfo.end();
 		while(itB != itE)
@@ -2432,7 +2449,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 							bool bSL = false;
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
-								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 								if(chengbenMoney+DOUBLE_PRECISION  < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -2703,14 +2720,14 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
 					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 
 						bool bSL = false;
 						std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 						if(itZTKY != m_mapZTKYAuthData.end())
 						{
-							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 							if(chengbenMoney+DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 							{
 								BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -2950,7 +2967,7 @@ bool CStorageBillDlg::Handle_MiYaShiQi()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_miYaZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_miYaZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
@@ -2958,7 +2975,7 @@ bool CStorageBillDlg::Handle_MiYaShiQi()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
-								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -3274,7 +3291,7 @@ bool CStorageBillDlg::LoadSFData()
 				}
 				continue;
 			}
-			else if(_data.vaServices == L"转寄退回" || _data.vaServices == L"异地退回" || _data.vaServices == L"原单退回" || _data.vaServices == L"异地转寄" || _data.vaServices == L"同城退回")
+			else if(_data.vaServices == L"转寄退回" || _data.vaServices == L"异地退回" || _data.vaServices == L"原单退回" || _data.vaServices == L"异地转寄" || _data.vaServices == L"同城退回" || _data.vaServices == L"同城转寄")
 			{
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())
@@ -3589,7 +3606,7 @@ double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, std::vector< s
 	THROW_ERROR(szBuffer);
 }
 
-double CStorageBillDlg::GetKDPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice, wstring strKuDiType, wstring danhao)
+double CStorageBillDlg::GetKDPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice, wstring strKuDiType, wstring danhao, bool bWarnning)
 {
 	std::map< std::wstring, std::list<sExpressPriceInfo> >::iterator it;
 	if(strShi != L"")
@@ -3615,6 +3632,8 @@ double CStorageBillDlg::GetKDPrice(int nWeight, wstring strSheng, wstring strShi
 			}
 			++itB;
 		}
+		if(!bWarnning)
+			return 0.0;
 		wchar_t szBuffer[128] = { 0 };
 		wsprintfW(szBuffer, L"%s %s 重量不含有对应价格区间 %s %d", strKuDiType.c_str(), danhao.c_str(), strSheng.c_str(), nWeight);
 		THROW_ERROR(szBuffer);
@@ -3622,13 +3641,13 @@ double CStorageBillDlg::GetKDPrice(int nWeight, wstring strSheng, wstring strShi
 	else
 	{
 		wchar_t szBuffer[128] = { 0 };
-		wsprintfW(szBuffer, L"%s 未知省份 %s", strKuDiType.c_str(), strSheng.c_str());
+		wsprintfW(szBuffer, L"%s %s 未知省份 %s", strKuDiType.c_str(), danhao.c_str(), strSheng.c_str());
 		THROW_ERROR(szBuffer);
 	}
 	return 0.0;
 }
 
-double CStorageBillDlg::GetKYPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, std::list<sLargeExpressPriceInfo> >& mapPrice)
+double CStorageBillDlg::GetKYPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, std::list<sLargeExpressPriceInfo> >& mapPrice, wstring danhao, bool bWarnning)
 {
 	std::map< std::wstring, std::list<sLargeExpressPriceInfo> >::iterator it;
 	if(strShi != L"")
@@ -3654,14 +3673,16 @@ double CStorageBillDlg::GetKYPrice(int nWeight, wstring strSheng, wstring strShi
 			}
 			++itB;
 		}
+		if(!bWarnning)
+			return 0.0;
 		wchar_t szBuffer[128] = { 0 };
-		wsprintfW(szBuffer, L"快运重量不含有对应价格区间 %s %d", strSheng.c_str(), nWeight);
+		wsprintfW(szBuffer, L"快运重量不含有对应价格区间 %s %d [%s]", strSheng.c_str(), nWeight, danhao.c_str());
 		THROW_ERROR(szBuffer);
 	}
 	else
 	{
 		wchar_t szBuffer[128] = { 0 };
-		wsprintfW(szBuffer, L"快运未知省份 %s", strSheng.c_str());
+		wsprintfW(szBuffer, L"快运未知省份 %s [%s]", strSheng.c_str(), danhao.c_str());
 		THROW_ERROR(szBuffer);
 	}
 	return 0.0;
@@ -3749,13 +3770,13 @@ bool CStorageBillDlg::Handle_YiMaiKeJi()
 						double money = 0;
 						if(nWeight > 0)
 						{
-							double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_yiMaiKeJiBSPrice, L"百世快递", itB->strWuLiuDanHao);
+							double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_yiMaiKeJiBSPrice, L"韵达快递", itB->strWuLiuDanHao);
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yiMaiKeJiZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yiMaiKeJiZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
@@ -3763,7 +3784,7 @@ bool CStorageBillDlg::Handle_YiMaiKeJi()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
-								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -3906,7 +3927,7 @@ bool CStorageBillDlg::Handle_XinMaBang()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_xinMaBangZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_xinMaBangZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
@@ -3914,7 +3935,7 @@ bool CStorageBillDlg::Handle_XinMaBang()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
-								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 								if(chengbenMoney+DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -4135,14 +4156,14 @@ bool CStorageBillDlg::Handle_KuoWeiDianShang()
 					}
 					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 
 						bool bSL = false;
 						std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 						if(itZTKY != m_mapZTKYAuthData.end())
 						{
-							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 							if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.shanglowPay)
 							{
 								BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -4806,14 +4827,14 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
 					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice, itB->strWuLiuDanHao, false);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 
 						std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 						bool bSL = false;
 						if(itZTKY != m_mapZTKYAuthData.end())
 						{
-							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+							double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao, false);
 							if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 							{
 								BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -4866,7 +4887,7 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 					}
 					else if(itB->strWuLiuGongSi == L"中通快递" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
-						double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiKDPrice, L"百世快递", itB->strWuLiuDanHao);
+						double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiKDPrice, L"韵达快递", itB->strWuLiuDanHao, false);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
 					else
@@ -5052,7 +5073,7 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_qiYiJiangYuanZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_qiYiJiangYuanZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
@@ -5060,7 +5081,7 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
-								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou-itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -5220,7 +5241,7 @@ bool CStorageBillDlg::Handle_WeiFuKang()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_weiFuKangZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_weiFuKangZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
@@ -5228,7 +5249,7 @@ bool CStorageBillDlg::Handle_WeiFuKang()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
-								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
@@ -5352,7 +5373,7 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
-						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_zhiShanZTKYPrice);
+						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_zhiShanZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 						{
@@ -5360,7 +5381,7 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang()
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							if(itZTKY != m_mapZTKYAuthData.end())
 							{
-								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice);
+								double chengbenMoney = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_chengBenZTKYPrice, itB->strWuLiuDanHao);
 								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.shanglowPay)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
