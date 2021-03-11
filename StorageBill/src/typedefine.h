@@ -52,14 +52,16 @@ struct sZTKYAuthData
 	wstring number;
 	double finalWeight;
 	double yingShou;
-	double shanglowPay;
+	double qita;
+	wstring qitaInfo;
 	int row;
 	sZTKYAuthData() :
 		number(L""),
 		finalWeight(0.0),
 		yingShou(0.0),
-		shanglowPay(0.0),
-		row(-1)
+		qita(0.0),
+		row(-1),
+		qitaInfo(L"")
 	{
 	}
 };
@@ -97,9 +99,12 @@ struct sSalesInfo
 	bool bChaiFen;						//是否是拆分订单
 	bool bXiuGaiZhongLiang;				//是否自动计算重量
 	bool bKunLunShan;					//是否昆仑山
+	double wuLiuFeiYong;				//物流费用 对账的时候用
+	double zengZhiFeiYong;				//增值费用 对账的时候用
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
 		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), 
-		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L""), strKeFuBeiZhu(L""), bXiuGaiZhongLiang(L""), bKunLunShan(false), strShi(L"")
+		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L""), strKeFuBeiZhu(L""), bXiuGaiZhongLiang(L""), bKunLunShan(false), strShi(L""),
+		wuLiuFeiYong(0), zengZhiFeiYong(0)
 	{
 	}
 };
