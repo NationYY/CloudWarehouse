@@ -117,6 +117,7 @@ private:
 	size_t m_sfHandleCol;
 	size_t m_bskdHandleCol;
 	size_t m_ztkyHandleCol;
+	size_t m_ztkyChengBenCol;
 	std::wstring m_strYM;
 public:
 	CListBox m_ctrlListLog;
