@@ -1603,7 +1603,7 @@ bool CStorageBillDlg::ParseALLData()
 					else if(itTmpB->second->strHuoPinMingXi == L"昆仑山矿泉水K24-510mL（大包装）@1")
 						itTmpB->second->strZhongLiang = L"13.80";
 					else if(itTmpB->second->strHuoPinMingXi == L"昆仑山矿泉水K6—510ml@1")
-						itTmpB->second->strZhongLiang = L"3.5400";
+						itTmpB->second->strZhongLiang = L"4.05";
 
 				}
 			}
@@ -2429,7 +2429,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 									}
 									else if(_itB->first == L"昆仑山矿泉水K6—510ml")
 									{
-										money += (GetKDPrice(4, itB->strSheng, itB->strShi, g_kunLunShanYTPrice, L"圆通快递", itB->strWuLiuDanHao)*_itB->second);
+										money += (GetKDPrice(5, itB->strSheng, itB->strShi, g_kunLunShanYTPrice, L"圆通快递", itB->strWuLiuDanHao)*_itB->second);
 									}
 									++_itB;
 								}
