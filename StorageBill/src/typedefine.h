@@ -2,6 +2,9 @@
 #include <string>
 #include <map>
 #include <set>
+#include "BasicExcel.hpp"
+using namespace YCompoundFiles;
+using namespace YExcel;
 using namespace std;
 struct sSFAuthData
 {
@@ -37,12 +40,30 @@ struct sBSKDAuthData
 	int finalWeight;
 	double needPay;
 	int row;
+	
 	sBSKDAuthData() :
 		number(L""),
 		ysWeight(0.0),
 		finalWeight(0),
 		needPay(0.0),
 		row(-1)
+	{
+	}
+};
+
+struct sYDKDAuthData
+{
+	wstring number;
+	double ysWeight;
+	int finalWeight;
+	int row;
+	BasicExcel* ydkdExcel;
+	sYDKDAuthData() :
+		number(L""),
+		ysWeight(0.0),
+		finalWeight(0),
+		row(-1),
+		ydkdExcel(NULL)
 	{
 	}
 };
@@ -54,14 +75,20 @@ struct sZTKYAuthData
 	double yingShou;
 	double qita;
 	wstring qitaInfo;
+	wstring sheng;
+	wstring shi;
 	int row;
+	bool bHandleChengBen;
 	sZTKYAuthData() :
 		number(L""),
 		finalWeight(0.0),
 		yingShou(0.0),
 		qita(0.0),
 		row(-1),
-		qitaInfo(L"")
+		qitaInfo(L""),
+		sheng(L""),
+		shi(L""),
+		bHandleChengBen(false)
 	{
 	}
 };
@@ -76,6 +103,13 @@ struct sYCExportData
 		row(0)
 	{
 	}
+};
+
+struct sYDKDHandleCol
+{
+	int handleCol;
+	int bzCol1;
+	int bzCol2;
 };
 struct sSalesInfo
 {
