@@ -36,7 +36,7 @@ if(_pStr)\
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世快递重量差异订单", L"中通快运重量差异订单", L"中通快运费用差异订单"};
 int g_arrRecordRowIndex[] ={0, 0, 0, 0, 0, 0};
 const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎", L"玖王", L"至善电商", L"辣风芹", L"维敷康", L"硕果流香", L"静心阁", L"昆仑山水卡", L"阔伟电商", L"趣旅收纳"};
-
+void ListFiles(const char * dir, std::list<string>& listFiles);
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -80,7 +80,7 @@ END_MESSAGE_MAP()
 CStorageBillDlg::CStorageBillDlg(CWnd* pParent /*=NULL*/)
 : CDialogEx(CStorageBillDlg::IDD, pParent),
  m_bExit(false), m_bRun(false), m_sfHandleCol(-1), m_bskdHandleCol(-1), m_ztkyHandleCol(-1),
- m_bDuoDuoMaiCai(false), m_bZYKYMore(false), m_ztkyChengBenCol(-1)
+ m_bDuoDuoMaiCai(false), m_bZYKYMore(false), m_ztkyChengBenCol(-1), m_bCheckYDKD(false), m_bSingleYDKD(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -96,6 +96,8 @@ void CStorageBillDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK4, m_checkZTKY);
 	DDX_Control(pDX, IDC_CHECK5, m_checkDuoDuoMaiCai);
 	DDX_Control(pDX, IDC_CHECK7, m_checkZTKYMore);
+	DDX_Control(pDX, IDC_CHECK6, m_checkYDKDCheck);
+	DDX_Control(pDX, IDC_CHECK8, m_checkSingleYDKD);
 }
 
 BEGIN_MESSAGE_MAP(CStorageBillDlg, CDialogEx)
@@ -108,6 +110,7 @@ BEGIN_MESSAGE_MAP(CStorageBillDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK7, &CStorageBillDlg::OnBnClickedCheckZTKYMore)
 	ON_BN_CLICKED(IDC_CHECK5, &CStorageBillDlg::OnBnClickedCheckDDMC)
 	ON_BN_CLICKED(IDC_CHECK3, &CStorageBillDlg::OnBnClickedCheckYG)
+	ON_BN_CLICKED(IDC_CHECK6, &CStorageBillDlg::OnBnClickedCheckYDKD)
 END_MESSAGE_MAP()
 
 
@@ -619,6 +622,8 @@ void CStorageBillDlg::_LogicThread()
 			}
 			else
 			{
+				if(!LoadYDKDData())
+					goto __break_logic;
 				if(!ParseALLData())
 					goto __break_logic;
 				if(!CreateHuoZhuFile())
@@ -631,9 +636,9 @@ void CStorageBillDlg::_LogicThread()
 				if(!LoadZTKYData())
 					goto __break_logic;
 				if(m_bZYKYMore)
-				{
 					CheckZTKYMore();
-				}
+				else if(m_bCheckYDKD)
+					CheckYDKDMore();
 				else
 				{
 					FillKDWeight();
@@ -679,6 +684,14 @@ void CStorageBillDlg::_LogicThread()
 				m_sfExcel.Save();
 				m_bskdExcel.Save();
 				m_ztkyExcel.Save();
+				std::map<BasicExcel*, sYDKDHandleCol>::iterator itEB = m_mapYDKDHandleCol.begin();
+				std::map<BasicExcel*, sYDKDHandleCol>::iterator itEE = m_mapYDKDHandleCol.end();
+				while(itEB != itEE)
+				{
+					itEB->first->Save();
+					delete itEB->first;
+					++itEB;
+				}
 				AddLog(L"账单生成完成");
 				AddLog(L"顺丰 整件酒包装盒");
 				AddLog(L"春节快递加价");
@@ -742,7 +755,6 @@ HCURSOR CStorageBillDlg::OnQueryDragIcon()
 
 void CStorageBillDlg::OnBnClickedCreateBill()
 {
-
 	CString strYM;
 	m_editYM.GetWindowText(strYM);
 	if(strYM == "")
@@ -751,10 +763,12 @@ void CStorageBillDlg::OnBnClickedCreateBill()
 		return;
 	}
 	m_bSF = (m_checkSF.GetState()==1);
+	m_bSingleYDKD = (m_checkSingleYDKD.GetState()==1);
 	m_bBSKD = (m_checkBSKD.GetState()==1);
 	m_bZYKY = (m_checkZTKY.GetState()==1);
 	m_bYG = (m_checkYGZD.GetState()==1);
 	m_bZYKYMore = (m_checkZTKYMore.GetState()==1);
+	m_bCheckYDKD = (m_checkYDKDCheck.GetState()==1);
 	m_bDuoDuoMaiCai = (m_checkDuoDuoMaiCai.GetState()==1);
 	m_bRun = true;
 	m_strYM = strYM.GetBuffer();
@@ -1522,7 +1536,7 @@ bool CStorageBillDlg::ParseALLData()
 	BasicExcel inStorageExcel;
 	BasicExcel kuaiYunWeightExcel;
 	BasicExcel baoJiaExcel;
-	if(!m_bZYKYMore)
+	if(!m_bZYKYMore && !m_bCheckYDKD)
 	{
 		std::string strBaoJiaFileName = "./系统数据/保价统计.xls";
 		if(!baoJiaExcel.Load(strBaoJiaFileName.c_str()))
@@ -1580,7 +1594,7 @@ bool CStorageBillDlg::ParseALLData()
 		if(!LoadXiaoShouChuKuMingXi(szBuffer, i == 1))
 			return false;
 	}
-	if(!m_bZYKYMore)
+	if(!m_bZYKYMore && !m_bCheckYDKD)
 	{
 		std::map< std::wstring, sSalesInfo* >::iterator itTmpB = m_mapTempSalesInfo.begin();
 		std::map< std::wstring, sSalesInfo* >::iterator itTmpE = m_mapTempSalesInfo.end();
@@ -1610,7 +1624,7 @@ bool CStorageBillDlg::ParseALLData()
 			++itTmpB;
 		}
 	}
-	if(!m_bZYKYMore)
+	if(!m_bZYKYMore && !m_bCheckYDKD)
 	{
 		std::string _strKuaiYunWeightFileName = CFuncCommon::WString2String(strKuaiYunWeightFileName.c_str());
 		if(!kuaiYunWeightExcel.Load(_strKuaiYunWeightFileName.c_str()))
@@ -1664,7 +1678,7 @@ bool CStorageBillDlg::ParseALLData()
 		}
 	}
 	m_mapTempSalesInfo.clear();
-	if(!m_bYG && !m_bZYKYMore)
+	if(!m_bYG && !m_bZYKYMore && !m_bCheckYDKD)
 	{
 		std::string _strInStorageFileName = CFuncCommon::WString2String(strInStorageFileName.c_str());
 		if(!inStorageExcel.Load(_strInStorageFileName.c_str()))
@@ -3043,6 +3057,8 @@ bool CStorageBillDlg::LoadBSKDData()
 {
 	if(m_bZYKYMore)
 		return true;
+	if(m_bCheckYDKD)
+		return true;
 	if(!m_bBSKD)
 		return true;
 	std::wstring strBSFileName = BSKD_FILE_PATH;
@@ -3109,6 +3125,126 @@ bool CStorageBillDlg::LoadBSKDData()
 		THROW_ERROR(L"读取百世快递账单失败");
 	}
 	return true;
+}
+
+bool CStorageBillDlg::LoadYDKDData()
+{
+	if(!m_bCheckYDKD && !m_bSingleYDKD)
+		return true;
+	std::list<string> listFiles;
+	ListFiles("./系统数据/韵达快递账单/*.*", listFiles);
+	std::list<string>::iterator itB = listFiles.begin();
+	std::list<string>::iterator itE = listFiles.end();
+	while(itB != itE)
+	{
+		_LoadYDKDData((*itB).c_str());
+		++itB;
+	}
+	AddLog(L"韵达快递账单读取完成");
+	return true;
+}
+
+bool CStorageBillDlg::_LoadYDKDData(const char *file)
+{
+	BasicExcel* pExcel = new BasicExcel;
+	pExcel->Load(file);
+	BasicExcelWorksheet* ydSheet = pExcel->GetWorksheet(L"Sheet1");
+	if(ydSheet)
+	{
+		size_t maxRows = ydSheet->GetTotalRows();
+		size_t maxCols = ydSheet->GetTotalCols();
+		m_mapYDKDHandleCol[pExcel].handleCol = maxCols;
+		m_mapYDKDHandleCol[pExcel].bzCol1 = maxCols+1;
+		m_mapYDKDHandleCol[pExcel].bzCol2 = maxCols+2;
+		//load tile
+		int colNumber = -1;
+		int colWeight = -1;
+		int colYsWeight = -1;
+		bool bFix = false;
+		for(size_t c = 0; c < maxCols; ++c)
+		{
+			BasicExcelCell* cell = ydSheet->Cell(0, c);
+			const wchar_t* _titile = cell->GetWString();
+			if(_titile)
+			{
+				std::wstring strTitle = _titile;
+
+				if(strTitle == L"运单编号")
+					colNumber = c;
+				else if(strTitle == L"取整")
+					colWeight = c;
+				else if(strTitle == L"新结算重量")
+					colYsWeight = c;
+				else if(strTitle == L"对账结果")
+				{
+					bFix = true;
+					m_mapYDKDHandleCol[pExcel].handleCol = c;
+				}
+			}
+		}
+		if(colNumber == -1 || colWeight == -1 || colYsWeight == 1)
+		{
+			wchar_t szBuffer[128] = { 0 };
+			wsprintfW(szBuffer, L"韵达快递账单有标题未找到");
+			THROW_ERROR(szBuffer);
+		}
+		if(!bFix)
+		{
+			ydSheet->Cell(0, maxCols)->SetWString(L"对账结果");
+			ydSheet->Cell(0, maxCols+1)->SetWString(L"对账备注1");
+			ydSheet->Cell(0, maxCols+2)->SetWString(L"对账备注2");
+		}
+		else
+		{
+			m_mapYDKDHandleCol[pExcel].bzCol1 = m_mapYDKDHandleCol[pExcel].handleCol + 1;
+			m_mapYDKDHandleCol[pExcel].bzCol2 = m_mapYDKDHandleCol[pExcel].handleCol + 2;
+		}
+		for(size_t r = 1; r < maxRows; ++r)
+		{
+			sYDKDAuthData _data;
+			_data.ydkdExcel = pExcel;
+			const wchar_t* _pStr = NULL;
+			SHEET_CELL_STRING(ydSheet, r, colNumber, _data.number);
+			SHEET_CELL_INT(ydSheet, r, colWeight, _data.finalWeight);
+			SHEET_CELL_DOUBLE(ydSheet, r, colYsWeight, _data.ysWeight);
+			_data.row = r;
+			m_mapYDKDAuthData[_data.number] = _data;
+		}
+		std::wstring wstrFile = CFuncCommon::String2WString(file);
+		wchar_t szBuffer[128] = { 0 };
+		wsprintfW(szBuffer, L"读取%s成功", wstrFile.c_str());
+		AddLog(szBuffer);
+	}
+	else
+	{
+		std::wstring wstrFile = CFuncCommon::String2WString(file);
+		wchar_t szBuffer[128] = { 0 };
+		wsprintfW(szBuffer, L"读取%s失败", wstrFile.c_str());
+		THROW_ERROR(szBuffer);
+	}
+	return true;
+}
+
+void ListFiles(const char * dir, std::list<string>& listFiles)
+{
+	intptr_t handle;
+	_finddata_t findData;
+	std::string filePath = dir;
+	filePath = filePath.substr(0, filePath.size()-3);
+	handle = _findfirst(dir, &findData);    // 查找目录中的第一个文件
+	if(handle == -1)
+		return;
+	do
+	{
+		if(findData.attrib & _A_SUBDIR)    // 是否是子目录并且不为"."或".."
+			int a = 3;
+		else if(findData.name[0] == '2')
+		{
+			std::string name = filePath + findData.name;
+			listFiles.push_back(name);
+		}
+	} while(_findnext(handle, &findData) == 0); 
+	_findclose(handle);
 }
 
 bool CStorageBillDlg::LoadZTKYData()
@@ -3208,6 +3344,35 @@ bool CStorageBillDlg::LoadZTKYData()
 	return true;
 }
 
+bool CStorageBillDlg::CheckYDKDMore()
+{
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itB1 = m_mapAllSalesInfo.begin();
+	std::map< std::wstring, std::list<sSalesInfo> >::iterator itE1 = m_mapAllSalesInfo.end();
+	while(itB1 != itE1)
+	{
+		std::list<sSalesInfo>::iterator itB2 = itB1->second.begin();
+		std::list<sSalesInfo>::iterator itE2 = itB1->second.end();
+		while(itB2 != itE2)
+		{
+			if(itB2->strWuLiuGongSi != L"韵达快递(拼多多)" && itB2->strWuLiuGongSi != L"韵达快递(菜鸟)")
+			{
+				++itB2;
+				continue;
+			}
+			std::map<std::wstring, sYDKDAuthData>::iterator itYD = m_mapYDKDAuthData.find(itB2->strWuLiuDanHao);
+			if(itYD != m_mapYDKDAuthData.end())
+			{
+				BasicExcelWorksheet* ydSheet = itYD->second.ydkdExcel->GetWorksheet(L"Sheet1");
+				ydSheet->Cell(itYD->second.row, m_mapYDKDHandleCol[itYD->second.ydkdExcel].handleCol)->SetWString(L"1");
+				
+			}
+			itB2++;
+		}
+		itB1++;
+	}
+	return true;
+}
+
 bool CStorageBillDlg::CheckZTKYMore()
 {
 	BasicExcelWorksheet* ztSheet = m_ztkyExcel.GetWorksheet(L"Sheet1");
@@ -3279,6 +3444,8 @@ bool CStorageBillDlg::CheckZTKYMore()
 bool CStorageBillDlg::LoadSFData()
 {
 	if(m_bZYKYMore)
+		return true;
+	if(m_bCheckYDKD)
 		return true;
 	if(!m_bSF)
 		return true;
@@ -3507,6 +3674,57 @@ bool CStorageBillDlg::CompareWithSFData(std::wstring strHuoZhu, std::list<sSales
 		}
 	}
 
+	return true;
+}
+
+bool CStorageBillDlg::CompareWithYDKDData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo)
+{
+	if(!m_bSingleYDKD)
+		return true;
+	std::list<sSalesInfo>::iterator itYCBegin = listInfo.begin();
+	std::list<sSalesInfo>::iterator itYCEnd = listInfo.end();
+	while(itYCBegin != itYCEnd)
+	{
+		if(itYCBegin->strWuLiuGongSi != L"韵达快递(菜鸟)" && itYCBegin->strWuLiuGongSi != L"韵达快递(拼多多)")
+		{
+			++itYCBegin;
+			continue;
+		}
+		std::map<std::wstring, sYDKDAuthData>::iterator itBS = m_mapYDKDAuthData.find(itYCBegin->strWuLiuDanHao);
+		if(itBS != m_mapYDKDAuthData.end())
+		{
+			BasicExcelWorksheet* ydSheet = itBS->second.ydkdExcel->GetWorksheet(L"Sheet1");
+			ydSheet->Cell(itBS->second.row, m_mapYDKDHandleCol[itBS->second.ydkdExcel].handleCol)->SetWString(L"1");
+
+			wistringstream iss(itYCBegin->strZhongLiang.c_str());
+			double dYCWeight;
+			iss >> dYCWeight;
+
+			double nYCWeight = 0.0;
+			if(dYCWeight <= 0.3)
+				nYCWeight = 0.3;
+			else if(dYCWeight <= 1)
+				nYCWeight = 1;
+
+			else if(dYCWeight <= 2.2)
+				nYCWeight = 2;
+			else if(dYCWeight <= 3.3)
+				nYCWeight = 3;
+			else if(dYCWeight <= 4)
+				nYCWeight = 4;
+			else if(dYCWeight <= 5.5)
+				nYCWeight = 5;
+			else
+				nYCWeight = (int)dYCWeight+1;
+			int nBSWeight = itBS->second.finalWeight;
+			if(nBSWeight > nYCWeight)
+			{
+				ydSheet->Cell(itBS->second.row, m_mapYDKDHandleCol[itBS->second.ydkdExcel].bzCol1)->SetDouble(nYCWeight);
+				ydSheet->Cell(itBS->second.row, m_mapYDKDHandleCol[itBS->second.ydkdExcel].bzCol2)->SetWString(itYCBegin->strZhongLiang.c_str());
+			}
+		}
+		++itYCBegin;
+	}
 	return true;
 }
 
@@ -5587,6 +5805,7 @@ void CStorageBillDlg::OnBnClickedCheckZTKYMore()
 	{
 		m_checkDuoDuoMaiCai.SetCheck(0);
 		m_checkYGZD.SetCheck(0);
+		m_checkYDKDCheck.SetCheck(0);
 	}
 }
 
@@ -5597,6 +5816,7 @@ void CStorageBillDlg::OnBnClickedCheckDDMC()
 	{
 		m_checkZTKYMore.SetCheck(0);
 		m_checkYGZD.SetCheck(0);
+		m_checkYDKDCheck.SetCheck(0);
 	}
 }
 
@@ -5607,5 +5827,17 @@ void CStorageBillDlg::OnBnClickedCheckYG()
 	{
 		m_checkZTKYMore.SetCheck(0);
 		m_checkDuoDuoMaiCai.SetCheck(0);
+		m_checkYDKDCheck.SetCheck(0);
+	}
+}
+
+
+void CStorageBillDlg::OnBnClickedCheckYDKD()
+{
+	if(m_checkYDKDCheck.GetCheck() == 1)
+	{
+		m_checkZTKYMore.SetCheck(0);
+		m_checkDuoDuoMaiCai.SetCheck(0);
+		m_checkYGZD.SetCheck(0);
 	}
 }
