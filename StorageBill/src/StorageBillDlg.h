@@ -71,14 +71,12 @@ private:
 	bool IsZhengShu(std::wstring number);
 	bool IsZero(std::wstring number);
 	void FillKDWeight();
-	bool CompareWithSFData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo, bool bWait=false);
-	bool CompareWithBSKDData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
-	bool CompareWithZTKYData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
-	bool CompareWithYDKDData(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo);
 	bool CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::list<sSalesInfo>& listSalesInfo, std::map<std::wstring, sInStorageInfo>& mapInStorageInfo);
 	double GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice, wstring danhao);
 	double GetKDPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, std::list<sExpressPriceInfo> >& mapPrice, wstring strKuDiType, wstring danhao, bool bWarnning=true);
 	double GetKYPrice(int nWeight, wstring strSheng, wstring strShi, std::map< std::wstring, std::list<sLargeExpressPriceInfo> >& mapPrice, wstring danhao, bool bWarnning=true);
+	bool CompareWhithWuLiu(std::wstring strHuoZhu, std::list<sSalesInfo>& listInfo, bool bWait=false);
+	double GetYDKDChengBen(double dWeight, wstring strSheng, wstring strShi);
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
 	std::wstring GetLastDay(int year, int month);
