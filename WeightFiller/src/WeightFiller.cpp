@@ -129,9 +129,9 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 						wchar_t szBuffer[128] = { 0 };
 						if(strWuLiuGongSi == L"韵达")
 						{
-							wsprintf(szBuffer, L"i%s整%d", itZL->second.szShortName, nPieces);
+							wsprintf(szBuffer, L"U%s整%d", itZL->second.szShortName, nPieces);
 							szBeiZhu += szBuffer;
-							szBeiZhu += L"i";
+							szBeiZhu += L"U";
 						}
 						else
 						{
@@ -178,9 +178,9 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 							wchar_t szBuffer[128] = { 0 };
 							if(strWuLiuGongSi == L"韵达")
 							{
-								wsprintf(szBuffer, L"i%s整%di%s散%d", itZL->second.szShortName, nPieces, itZL->second.szShortName, nLastCnt);
+								wsprintf(szBuffer, L"U%s整%dU%s散%d", itZL->second.szShortName, nPieces, itZL->second.szShortName, nLastCnt);
 								szBeiZhu += szBuffer;
-								szBeiZhu += L"i";
+								szBeiZhu += L"U";
 							}
 							else
 							{
@@ -213,9 +213,9 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 							
 							if(strWuLiuGongSi == L"韵达")
 							{
-								wsprintf(szBuffer, L"i%s散%d", itZL->second.szShortName, nLastCnt);
+								wsprintf(szBuffer, L"U%s散%d", itZL->second.szShortName, nLastCnt);
 								szBeiZhu += szBuffer;
-								szBeiZhu += L"i";
+								szBeiZhu += L"U";
 							}
 							else
 							{
