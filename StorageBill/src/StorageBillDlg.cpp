@@ -35,7 +35,7 @@ if(_pStr)\
 #define DUODUOMAICAI_PRICE_FILE L"./系统数据/DuoDuoMaiCai_Price.ini"
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世快递重量差异订单", L"中通快运重量差异订单", L"中通快运费用差异订单"};
 int g_arrRecordRowIndex[] ={0, 0, 0, 0, 0, 0};
-const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎", L"玖王", L"至善电商", L"辣风芹", L"维敷康", L"硕果流香", L"静心阁", L"昆仑山水卡", L"阔伟电商", L"趣旅收纳"};
+const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎", L"玖王", L"至善电商", L"辣风芹", L"维敷康", L"硕果流香", L"静心阁", L"昆仑山水卡", L"阔伟电商", L"趣旅收纳", L"星星少女零食"};
 void ListFiles(const char * dir, std::list<string>& listFiles);
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -672,6 +672,8 @@ void CStorageBillDlg::_LogicThread()
 						if(!Handle_KuoWeiDianShang())
 							goto __break_logic;
 						if(!Handle_QuLvShouNa())
+							goto __break_logic;
+						if(!Handle_XingXingShaoNv())
 							goto __break_logic;
 					}
 				}
@@ -1876,6 +1878,9 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 			sheet->Cell(0, eET_KunLunShanShuiKa_510_24)->SetWString(L"510*24");
 			sheet->Cell(0, eET_KunLunShanShuiKa_4_4)->SetWString(L"4*4");
 			sheet->Cell(0, eET_KunLunShanShuiKa_510_12)->SetWString(L"510*12");
+			sheet->Cell(0, eET_KunLunShanShuiKa_123_12)->SetWString(L"1.23*12");
+			sheet->Cell(0, eET_KunLunShanShuiKa_350_24)->SetWString(L"350*24");
+			sheet->Cell(0, eET_KunLunShanShuiKa_350_12)->SetWString(L"350*12");
 		}
 
 		std::list<sSalesInfo>::iterator itB = listSalesInfo.begin();
@@ -2157,7 +2162,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
+					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
 					{
 						double money = 0;
 						if(nWeight > 0)
@@ -2805,7 +2810,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(strmoney.c_str()));
 
 					}
-					else if(itB->strWuLiuGongSi == L"百世快递(线下)" || itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" ||
+					else if(itB->strWuLiuGongSi == L"百世快递(线下)" || itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || 
 						itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)")
 					{
 						map_key_wstring_val_int mapRet;
@@ -2906,7 +2911,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 								sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(strmoney.c_str()));
 							}
 						}
-						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
 						{
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
 							bool bSL = false;
@@ -3179,7 +3184,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
-					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -3424,11 +3429,11 @@ bool CStorageBillDlg::Handle_MiYaShiQi()
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_miYaZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
-						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+						if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
 						{
 							bool bSL = false;
 							std::map<std::wstring, sZTKYAuthData>::iterator itZTKY = m_mapZTKYAuthData.find(itB->strWuLiuDanHao);
@@ -4495,6 +4500,54 @@ bool CStorageBillDlg::Handle_KunLunShanShuiKa()
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
 			{
+				map_key_wstring_val_int mapRet;
+				double money = 0.0;
+				if(CFuncCommon::ParseKeyWStringInt(itB->strHuoPinMingXi, mapRet))
+				{
+					map_key_wstring_val_int::iterator _itB = mapRet.begin();
+					map_key_wstring_val_int::iterator _itE = mapRet.end();
+					while(_itB != _itE)
+					{
+						if(_itB->first == L"昆仑山 510ml*12")
+						{
+							sheet->Cell(itB->nRow, eET_KunLunShanShuiKa_510_12)->SetInteger(_itB->second);
+							money += (12*_itB->second);
+						}
+						else if(_itB->first == L"昆仑山 510ml*24")
+						{
+							sheet->Cell(itB->nRow, eET_KunLunShanShuiKa_510_24)->SetInteger(_itB->second);
+							money += (18*_itB->second);
+						}
+						else if(_itB->first == L"昆仑山 4L*4")
+						{
+							sheet->Cell(itB->nRow, eET_KunLunShanShuiKa_4_4)->SetInteger(_itB->second);
+							money += (20*_itB->second);
+						}
+						else if(_itB->first == L"昆仑山 1.23L*12")
+						{
+							sheet->Cell(itB->nRow, eET_KunLunShanShuiKa_123_12)->SetInteger(_itB->second);
+							money += (20*_itB->second);
+						}
+						else if(_itB->first == L"昆仑山 350ml*12")
+						{
+							sheet->Cell(itB->nRow, eET_KunLunShanShuiKa_350_12)->SetInteger(_itB->second);
+							money += (5*_itB->second);
+						}
+						else if(_itB->first == L"昆仑山 350ml*24")
+						{
+							sheet->Cell(itB->nRow, eET_KunLunShanShuiKa_350_24)->SetInteger(_itB->second);
+							money += (14*_itB->second);
+						}
+						else
+						{
+							wchar_t szBuffer[128] = { 0 };
+							wsprintfW(szBuffer, L"昆仑山水卡找不到产品名 单号=%s %s", itB->strWuLiuDanHao.c_str(), _itB->first.c_str());
+							AddLog(szBuffer);
+						}
+						++_itB;
+					}
+				}
+				sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 				++itB;
 			}
 		}
@@ -4804,6 +4857,186 @@ bool CStorageBillDlg::Handle_JingXinGe()
 	}
 	excel.SaveAs(_file.c_str());
 	AddLog(L"静心阁账单生成成功");
+	return true;
+}
+
+bool CStorageBillDlg::Handle_XingXingShaoNv()
+{
+	BasicExcel excel;
+	if(!CreateExcel(L"星星少女", excel, m_mapAllSalesInfo[L"星星少女"], m_mapInStorageInfo[L"星星少女"]))
+		return false;
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"星星少女_" + m_strYM + L"对账单.xls";
+	string _file = CFuncCommon::WString2String(fileName.c_str());
+	CompareWhithWuLiu(L"星星少女", m_mapAllSalesInfo[L"星星少女"]);
+	//计算相关费用
+	{
+		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
+		if(sheet)
+		{
+			double kouJian = 0;
+			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"星星少女"];
+			if(listSales.size() > 5000)
+				kouJian = 0.1;
+			else if(listSales.size() > 15000)
+				kouJian = 0.2;
+			std::list<sSalesInfo>::iterator itB = listSales.begin();
+			std::list<sSalesInfo>::iterator itE = listSales.end();
+			while(itB != itE)
+			{
+				wstring strBeiZhu = L"";
+				int nWeight = 0;
+				if(!IsZhengShu(itB->strZhongLiang))
+				{
+					double nZhongLiang = _wtof(itB->strZhongLiang.c_str());
+					nZhongLiang += 1;
+					nZhongLiang += DOUBLE_PRECISION;
+					nWeight = int(nZhongLiang);
+					wchar_t szWeight[10] = { 0 };
+					_itow_s(nWeight, szWeight, 10);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
+				}
+				else
+				{
+					if(IsZero(itB->strZhongLiang))
+						nWeight = 0;
+					else
+						nWeight = _wtoi(itB->strZhongLiang.c_str());
+					wchar_t szWeight[10] = { 0 };
+					_itow_s(nWeight, szWeight, 10);
+					sheet->Cell(itB->nRow, eET_JiFeiZhongLiang)->SetWString(szWeight);
+				}
+				double dZengZhi = 0;
+				//计算物流费
+				{
+					/*if(itB->strWuLiuGongSi == L"顺丰热敏(线下)" || itB->strWuLiuGongSi == L"顺丰热敏(拼多多)")
+					{
+						double money = GetSFPrice(nWeight, itB->strSheng, g_quLvShouNaSFPrice, itB->strWuLiuDanHao);
+						double sourceBJ = 0;
+						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
+						if(itSF != m_mapSFAuthData.end())
+							sourceBJ = _wtof(itSF->second.bjPay.c_str());
+						if(itB->nBaoJiaJinE != 0)
+						{
+							dZengZhi += (itB->nBaoJiaJinE*0.003);
+							if(dZengZhi < 1)
+								dZengZhi = 0.0;
+							else
+							{
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"保价";
+								else
+									strBeiZhu = strBeiZhu + L" | 保价";
+							}
+						}
+						else if(sourceBJ > DOUBLE_PRECISION)
+						{
+							dZengZhi += sourceBJ;
+							if(strBeiZhu == L"")
+								strBeiZhu = strBeiZhu + L"保价";
+							else
+								strBeiZhu = strBeiZhu + L" | 保价";
+						}
+
+						if(itSF != m_mapSFAuthData.end())
+						{
+							if(itSF->second.type != L"特惠专配" && itSF->second.type != L"电商标快")
+							{
+								std::set<std::wstring>::iterator itType = m_setSFOtherType.find(itSF->second.type);
+								if(itType != m_setSFOtherType.end())
+								{
+									wchar_t szOut[120] = { 0 };
+									_swprintf(szOut, L"顺丰出现异常产品类型[%s]", itSF->second.type.c_str());
+									AddLog(szOut);
+									m_setSFOtherType.insert(itSF->second.type);
+								}
+								double _needPay = _wtof(itSF->second.needPay.c_str());
+								double _backPay = 0.0;
+								double _bjPay = 0.0;
+								if(itSF->second.backPay != L"")
+									_backPay = _wtof(itSF->second.backPay.c_str());
+								if(itSF->second.bjPay != L"")
+									_bjPay = _wtof(itSF->second.bjPay.c_str());
+								money = _needPay - _backPay - _bjPay + 3;
+							}
+							if(itSF->second.backPay != L"")
+							{
+								double backPay = _wtof(itSF->second.backPay.c_str());
+								money += backPay;
+
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"转寄退回";
+								else
+									strBeiZhu = strBeiZhu + L" | 转寄退回";
+							}
+							double needPay = _wtof(itSF->second.needPay.c_str());
+							if(needPay > money + dZengZhi)
+							{
+								std::set<std::wstring>::iterator it = m_setSFZhongLiangYiChang.find(itB->strWuLiuDanHao.c_str());
+								if(it == m_setSFZhongLiangYiChang.end())
+								{
+									if(!m_bSFErrorPrice)
+									{
+										AddLog(L"顺丰费用有异常");
+										m_bSFErrorPrice = true;
+									}
+									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[2]);
+									recordSheet->Cell(g_arrRecordRowIndex[2], 0)->SetWString(itB->strWuLiuDanHao.c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[2], 1)->SetWString(itB->strHuoZhu.c_str());
+									g_arrRecordRowIndex[2]++;
+								}
+							}
+						}
+
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+					}
+					else*/ if(itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)")
+					{
+						double money = 0;
+						if(nWeight > 0)
+						{
+							double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_xingXingShaoNvKDPrice, L"韵达快递", itB->strWuLiuDanHao);
+							money -= kouJian;
+							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
+						}
+					}
+					else
+					{
+						wchar_t szOut[120] = { 0 };
+						_swprintf(szOut, L"[未知的物流方式] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
+						AddLog(szOut);
+					}
+				}
+				double _price = 1;
+				int nZSL = _wtoi(itB->strHuoPinZongShuLiang.c_str());
+				if(nZSL == 0)
+				{
+					wchar_t szOut[120] = { 0 };
+					_swprintf(szOut, L"[异常货品数量] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
+					AddLog(szOut);
+				}
+				if(nZSL > 8)
+					_price = 0.5 + (nZSL - 8)*0.1;
+				else
+					_price = 0.5;
+				sheet->Cell(itB->nRow, eET_CaoZuoFei)->SetWString(CFuncCommon::Double2WString(_price + DOUBLE_PRECISION, 1).c_str());
+				double haocaifei = 0.0;
+				if(nZSL >= 2)
+					haocaifei += 0.25;
+				else if(itB->strHuoPinMingXi.find(L"蛋黄瓦格饼") != wstring::npos)
+					haocaifei += 0.02;
+				sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(haocaifei + DOUBLE_PRECISION, 2).c_str());
+				//计算增值费用
+				{
+					if(dZengZhi > 0)
+						sheet->Cell(itB->nRow, eET_ZengZhiFeiYong)->SetWString(CFuncCommon::Double2WString(dZengZhi + DOUBLE_PRECISION, 1).c_str());
+				}
+				sheet->Cell(itB->nRow, eET_BeiZhu)->SetWString(strBeiZhu.c_str());
+				++itB;
+			}
+		}
+	}
+	excel.SaveAs(_file.c_str());
+	AddLog(L"趣旅收纳账单生成成功");
 	return true;
 }
 

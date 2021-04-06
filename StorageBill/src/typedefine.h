@@ -294,6 +294,9 @@ enum eExportTitle
 	eET_KunLunShanShuiKa_510_24,
 	eET_KunLunShanShuiKa_4_4,
 	eET_KunLunShanShuiKa_510_12,
+	eET_KunLunShanShuiKa_123_12,
+	eET_KunLunShanShuiKa_350_24,
+	eET_KunLunShanShuiKa_350_12
 };
 
 struct sDuoDuoMaiCaiChanPinXinXi

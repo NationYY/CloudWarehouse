@@ -61,6 +61,7 @@ private:
 	bool Handle_DuoDuoMaiCai();
 	bool Handle_WeiFuKang();
 	bool Handle_QuLvShouNa();
+	bool Handle_XingXingShaoNv();
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();

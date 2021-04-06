@@ -17,6 +17,7 @@ extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_weiFuKangYDKDPri
 extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_jingXinGeYDKDPrice;
 extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_quLvShouNaKDPrice;
 extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_shuoGuoLiuXiangKDPrice;
+extern std::map< std::wstring, std::list<sExpressPriceInfo> > g_xingXingShaoNvKDPrice;
 //------------------------------------Ë³·á¼Û¸ñ--------------------------------------//
 //ÓÀ´´Ò«»Ô
 extern std::vector< std::list<sExpressPriceInfo> > g_yongChuangYaoHuiSFPrice;

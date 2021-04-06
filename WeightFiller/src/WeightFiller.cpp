@@ -131,7 +131,6 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 						{
 							wsprintf(szBuffer, L"U%sÕû%d", itZL->second.szShortName, nPieces);
 							szBeiZhu += szBuffer;
-							szBeiZhu += L"U";
 						}
 						else
 						{
@@ -180,7 +179,6 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 							{
 								wsprintf(szBuffer, L"U%sÕû%dU%sÉ¢%d", itZL->second.szShortName, nPieces, itZL->second.szShortName, nLastCnt);
 								szBeiZhu += szBuffer;
-								szBeiZhu += L"U";
 							}
 							else
 							{
@@ -215,7 +213,6 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 							{
 								wsprintf(szBuffer, L"U%sÉ¢%d", itZL->second.szShortName, nLastCnt);
 								szBeiZhu += szBuffer;
-								szBeiZhu += L"U";
 							}
 							else
 							{
@@ -246,11 +243,13 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 				}
 				++itGB;
 			}
+			szBeiZhu = szBeiZhu + L"F";
+			wstring info = itB->second.strShouJianRedDiZhi + szBeiZhu;
 			sheet->Cell(rowIndex, 0)->SetWString(szBeiZhu.c_str());
 			sheet->Cell(rowIndex, 1)->SetWString(itB->first.c_str());
 			sheet->Cell(rowIndex, 2)->SetWString(itB->second.strZhuanJianZhuYi.c_str());
 			sheet->Cell(rowIndex, 3)->SetWString(itB->second.strShouJianRen.c_str());
-			sheet->Cell(rowIndex, 4)->SetWString(itB->second.strShouJianRedDiZhi.c_str());
+			sheet->Cell(rowIndex, 4)->SetWString(info.c_str());
 			sheet->Cell(rowIndex, 5)->SetWString(itB->second.strShouJianRenDianHua.c_str());
 			int nZhongLiang = (int)ceil(dZhongLiang);
 			sheet->Cell(rowIndex, 6)->SetInteger(nZhongLiang);

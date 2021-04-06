@@ -15,6 +15,8 @@ std::map< std::wstring, std::list<sExpressPriceInfo> > g_weiFuKangYDKDPrice;
 std::map< std::wstring, std::list<sExpressPriceInfo> > g_jingXinGeYDKDPrice;
 std::map< std::wstring, std::list<sExpressPriceInfo> > g_quLvShouNaKDPrice;
 std::map< std::wstring, std::list<sExpressPriceInfo> > g_shuoGuoLiuXiangKDPrice;
+std::map< std::wstring, std::list<sExpressPriceInfo> > g_xingXingShaoNvKDPrice;
+
 //----------------------------------------------------------------------------------//
 
 //------------------------------------顺丰价格--------------------------------------//
@@ -1832,6 +1834,7 @@ void PrepareExpressPrice()
 		g_shuoGuoLiuXiangKDPrice[L"吉林省"].push_back({ 0, 3, 3, 4.4, 0 });
 		g_shuoGuoLiuXiangKDPrice[L"辽宁省"].push_back({ 0, 3, 3, 4.4, 0 });
 
+		g_shuoGuoLiuXiangKDPrice[L"深圳市"].push_back({ 0, 3, 3, 2.9, 0 });
 		g_shuoGuoLiuXiangKDPrice[L"上海"].push_back({ 0, 3, 3, 2.9, 0 });
 		g_shuoGuoLiuXiangKDPrice[L"北京"].push_back({ 0, 3, 3, 2.9, 0 });
 		//3kg以上
@@ -1871,6 +1874,104 @@ void PrepareExpressPrice()
 		g_shuoGuoLiuXiangKDPrice[L"海南省"].push_back({ 0, 0, 1, 7, 5 });
 		g_shuoGuoLiuXiangKDPrice[L"内蒙古自治区"].push_back({ 0, 0, 1, 8, 6 });
 		g_shuoGuoLiuXiangKDPrice[L"甘肃省"].push_back({ 0, 0, 1, 6, 5 });
+	}
+	//星星少女
+	{
+		//2kg
+		g_xingXingShaoNvKDPrice[L"河南省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"江苏省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"浙江省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"安徽省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"山东省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"天津"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"河北省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"湖南省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"湖北省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"山西省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"陕西省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"江西省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"广东省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"福建省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"广西壮族自治区"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"云南省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"贵州省"].push_back({ 0, 2, 2, 2.6, 0 });
+
+		g_xingXingShaoNvKDPrice[L"四川省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"重庆"].push_back({ 0, 2, 2, 2.6, 0 });
+
+		g_xingXingShaoNvKDPrice[L"黑龙江省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"吉林省"].push_back({ 0, 2, 2, 2.6, 0 });
+		g_xingXingShaoNvKDPrice[L"辽宁省"].push_back({ 0, 2, 2, 2.6, 0 });
+
+		g_xingXingShaoNvKDPrice[L"深圳市"].push_back({ 0, 2, 2, 3.5, 0 });
+		g_xingXingShaoNvKDPrice[L"上海"].push_back({ 0, 2, 2, 3.5, 0 });
+		g_xingXingShaoNvKDPrice[L"北京"].push_back({ 0, 2, 2, 3.5, 0 });
+		//3kg
+		g_xingXingShaoNvKDPrice[L"河南省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"江苏省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"浙江省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"安徽省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"山东省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"天津"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"河北省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"湖南省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"湖北省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"山西省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"陕西省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"江西省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"广东省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"福建省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"广西壮族自治区"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"云南省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"贵州省"].push_back({ 2, 3, 3, 2.9, 0 });
+
+		g_xingXingShaoNvKDPrice[L"四川省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"重庆"].push_back({ 2, 3, 3, 2.9, 0 });
+
+		g_xingXingShaoNvKDPrice[L"黑龙江省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"吉林省"].push_back({ 2, 3, 3, 2.9, 0 });
+		g_xingXingShaoNvKDPrice[L"辽宁省"].push_back({ 2, 3, 3, 2.9, 0 });
+
+		g_xingXingShaoNvKDPrice[L"深圳市"].push_back({ 2, 3, 3, 3.8, 0 });
+		g_xingXingShaoNvKDPrice[L"上海"].push_back({ 2, 3, 3, 3.8, 0 });
+		g_xingXingShaoNvKDPrice[L"北京"].push_back({ 2, 3, 3, 3.8, 0 });
+		//3kg以上
+		g_xingXingShaoNvKDPrice[L"河南省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"江苏省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"浙江省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"安徽省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"山东省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"天津"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"河北省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"湖南省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"湖北省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"山西省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"陕西省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"江西省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"广东省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"福建省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"广西壮族自治区"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"云南省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+		g_xingXingShaoNvKDPrice[L"贵州省"].push_back({ 3, 0, 1, 3.6, 1.1 });
+
+		g_xingXingShaoNvKDPrice[L"四川省"].push_back({ 3, 0, 1, 3.4, 0.9 });
+		g_xingXingShaoNvKDPrice[L"重庆"].push_back({ 3, 0, 1, 3.4, 0.9 });
+
+		g_xingXingShaoNvKDPrice[L"黑龙江省"].push_back({ 3, 0, 1, 5.1, 2.5 });
+		g_xingXingShaoNvKDPrice[L"吉林省"].push_back({ 3, 0, 1, 5.1, 2.5 });
+		g_xingXingShaoNvKDPrice[L"辽宁省"].push_back({ 3, 0, 1, 5.1, 2.5 });
+
+		g_xingXingShaoNvKDPrice[L"深圳市"].push_back({ 3, 0, 1, 3.8, 1.2 });
+		g_xingXingShaoNvKDPrice[L"上海"].push_back({ 3, 0, 1, 3.8, 1.2 });
+		g_xingXingShaoNvKDPrice[L"北京"].push_back({ 3, 0, 1, 3.8, 1.2 });
+		//特殊区域
+		g_xingXingShaoNvKDPrice[L"新疆维吾尔自治区"].push_back({ 0, 0, 1, 16, 4 });
+		g_xingXingShaoNvKDPrice[L"西藏自治区"].push_back({ 0, 0, 1, 9, 7 });
+		g_xingXingShaoNvKDPrice[L"宁夏回族自治区"].push_back({ 0, 0, 1, 7, 5 });
+		g_xingXingShaoNvKDPrice[L"青海省"].push_back({ 0, 0, 1, 7, 5 });
+		g_xingXingShaoNvKDPrice[L"海南省"].push_back({ 0, 0, 1, 7, 5 });
+		g_xingXingShaoNvKDPrice[L"内蒙古自治区"].push_back({ 0, 0, 1, 8, 6 });
+		g_xingXingShaoNvKDPrice[L"甘肃省"].push_back({ 0, 0, 1, 6, 5 });\
 	}
 }
 
