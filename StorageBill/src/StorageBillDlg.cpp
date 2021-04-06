@@ -657,8 +657,8 @@ void CStorageBillDlg::_LogicThread()
 							goto __break_logic;
 						if(!Handle_HaTeNengLiang())
 							goto __break_logic;
-						if(!Handle_LaFengQing())
-							goto __break_logic;
+						//if(!Handle_LaFengQing())
+						//	goto __break_logic;
 						if(!Handle_ZhiShanDianShang())
 							goto __break_logic;
 						if(!Handle_WeiFuKang())
@@ -1930,6 +1930,43 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 					itB->strZhongLiang = CFuncCommon::Double2WString(zl, 4);
 				}
 			}
+			if(strHuoZhu == L"星星少女零食" && IsZero(itB->strZhongLiang))
+			{
+				double zl = 0;
+				map_key_wstring_val_int mapRet;
+				if(CFuncCommon::ParseKeyWStringInt(itB->strHuoPinMingXi, mapRet))
+				{
+					map_key_wstring_val_int::iterator _itB = mapRet.begin();
+					map_key_wstring_val_int::iterator _itE = mapRet.end();
+					while(_itB != _itE)
+					{
+						if(_itB->first == L"1KG新西兰酸奶味沙琪玛")
+						{
+							zl += (1.2240*_itB->second);
+						}
+						else if(_itB->first == L"500g蛋黄瓦格饼牛奶味")
+						{
+							zl += (0.6385*_itB->second);
+						}
+						else if(_itB->first == L"1KG新西兰牛奶味沙琪玛")
+						{
+							zl += (1.2240*_itB->second);
+						}
+						else if(_itB->first == L"500g蛋黄瓦格饼芝麻味")
+						{
+							zl += (0.6385*_itB->second);
+						}
+						else
+						{
+							wchar_t szBuffer[128] = { 0 };
+							wsprintfW(szBuffer, L"星星少女零食找不到产品名 单号=%s %s", itB->strWuLiuDanHao.c_str(), _itB->first.c_str());
+							AddLog(szBuffer);
+						}
+						++_itB;
+					}
+					itB->strZhongLiang = CFuncCommon::Double2WString(zl, 4);
+				}
+			}
 			if(strHuoZhu == L"阔伟电商" && IsZero(itB->strZhongLiang))
 			{
 				double zl = 0;
@@ -2663,6 +2700,15 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 		}
 		++itSB;
 	}
+
+	itSB = m_mapAllSalesInfo[L"永创昆仑山"].begin();
+	itSE = m_mapAllSalesInfo[L"永创昆仑山"].end();
+	while(itSB != itSE)
+	{
+		listKunLunShanSales.push_back(*itSB);
+		++itSB;
+	}
+
 
 	std::map<std::wstring, sInStorageInfo> mapKunLunShanInStorage;
 	std::map<std::wstring, sInStorageInfo>::iterator itIB = m_mapInStorageInfo[L"永创耀辉"].begin();
@@ -4863,18 +4909,18 @@ bool CStorageBillDlg::Handle_JingXinGe()
 bool CStorageBillDlg::Handle_XingXingShaoNv()
 {
 	BasicExcel excel;
-	if(!CreateExcel(L"星星少女", excel, m_mapAllSalesInfo[L"星星少女"], m_mapInStorageInfo[L"星星少女"]))
+	if(!CreateExcel(L"星星少女零食", excel, m_mapAllSalesInfo[L"星星少女零食"], m_mapInStorageInfo[L"星星少女零食"]))
 		return false;
-	wstring fileName = L"./Export_" + m_strYM + L"/" + L"星星少女_" + m_strYM + L"对账单.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + L"星星少女零食_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
-	CompareWhithWuLiu(L"星星少女", m_mapAllSalesInfo[L"星星少女"]);
+	CompareWhithWuLiu(L"星星少女零食", m_mapAllSalesInfo[L"星星少女零食"]);
 	//计算相关费用
 	{
 		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
 		if(sheet)
 		{
 			double kouJian = 0;
-			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"星星少女"];
+			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"星星少女零食"];
 			if(listSales.size() > 5000)
 				kouJian = 0.1;
 			else if(listSales.size() > 15000)
@@ -5036,7 +5082,7 @@ bool CStorageBillDlg::Handle_XingXingShaoNv()
 		}
 	}
 	excel.SaveAs(_file.c_str());
-	AddLog(L"趣旅收纳账单生成成功");
+	AddLog(L"星星少女零食账单生成成功");
 	return true;
 }
 
