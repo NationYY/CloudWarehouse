@@ -272,11 +272,9 @@ struct sDuoDuoMaiCaiPriceInfo
 enum eExportTitle
 {
 	eET_ShouJianRen = 0,
-	eET_ShouJianRenDiZhi,
 	eET_Sheng,
 	eET_WuLiuGongSi,
 	eET_WuLiuDanHao,
-	eET_YuanShiDanHao,
 	eET_DianPu,
 	eET_ZhongLiang,
 	eET_FaHuoShiJian,
