@@ -48,6 +48,8 @@ struct SDingDanInfo
 	}
 };
 
+
+
 struct SWeightInfo
 {
 	wchar_t szName[128];
@@ -78,7 +80,7 @@ std::string WString2String(const wchar_t* wchar)
 }
 
 
-void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDingDanInfo)
+void CreateExcel(wstring strTitle, wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDingDanInfo)
 {
 	std::map<wstring, int> mapAllCnt;
 	BasicExcel excel;
@@ -270,7 +272,7 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 			rowIndex++;
 			++itB;
 		}
-		wstring title = strWuLiuGongSi + L"货品汇总";
+		wstring title = strWuLiuGongSi + L"货品汇总-" + strTitle;
 		sheet->Cell(rowIndex++, 0)->SetWString(title.c_str());
 		std::map<wstring, int>::iterator __itB = mapAllCnt.begin();
 		std::map<wstring, int>::iterator __itE = mapAllCnt.end();
@@ -283,7 +285,8 @@ void CreateExcel(wstring strWuLiuGongSi, std::map<wstring, SDingDanInfo>& mapDin
 		}
 	}
 	string cWL = WString2String(strWuLiuGongSi.c_str());
-	cWL = "./结果-" + cWL+".xls";
+	string cTitle = WString2String(strTitle.c_str());
+	cWL = "./" + cTitle + "-" + cWL+".xls";
 	excel.SaveAs(cWL.c_str());
 }
 
@@ -397,6 +400,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		THROW_ERROR(L"销售出库明细 加载失败");
 	}
 	BasicExcelWorksheet* saleDetailSheet = saleDetailExcel.GetWorksheet(L"Sheet1");
+	wstring strOldFJDanHao = L"";
+	bool bSameFJ = true;
 	if(saleDetailSheet)
 	{
 		size_t maxRows = saleDetailSheet->GetTotalRows();
@@ -413,6 +418,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		int nBeiZhu = -1;
 		int nDaYinBeiZhu = -1;
 		int nDianPu = -1;
+		int nFJDanHao = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
 			BasicExcelCell* cell = saleDetailSheet->Cell(0, c);
@@ -440,15 +446,30 @@ int _tmain(int argc, _TCHAR* argv[])
 				nDianPu = c;
 			else if(strTitle == L"物流公司")
 				nWuLiuGongSi = c;
+			else if(strTitle == L"分拣单编号")
+				nFJDanHao = c;
+			
 		}
 		if(nHuoPinMingCheng == -1 || nWuLiuBianHao == -1 || nHuoPinZongShuLiang == -1 || nHuoPinShuLiang == -1 || nShouJianRen == -1
-			|| nShouJianRenShouJi == -1 || nShouJianRenDiZhi == -1 || nBeiZhu == -1 || nDaYinBeiZhu == -1 || nDianPu == -1 || nWuLiuGongSi == -1)
+			|| nShouJianRenShouJi == -1 || nShouJianRenDiZhi == -1 || nBeiZhu == -1 || nDaYinBeiZhu == -1 || nDianPu == -1 || nWuLiuGongSi == -1
+			|| nFJDanHao == -1)
 		{
 			THROW_ERROR(L"销售出库明细 有标题未找到");
 		}
 		for(size_t r = 1; r < maxRows; ++r)
 		{
 			const wchar_t* _pStr = NULL;
+			wstring str00;
+			SHEET_CELL_STRING(saleDetailSheet, r, 0, str00);
+			if(str00 == L"合计:")
+				continue;
+
+			wstring strFJDanHao;
+			SHEET_CELL_STRING(saleDetailSheet, r, nFJDanHao, strFJDanHao);
+			if(strOldFJDanHao == L"" && strFJDanHao != L"")
+				strOldFJDanHao = strFJDanHao;
+			if(strOldFJDanHao != strFJDanHao || strFJDanHao == L"")
+				bSameFJ = false;
 			wstring strWuLiuDanHao;
 			wstring strWuliuGongSi;
 			SHEET_CELL_STRING(saleDetailSheet, r, nWuLiuGongSi, strWuliuGongSi);
@@ -515,12 +536,47 @@ int _tmain(int argc, _TCHAR* argv[])
 				_it->second += nHuoPinCnt;
 		}
 	}
-
+	else
+		return 0;
 	{
-		DeleteFile(L"./结果-韵达.xls");
-		DeleteFile(L"./结果-中通.xls");
-		CreateExcel(L"韵达", mapYDDingDanInfo);
-		CreateExcel(L"中通", mapZTDingDanInfo);
+
+		WIN32_FIND_DATA Data;
+		wstring strName, strPath;
+		strName = L"*韵达.xls";
+		strPath = L"./";
+		HANDLE hFile = FindFirstFileW(strName.c_str(), &Data);
+		if(hFile != INVALID_HANDLE_VALUE)
+		{
+			DeleteFileW((strPath + Data.cFileName).c_str());
+			while(FindNextFileW(hFile, &Data))
+			{
+				DeleteFileW((strPath + Data.cFileName).c_str());
+			}
+		}
+
+		strName = L"*中通.xls";
+		hFile = FindFirstFileW(strName.c_str(), &Data);
+		if(hFile != INVALID_HANDLE_VALUE)
+		{
+			DeleteFileW((strPath + Data.cFileName).c_str());
+			while(FindNextFileW(hFile, &Data))
+			{
+				DeleteFileW((strPath + Data.cFileName).c_str());
+			}
+		}
+
+
+		//DeleteFile(L"./*韵达.xls");
+		//DeleteFile(L"./*中通.xls");
+		//if(mapYDDingDanInfo.size())
+		wstring strFileName = bSameFJ?strOldFJDanHao:L"结果";
+		if(mapYDDingDanInfo.size() == 0)
+			strFileName += L"(空)";
+		CreateExcel(strFileName, L"韵达", mapYDDingDanInfo);
+		strFileName = bSameFJ?strOldFJDanHao:L"结果";
+		if(mapZTDingDanInfo.size() == 0)
+			strFileName += L"(空)";
+		CreateExcel(strFileName, L"中通", mapZTDingDanInfo);
 	}
 	return 0;
 }
