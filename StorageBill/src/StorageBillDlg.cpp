@@ -1854,9 +1854,11 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 	if(sheet)
 	{
 		sheet->Cell(0, eET_ShouJianRen)->SetWString(L"收件人");
+		sheet->Cell(0, eET_ShouJianRenDiZhi)->SetWString(L"收件人地址");
 		sheet->Cell(0, eET_Sheng)->SetWString(L"省");
 		sheet->Cell(0, eET_WuLiuGongSi)->SetWString(L"物流公司");
 		sheet->Cell(0, eET_WuLiuDanHao)->SetWString(L"物流单号");
+		sheet->Cell(0, eET_YuanShiDanHao)->SetWString(L"原始单号");
 		sheet->Cell(0, eET_DianPu)->SetWString(L"店铺");
 		sheet->Cell(0, eET_ZhongLiang)->SetWString(L"重量");
 		sheet->Cell(0, eET_FaHuoShiJian)->SetWString(L"发货时间");
@@ -1887,9 +1889,11 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 		{
 			itB->nRow = nRecordRowIndex;
 			sheet->Cell(nRecordRowIndex, eET_ShouJianRen)->SetWString(itB->strShouJianRen.c_str());
+			sheet->Cell(nRecordRowIndex, eET_ShouJianRenDiZhi)->SetWString(itB->strShouJianRenDiZhi.c_str());
 			sheet->Cell(nRecordRowIndex, eET_Sheng)->SetWString(itB->strSheng.c_str());
 			sheet->Cell(nRecordRowIndex, eET_WuLiuGongSi)->SetWString(itB->strWuLiuGongSi.c_str());
 			sheet->Cell(nRecordRowIndex, eET_WuLiuDanHao)->SetWString(itB->strWuLiuDanHao.c_str());
+			sheet->Cell(nRecordRowIndex, eET_YuanShiDanHao)->SetWString(itB->strYuanShiDanHao.c_str());
 			sheet->Cell(nRecordRowIndex, eET_DianPu)->SetWString(itB->strDianPu.c_str());
 			if(strHuoZhu == L"静心阁" && IsZero(itB->strZhongLiang))
 			{
@@ -2135,11 +2139,11 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 	if(sheet)
 	{
 		if(strHuoZhu == L"七一酱园" || strHuoZhu == L"新马帮" || strHuoZhu == L"颐麦科技")
-			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!L:L,订单费用!M:M,订单费用!N:N,订单费用!O:O,入库费用!E:E,仓租费用!D:D,其他费用!C:C))*1.06");
+			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!N:N,订单费用!O:O,订单费用!P:P,订单费用!Q:Q,入库费用!E:E,仓租费用!D:D,其他费用!C:C))*1.06");
 		else if(strHuoZhu == L"永创昆仑山")
-			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!L:L,订单费用!M:M,订单费用!N:N,订单费用!O:O,仓租费用!D:D,其他费用!C:C)+3600)*1.06");
+			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!N:N,订单费用!O:O,订单费用!P:P,订单费用!Q:Q,仓租费用!D:D,其他费用!C:C)+3600)*1.06");
 		else
-			sheet->Cell(0, 0)->SetWString(L"=SUM(订单费用!L:L,订单费用!M:M,订单费用!N:N,订单费用!O:O,入库费用!E:E,仓租费用!D:D,其他费用!C:C)");
+			sheet->Cell(0, 0)->SetWString(L"=SUM(订单费用!N:N,订单费用!O:O,订单费用!P:P,订单费用!Q:Q,入库费用!E:E,仓租费用!D:D,其他费用!C:C)");
 	}
 	return true;
 }
