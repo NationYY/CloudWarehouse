@@ -57,7 +57,7 @@ private:
 	bool Handle_HaTeNengLiang();
 	bool Handle_HanTaiLang();
 	bool Handle_LaFengQing();
-	bool Handle_ZhiShanDianShang();
+	bool Handle_ZhiShanDianShang(wchar_t* szHuoZhu);
 	bool Handle_DuoDuoMaiCai();
 	bool Handle_WeiFuKang();
 	bool Handle_QuLvShouNa();

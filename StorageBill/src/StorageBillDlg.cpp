@@ -35,7 +35,7 @@ if(_pStr)\
 #define DUODUOMAICAI_PRICE_FILE L"./系统数据/DuoDuoMaiCai_Price.ini"
 const wchar_t* g_arrWorksheetName[] ={L"顺丰重量差异订单", L"顺丰云仓未处理单号", L"顺丰价格异常", L"百世快递重量差异订单", L"中通快运重量差异订单", L"中通快运费用差异订单"};
 int g_arrRecordRowIndex[] ={0, 0, 0, 0, 0, 0};
-const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎", L"玖王", L"至善电商", L"辣风芹", L"维敷康", L"硕果流香", L"静心阁", L"昆仑山水卡", L"阔伟电商", L"趣旅收纳", L"星星少女零食"};
+const wchar_t* g_arrHuoZhuName[] ={L"永创耀辉", L"弥雅食器", L"泰福商贸", L"颐麦科技", L"新马帮", L"七一酱园", L"永创昆仑山", L"凡将", L"韩太郎", L"玖王", L"至善电商", L"女巫科技", L"辣风芹", L"维敷康", L"硕果流香", L"静心阁", L"昆仑山水卡", L"阔伟电商", L"趣旅收纳", L"星星少女零食"};
 void ListFiles(const char * dir, std::list<string>& listFiles);
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -659,7 +659,9 @@ void CStorageBillDlg::_LogicThread()
 							goto __break_logic;
 						//if(!Handle_LaFengQing())
 						//	goto __break_logic;
-						if(!Handle_ZhiShanDianShang())
+						if(!Handle_ZhiShanDianShang(L"至善电商"))
+							goto __break_logic;
+						if(!Handle_ZhiShanDianShang(L"女巫科技"))
 							goto __break_logic;
 						if(!Handle_WeiFuKang())
 							goto __break_logic;
@@ -6053,20 +6055,20 @@ bool CStorageBillDlg::Handle_WeiFuKang()
 	return true;
 }
 
-bool CStorageBillDlg::Handle_ZhiShanDianShang()
+bool CStorageBillDlg::Handle_ZhiShanDianShang(wchar_t* szHuoZhu)
 {
 	BasicExcel excel;
-	if(!CreateExcel(L"至善电商", excel, m_mapAllSalesInfo[L"至善电商"], m_mapInStorageInfo[L"至善电商"]))
+	if(!CreateExcel(szHuoZhu, excel, m_mapAllSalesInfo[szHuoZhu], m_mapInStorageInfo[szHuoZhu]))
 		return false;
-	wstring fileName = L"./Export_" + m_strYM + L"/" + L"至善电商_" + m_strYM + L"对账单.xls";
+	wstring fileName = L"./Export_" + m_strYM + L"/" + szHuoZhu + L"_" + m_strYM + L"对账单.xls";
 	string _file = CFuncCommon::WString2String(fileName.c_str());
-	CompareWhithWuLiu(L"至善电商", m_mapAllSalesInfo[L"至善电商"]);
+	CompareWhithWuLiu(szHuoZhu, m_mapAllSalesInfo[szHuoZhu]);
 	//计算相关费用
 	{
 		BasicExcelWorksheet* sheet = excel.GetWorksheet(L"订单费用");
 		if(sheet)
 		{
-			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[L"至善电商"];
+			std::list<sSalesInfo>& listSales = m_mapAllSalesInfo[szHuoZhu];
 			std::list<sSalesInfo>::iterator itB = listSales.begin();
 			std::list<sSalesInfo>::iterator itE = listSales.end();
 			while(itB != itE)
@@ -6121,7 +6123,7 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang()
 								if(chengbenMoney + DOUBLE_PRECISION < itZTKY->second.yingShou - itZTKY->second.qita)
 								{
 									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[5]);
-									recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(L"至善电商");
+									recordSheet->Cell(g_arrRecordRowIndex[5], 0)->SetWString(szHuoZhu);
 									recordSheet->Cell(g_arrRecordRowIndex[5], 1)->SetWString(itB->strWuLiuDanHao.c_str());
 									recordSheet->Cell(g_arrRecordRowIndex[5], 2)->SetWString(CFuncCommon::Double2WString(itZTKY->second.yingShou - itZTKY->second.qita + DOUBLE_PRECISION, 1).c_str());
 									recordSheet->Cell(g_arrRecordRowIndex[5], 3)->SetWString(CFuncCommon::Double2WString(chengbenMoney + DOUBLE_PRECISION, 1).c_str());
@@ -6173,7 +6175,9 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang()
 
 	}
 	excel.SaveAs(_file.c_str());
-	AddLog(L"至善电商账单生成成功");
+	wchar_t szBuffer[128] = { 0 };
+	wsprintfW(szBuffer, L"%s账单生成成功", szHuoZhu);
+	AddLog(szBuffer);
 	return true;
 }
 
