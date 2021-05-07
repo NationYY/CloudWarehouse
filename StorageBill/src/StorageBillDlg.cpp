@@ -1856,11 +1856,9 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 	if(sheet)
 	{
 		sheet->Cell(0, eET_ShouJianRen)->SetWString(L"收件人");
-		sheet->Cell(0, eET_ShouJianRenDiZhi)->SetWString(L"收件人地址");
 		sheet->Cell(0, eET_Sheng)->SetWString(L"省");
 		sheet->Cell(0, eET_WuLiuGongSi)->SetWString(L"物流公司");
 		sheet->Cell(0, eET_WuLiuDanHao)->SetWString(L"物流单号");
-		sheet->Cell(0, eET_YuanShiDanHao)->SetWString(L"原始单号");
 		sheet->Cell(0, eET_DianPu)->SetWString(L"店铺");
 		sheet->Cell(0, eET_ZhongLiang)->SetWString(L"重量");
 		sheet->Cell(0, eET_FaHuoShiJian)->SetWString(L"发货时间");
@@ -1891,11 +1889,9 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 		{
 			itB->nRow = nRecordRowIndex;
 			sheet->Cell(nRecordRowIndex, eET_ShouJianRen)->SetWString(itB->strShouJianRen.c_str());
-			sheet->Cell(nRecordRowIndex, eET_ShouJianRenDiZhi)->SetWString(itB->strShouJianRenDiZhi.c_str());
 			sheet->Cell(nRecordRowIndex, eET_Sheng)->SetWString(itB->strSheng.c_str());
 			sheet->Cell(nRecordRowIndex, eET_WuLiuGongSi)->SetWString(itB->strWuLiuGongSi.c_str());
 			sheet->Cell(nRecordRowIndex, eET_WuLiuDanHao)->SetWString(itB->strWuLiuDanHao.c_str());
-			sheet->Cell(nRecordRowIndex, eET_YuanShiDanHao)->SetWString(itB->strYuanShiDanHao.c_str());
 			sheet->Cell(nRecordRowIndex, eET_DianPu)->SetWString(itB->strDianPu.c_str());
 			if(strHuoZhu == L"静心阁" && IsZero(itB->strZhongLiang))
 			{
@@ -2072,7 +2068,7 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 					}
 				}
 			}
-			else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+			else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 			{
 				if(m_bZYKY)
 				{
@@ -2141,11 +2137,11 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 	if(sheet)
 	{
 		if(strHuoZhu == L"七一酱园" || strHuoZhu == L"新马帮" || strHuoZhu == L"颐麦科技")
-			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!N:N,订单费用!O:O,订单费用!P:P,订单费用!Q:Q,入库费用!E:E,仓租费用!D:D,其他费用!C:C))*1.06");
+			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!L:L,订单费用!M:M,订单费用!N:N,订单费用!O:O,入库费用!E:E,仓租费用!D:D,其他费用!C:C))*1.06");
 		else if(strHuoZhu == L"永创昆仑山")
-			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!N:N,订单费用!O:O,订单费用!P:P,订单费用!Q:Q,仓租费用!D:D,其他费用!C:C)+3600)*1.06");
+			sheet->Cell(0, 0)->SetWString(L"=(SUM(订单费用!L:L,订单费用!M:M,订单费用!N:N,订单费用!O:O,入库费用!E:E,仓租费用!D:D,其他费用!C:C)+3600)*1.06");
 		else
-			sheet->Cell(0, 0)->SetWString(L"=SUM(订单费用!N:N,订单费用!O:O,订单费用!P:P,订单费用!Q:Q,入库费用!E:E,仓租费用!D:D,其他费用!C:C)");
+			sheet->Cell(0, 0)->SetWString(L"=SUM(订单费用!L:L,订单费用!M:M,订单费用!N:N,订单费用!O:O,入库费用!E:E,仓租费用!D:D,其他费用!C:C)");
 	}
 	return true;
 }
@@ -2201,7 +2197,7 @@ bool CStorageBillDlg::Handle_TaiFuShangMao()
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"中通快运(菜鸟)")
+					if(itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" )
 					{
 						double money = 0;
 						if(nWeight > 0)
@@ -2859,7 +2855,7 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui_KunLunShan()
 
 					}
 					else if(itB->strWuLiuGongSi == L"百世快递(线下)" || itB->strWuLiuGongSi == L"百世线下(分拨)" || itB->strWuLiuGongSi == L"百世快递(菜鸟)" || itB->strWuLiuGongSi == L"百世快递(拼多多)" || itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || 
-						itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"圆通快递(菜鸟_赵哥)" || itB->strWuLiuGongSi == L"韵达快运(线下)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)")
+						itB->strWuLiuGongSi == L"韵达快递(菜鸟)" || itB->strWuLiuGongSi == L"韵达快递(拼多多)" || itB->strWuLiuGongSi == L"圆通快递(菜鸟_赵哥)" || itB->strWuLiuGongSi == L"韵达快运(线下)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						map_key_wstring_val_int mapRet;
 						bool bChunShui = false;
@@ -3475,7 +3471,7 @@ bool CStorageBillDlg::Handle_MiYaShiQi()
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_miYaZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -3999,7 +3995,7 @@ bool CStorageBillDlg::LoadSFData()
 			std::set<std::wstring>::iterator itLiveCheck = m_setSFCangKuData.find(_data.number);
 			if(itLiveCheck != m_setSFCangKuData.end())
 				sfSheet->Cell(r, m_sfHandleCol)->SetWString(L"1");
-			if(_data.vaServices == L"保价" || _data.vaServices == L"特安" || _data.vaServices == L"易碎保" || _data.vaServices == L"包装服务" || _data.vaServices == L"资源调节费")
+			if(_data.vaServices == L"保价" || _data.vaServices == L"特安" || _data.vaServices == L"易碎保" || _data.vaServices == L"包装服务" || _data.vaServices == L"资源调节费" || _data.vaServices == L"超长超重服务")
 			{
 				std::map<std::wstring, sSFAuthData>::iterator it = m_mapSFAuthData.find(_data.number);
 				if(it != m_mapSFAuthData.end())
@@ -4107,7 +4103,7 @@ void CStorageBillDlg::OnLbnDblclkLogList()
 double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice, wstring danhao)
 {
 	int nIndex = -1;
-	if(strSheng == L"四川省" || strSheng == L"重庆")
+	/*if(strSheng == L"四川省" || strSheng == L"重庆")
 		nIndex = 0;
 	else if(strSheng == L"北京" || strSheng == L"贵州省" || strSheng == L"河北省" || strSheng == L"湖北省" || strSheng == L"江苏省" || strSheng == L"陕西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"云南省" || strSheng == L"浙江省")
 		nIndex = 1;
@@ -4115,6 +4111,19 @@ double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, std::vector< s
 		nIndex = 2;
 	else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区" || strSheng == L"西藏自治区")
 		nIndex = 3;
+	else
+	{
+		wchar_t szBuffer[128] = { 0 };
+		wsprintfW(szBuffer, L"顺丰 未知省份 %s", strSheng.c_str());
+		THROW_ERROR(szBuffer);
+	}*/
+
+	if(strSheng == L"四川省" || strSheng == L"重庆" ||
+		strSheng == L"北京" || strSheng == L"贵州省" || strSheng == L"河北省" || strSheng == L"湖北省" || strSheng == L"江苏省" || strSheng == L"陕西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"云南省" || strSheng == L"浙江省" ||
+		strSheng == L"安徽省" || strSheng == L"福建省" || strSheng == L"甘肃省" || strSheng == L"广东省" || strSheng == L"广西壮族自治区" || strSheng == L"海南省" || strSheng == L"河南省" || strSheng == L"湖南省" || strSheng == L"江西省" || strSheng == L"宁夏回族自治区" || strSheng == L"青海省" || strSheng == L"山东省" || strSheng == L"山西省")
+		nIndex = 0;
+	else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区" || strSheng == L"西藏自治区")
+		nIndex = 1;
 	else
 	{
 		wchar_t szBuffer[128] = { 0 };
@@ -4306,7 +4315,7 @@ bool CStorageBillDlg::Handle_YiMaiKeJi()
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yiMaiKeJiZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -4455,7 +4464,7 @@ bool CStorageBillDlg::Handle_XinMaBang()
 							sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 						}
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_xinMaBangZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -4728,7 +4737,7 @@ bool CStorageBillDlg::Handle_KuoWeiDianShang()
 
 
 					}
-					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -5569,7 +5578,7 @@ bool CStorageBillDlg::Handle_HaTeNengLiang()
 					}
 					else if(itB->strWuLiuGongSi == L"百世快运")
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(L"2.5");
-					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_yongChuangYaoHuiZTKYPrice, itB->strWuLiuDanHao, false);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -5813,7 +5822,7 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_qiYiJiangYuanZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -5979,7 +5988,7 @@ bool CStorageBillDlg::Handle_WeiFuKang()
 						double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_weiFuKangYDKDPrice, L"韵达快递", itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_weiFuKangZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
@@ -6109,7 +6118,7 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang(wchar_t* szHuoZhu)
 						double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_zhiShanQTKDPrice, L"韵达快递", itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());
 					}
-					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)")
+					else if(itB->strWuLiuGongSi == L"百世快运" || itB->strWuLiuGongSi == L"中通快运" || itB->strWuLiuGongSi == L"中通快运(菜鸟)" || itB->strWuLiuGongSi == L"中通快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(拼多多)" || itB->strWuLiuGongSi == L"韵达快运(菜鸟)" || itB->strWuLiuGongSi == L"韵达快运(线下)")
 					{
 						double money = GetKYPrice(nWeight, itB->strSheng, itB->strShi, g_zhiShanZTKYPrice, itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());

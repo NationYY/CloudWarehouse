@@ -378,7 +378,7 @@ void PrepareExpressPrice()
 	}
 	//”¿¥¥“´ª‘À≥∑·
 	{
-		g_yongChuangYaoHuiSFPrice.resize(4);
+		/*g_yongChuangYaoHuiSFPrice.resize(4);
 		g_yongChuangYaoHuiSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
 		g_yongChuangYaoHuiSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
 		g_yongChuangYaoHuiSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
@@ -397,7 +397,14 @@ void PrepareExpressPrice()
 		g_yongChuangYaoHuiSFPrice[3].push_back({ 0, 1, 1, 14, 0 });
 		g_yongChuangYaoHuiSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
 		g_yongChuangYaoHuiSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
-		g_yongChuangYaoHuiSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+		g_yongChuangYaoHuiSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });*/
+
+		g_yongChuangYaoHuiSFPrice.resize(2);
+		g_yongChuangYaoHuiSFPrice[0].push_back({ 0, 4, 4, 8, 0 });
+		g_yongChuangYaoHuiSFPrice[0].push_back({ 4, 0, 4, 8, 1.4 });
+
+		g_yongChuangYaoHuiSFPrice[1].push_back({ 0, 4, 4, 10, 0 });
+		g_yongChuangYaoHuiSFPrice[1].push_back({ 4, 0, 4, 10, 3 });
 	}
 	//√÷—≈∞Ÿ ¿
 	{
