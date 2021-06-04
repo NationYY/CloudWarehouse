@@ -81,6 +81,41 @@ private:
 	void AddLog(std::wstring strLog);
 	void SetHScroll();
 	std::wstring GetLastDay(int year, int month);
+	bool IsBaiShiKuaiDi(std::wstring strWuLiu){
+		if(strWuLiu == L"百世快递(线下)" || strWuLiu == L"百世快递(菜鸟)" || strWuLiu == L"百世快递(拼多多)" || strWuLiu == L"百世线下(分拨)")
+			return true;
+		return false;
+	}
+	bool IsYunDaKuaiDi(std::wstring strWuLiu){
+		if(strWuLiu == L"韵达快递(菜鸟)" || strWuLiu == L"韵达快递(拼多多)" || strWuLiu == L"韵达快递(京东)")
+			return true;
+		return false;
+	}
+	bool IsShunFengKuaiDi(std::wstring strWuLiu){
+		if(strWuLiu == L"顺丰热敏(线下)" || strWuLiu == L"顺丰热敏(拼多多)"|| strWuLiu == L"顺丰刘泽静(拼多多)" || strWuLiu == L"顺丰刘泽静(线下)" || strWuLiu == L"顺丰周明(拼多多)" || strWuLiu == L"顺丰周明(线下)" || strWuLiu == L"顺丰李总(拼多多)" || strWuLiu == L"顺丰李总(线下)")
+			return true;
+		return false;
+	}
+	bool IsYuanTongKuaiDi(std::wstring strWuLiu){
+		if(strWuLiu == L"圆通快递(菜鸟_赵哥)")
+			return true;
+		return false;
+	}
+	bool IsBaiShiKuaiYun(std::wstring strWuLiu){
+		if(strWuLiu == L"百世快运")
+			return true;
+		return false;
+	}
+	bool IsZhongTongKuaiYun(std::wstring strWuLiu){
+		if(strWuLiu == L"中通快运" || strWuLiu == L"中通快运(菜鸟)" || strWuLiu == L"中通快运(拼多多)")
+			return true;
+		return false;
+	}
+	bool IsYunDaKuaiYun(std::wstring strWuLiu){
+		if(strWuLiu == L"韵达快运(线下)" || strWuLiu == L"韵达快运(菜鸟)" || strWuLiu == L"韵达快运(拼多多)")
+			return true;
+		return false;
+	}
 private:
 	boost::thread m_logicThread;
 	bool m_bExit;
