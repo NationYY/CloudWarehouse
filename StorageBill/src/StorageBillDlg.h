@@ -62,6 +62,11 @@ private:
 	bool Handle_WeiFuKang();
 	bool Handle_QuLvShouNa();
 	bool Handle_XingXingShaoNv();
+	bool Handle_TuNiangNiang();
+	bool Handle_ChuJianNingMengCha();
+	bool Handle_KaDuoGe();
+	bool Handle_XiaoBaiXiong();
+	bool Handle_AiWeiEr();
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
@@ -88,6 +93,11 @@ private:
 	}
 	bool IsYunDaKuaiDi(std::wstring strWuLiu){
 		if(strWuLiu == L"韵达快递(菜鸟)" || strWuLiu == L"韵达快递(拼多多)" || strWuLiu == L"韵达快递(京东)")
+			return true;
+		return false;
+	}
+	bool IsShunFengKongYun(std::wstring strWuLiu){
+		if(strWuLiu == L"顺丰空运(线下)")
 			return true;
 		return false;
 	}
