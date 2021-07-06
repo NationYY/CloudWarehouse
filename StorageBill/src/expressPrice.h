@@ -36,6 +36,8 @@ extern std::vector< std::list<sExpressPriceInfo> > g_yiMaiKeJiSFPrice;
 extern std::vector< std::list<sExpressPriceInfo> > g_quLvShouNaSFPrice;
 //硕果流香
 extern std::vector< std::list<sExpressPriceInfo> > g_shuoGuoLiuXiangSFPrice;
+//至善电商
+extern std::vector< std::list<sExpressPriceInfo> > g_zhiShanSFPrice;
 //----------------------------------------------------------------------------------//
 
 //------------------------------------快运价格--------------------------------------//

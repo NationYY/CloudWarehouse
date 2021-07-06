@@ -2078,7 +2078,7 @@ bool CStorageBillDlg::CreateExcel(wchar_t* szHuoZhu, BasicExcel& excel, std::lis
 					}
 				}
 			}
-			else if(IsZhongTongKuaiYun(itB->strWuLiuGongSi) || IsYunDaKuaiYun(itB->strWuLiuGongSi))
+			else if(IsZhongTongKuaiYun(itB->strWuLiuGongSi))
 			{
 				if(m_bZYKY)
 				{
@@ -4113,34 +4113,38 @@ void CStorageBillDlg::OnLbnDblclkLogList()
 double CStorageBillDlg::GetSFPrice(int nWeight, wstring strSheng, std::vector< std::list<sExpressPriceInfo> >& vecPrice, wstring danhao)
 {
 	int nIndex = -1;
-	/*if(strSheng == L"四川省" || strSheng == L"重庆")
-		nIndex = 0;
-	else if(strSheng == L"北京" || strSheng == L"贵州省" || strSheng == L"河北省" || strSheng == L"湖北省" || strSheng == L"江苏省" || strSheng == L"陕西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"云南省" || strSheng == L"浙江省")
-		nIndex = 1;
-	else if(strSheng == L"安徽省" || strSheng == L"福建省" || strSheng == L"甘肃省" || strSheng == L"广东省" || strSheng == L"广西壮族自治区" || strSheng == L"海南省" || strSheng == L"河南省" || strSheng == L"湖南省" || strSheng == L"江西省" || strSheng == L"宁夏回族自治区" || strSheng == L"青海省" || strSheng == L"山东省" || strSheng == L"山西省")
-		nIndex = 2;
-	else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区" || strSheng == L"西藏自治区")
-		nIndex = 3;
-	else
+	if(vecPrice.size() == 4)
 	{
-		wchar_t szBuffer[128] = { 0 };
-		wsprintfW(szBuffer, L"顺丰 未知省份 %s", strSheng.c_str());
-		THROW_ERROR(szBuffer);
-	}*/
-
-	if(strSheng == L"四川省" || strSheng == L"重庆" ||
-		strSheng == L"北京" || strSheng == L"贵州省" || strSheng == L"河北省" || strSheng == L"湖北省" || strSheng == L"江苏省" || strSheng == L"陕西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"云南省" || strSheng == L"浙江省" ||
-		strSheng == L"安徽省" || strSheng == L"福建省" || strSheng == L"甘肃省" || strSheng == L"广东省" || strSheng == L"广西壮族自治区" || strSheng == L"海南省" || strSheng == L"河南省" || strSheng == L"湖南省" || strSheng == L"江西省" || strSheng == L"宁夏回族自治区" || strSheng == L"青海省" || strSheng == L"山东省" || strSheng == L"山西省")
-		nIndex = 0;
-	else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区" || strSheng == L"西藏自治区")
-		nIndex = 1;
-	else
-	{
-		wchar_t szBuffer[128] = { 0 };
-		wsprintfW(szBuffer, L"顺丰 未知省份 %s", strSheng.c_str());
-		THROW_ERROR(szBuffer);
+		if(strSheng == L"四川省" || strSheng == L"重庆")
+			nIndex = 0;
+		else if(strSheng == L"北京" || strSheng == L"贵州省" || strSheng == L"河北省" || strSheng == L"湖北省" || strSheng == L"江苏省" || strSheng == L"陕西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"云南省" || strSheng == L"浙江省")
+			nIndex = 1;
+		else if(strSheng == L"安徽省" || strSheng == L"福建省" || strSheng == L"甘肃省" || strSheng == L"广东省" || strSheng == L"广西壮族自治区" || strSheng == L"海南省" || strSheng == L"河南省" || strSheng == L"湖南省" || strSheng == L"江西省" || strSheng == L"宁夏回族自治区" || strSheng == L"青海省" || strSheng == L"山东省" || strSheng == L"山西省")
+			nIndex = 2;
+		else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区" || strSheng == L"西藏自治区")
+			nIndex = 3;
+		else
+		{
+			wchar_t szBuffer[128] = { 0 };
+			wsprintfW(szBuffer, L"顺丰 未知省份 %s", strSheng.c_str());
+			THROW_ERROR(szBuffer);
+		}
 	}
-
+	else
+	{
+		if(strSheng == L"四川省" || strSheng == L"重庆" ||
+			strSheng == L"北京" || strSheng == L"贵州省" || strSheng == L"河北省" || strSheng == L"湖北省" || strSheng == L"江苏省" || strSheng == L"陕西省" || strSheng == L"上海" || strSheng == L"天津" || strSheng == L"云南省" || strSheng == L"浙江省" ||
+			strSheng == L"安徽省" || strSheng == L"福建省" || strSheng == L"甘肃省" || strSheng == L"广东省" || strSheng == L"广西壮族自治区" || strSheng == L"海南省" || strSheng == L"河南省" || strSheng == L"湖南省" || strSheng == L"江西省" || strSheng == L"宁夏回族自治区" || strSheng == L"青海省" || strSheng == L"山东省" || strSheng == L"山西省")
+			nIndex = 0;
+		else if(strSheng == L"黑龙江省" || strSheng == L"吉林省" || strSheng == L"辽宁省" || strSheng == L"内蒙古自治区" || strSheng == L"新疆维吾尔自治区" || strSheng == L"西藏自治区")
+			nIndex = 1;
+		else
+		{
+			wchar_t szBuffer[128] = { 0 };
+			wsprintfW(szBuffer, L"顺丰 未知省份 %s", strSheng.c_str());
+			THROW_ERROR(szBuffer);
+		}
+	}
 	std::list<sExpressPriceInfo>::iterator itB = vecPrice[nIndex].begin();
 	std::list<sExpressPriceInfo>::iterator itE = vecPrice[nIndex].end();
 	while(itB != itE)
@@ -6310,11 +6314,13 @@ bool CStorageBillDlg::Handle_QiYiJiangYuan()
 						else if(itB->strBaoZhuang == L"5#3层纸箱(5#3层纸箱)")
 							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 1.42 + DOUBLE_PRECISION, 1).c_str());
 						else
+							sheet->Cell(itB->nRow, eET_HaoCaiFei)->SetWString(CFuncCommon::Double2WString(0.1 + nZSL*0.6 + 2.05 + DOUBLE_PRECISION, 1).c_str());
+						/*else
 						{
 							wchar_t szOut[120] = { 0 };
 							_swprintf(szOut, L"[未知包装物] 货主=%s 单号=%s 物流公司=%s", itB->strHuoZhu.c_str(), itB->strWuLiuDanHao.c_str(), itB->strWuLiuGongSi.c_str());
 							AddLog(szOut);
-						}
+						}*/
 					}
 				}
 				++itB;
@@ -6502,7 +6508,89 @@ bool CStorageBillDlg::Handle_ZhiShanDianShang(wchar_t* szHuoZhu)
 				double dZengZhi = 0;
 				//计算物流费
 				{
-					if(IsBaiShiKuaiDi(itB->strWuLiuGongSi))
+					if(IsShunFengKuaiDi(itB->strWuLiuGongSi) || itB->strWuLiuGongSi==L"顺丰空运(线下)")
+					{
+						double money = GetSFPrice(nWeight, itB->strSheng, g_zhiShanSFPrice, itB->strWuLiuDanHao);
+						double sourceBJ = 0.0;
+						std::map<std::wstring, sSFAuthData>::iterator itSF = m_mapSFAuthData.find(itB->strWuLiuDanHao);
+						if(itSF != m_mapSFAuthData.end())
+							sourceBJ = _wtof(itSF->second.bjPay.c_str());
+						if(itB->nBaoJiaJinE != 0)
+						{
+							dZengZhi += (itB->nBaoJiaJinE*0.003);
+							if(dZengZhi < 1)
+								dZengZhi = 0.0;
+							else
+							{
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"保价";
+								else
+									strBeiZhu = strBeiZhu + L" | 保价";
+							}
+						}
+						else if(sourceBJ > DOUBLE_PRECISION)
+						{
+							dZengZhi += sourceBJ;
+							if(strBeiZhu == L"")
+								strBeiZhu = strBeiZhu + L"保价";
+							else
+								strBeiZhu = strBeiZhu + L" | 保价";
+						}
+						if(sourceBJ > DOUBLE_PRECISION && sourceBJ > dZengZhi)
+							dZengZhi = sourceBJ;
+						if(itSF != m_mapSFAuthData.end())
+						{
+							if(itSF->second.type != L"特惠专配" && itSF->second.type != L"电商标快")
+							{
+								std::set<std::wstring>::iterator itType = m_setSFOtherType.find(itSF->second.type);
+								if(itType != m_setSFOtherType.end())
+								{
+									wchar_t szOut[120] = { 0 };
+									_swprintf(szOut, L"顺丰出现异常产品类型[%s]", itSF->second.type.c_str());
+									AddLog(szOut);
+									m_setSFOtherType.insert(itSF->second.type);
+								}
+								double _needPay = _wtof(itSF->second.needPay.c_str());
+								double _backPay = 0.0;
+								double _bjPay = 0.0;
+								if(itSF->second.backPay != L"")
+									_backPay = _wtof(itSF->second.backPay.c_str());
+								if(itSF->second.bjPay != L"")
+									_bjPay = _wtof(itSF->second.bjPay.c_str());
+								money = _needPay - _backPay - _bjPay + 3;
+							}
+							if(itSF->second.backPay != L"")
+							{
+								double backPay = _wtof(itSF->second.backPay.c_str());
+								money += backPay;
+
+								if(strBeiZhu == L"")
+									strBeiZhu = strBeiZhu + L"转寄退回";
+								else
+									strBeiZhu = strBeiZhu + L" | 转寄退回";
+							}
+							double needPay = _wtof(itSF->second.needPay.c_str());
+							if(needPay > money + dZengZhi)
+							{
+								std::set<std::wstring>::iterator it = m_setSFZhongLiangYiChang.find(itB->strWuLiuDanHao.c_str());
+								if(it == m_setSFZhongLiangYiChang.end())
+								{
+									if(!m_bSFErrorPrice)
+									{
+										AddLog(L"顺丰费用有异常");
+										m_bSFErrorPrice = true;
+									}
+									BasicExcelWorksheet* recordSheet = m_recordExcel.GetWorksheet(g_arrWorksheetName[2]);
+									recordSheet->Cell(g_arrRecordRowIndex[2], 0)->SetWString(itB->strWuLiuDanHao.c_str());
+									recordSheet->Cell(g_arrRecordRowIndex[2], 1)->SetWString(itB->strHuoZhu.c_str());
+									g_arrRecordRowIndex[2]++;
+								}
+							}
+						}
+						std::wstring strmoney = CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1);
+						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetDouble(_wtof(strmoney.c_str()));
+					}
+					else if(IsBaiShiKuaiDi(itB->strWuLiuGongSi))
 					{
 						double money = GetKDPrice(nWeight, itB->strSheng, itB->strShi, g_zhiShanBSKDPrice, L"百世快递", itB->strWuLiuDanHao);
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money + DOUBLE_PRECISION, 1).c_str());

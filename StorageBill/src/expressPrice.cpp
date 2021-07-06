@@ -36,6 +36,8 @@ std::vector< std::list<sExpressPriceInfo> > g_yiMaiKeJiSFPrice;
 std::vector< std::list<sExpressPriceInfo> > g_quLvShouNaSFPrice;
 //硕果流香
 std::vector< std::list<sExpressPriceInfo> > g_shuoGuoLiuXiangSFPrice;
+//至善电商
+std::vector< std::list<sExpressPriceInfo> > g_zhiShanSFPrice;
 //----------------------------------------------------------------------------------//
 
 
@@ -1568,6 +1570,30 @@ void PrepareExpressPrice()
 		g_quLvShouNaSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
 		g_quLvShouNaSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
 		g_quLvShouNaSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+	}
+	//至善电商顺丰
+	{
+		g_zhiShanSFPrice.resize(4);
+		g_zhiShanSFPrice[0].push_back({ 0, 1, 1, 10, 0 });
+		g_zhiShanSFPrice[0].push_back({ 1, 2, 2, 12.5, 0 });
+		g_zhiShanSFPrice[0].push_back({ 2, 3, 3, 15, 0 });
+		g_zhiShanSFPrice[0].push_back({ 3, 0, 1, 9, 4.2 });
+
+		g_zhiShanSFPrice[1].push_back({ 0, 1, 1, 11, 0 });
+		g_zhiShanSFPrice[1].push_back({ 1, 2, 2, 14, 0 });
+		g_zhiShanSFPrice[1].push_back({ 2, 3, 3, 16, 0 });
+		g_zhiShanSFPrice[1].push_back({ 3, 0, 1, 10, 4.5 });
+
+		g_zhiShanSFPrice[2].push_back({ 0, 1, 1, 11, 0 });
+		g_zhiShanSFPrice[2].push_back({ 1, 2, 2, 15, 0 });
+		g_zhiShanSFPrice[2].push_back({ 2, 3, 3, 18.5, 0 });
+		g_zhiShanSFPrice[2].push_back({ 3, 0, 1, 10, 5.5 });
+
+		g_zhiShanSFPrice[3].push_back({ 0, 1, 1, 14, 0 });
+		g_zhiShanSFPrice[3].push_back({ 1, 2, 2, 21.5, 0 });
+		g_zhiShanSFPrice[3].push_back({ 2, 3, 3, 30, 0 });
+		g_zhiShanSFPrice[3].push_back({ 3, 0, 1, 13, 9.5 });
+		
 	}
 	//硕果流香顺丰
 	{
