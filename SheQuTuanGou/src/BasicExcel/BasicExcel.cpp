@@ -4237,7 +4237,7 @@ size_t Worksheet::CellTable::RowBlock::Read(const char* data)
 	LittleEndian::Read(data, code, 0, 2);
 	Row row;
 	CellBlock cellBlock;
-	cellBlocks_.reserve(1000);
+	cellBlocks_.reserve(10000);
 	while (code != CODE::DBCELL)
 	{
 		switch (code)
@@ -4256,7 +4256,7 @@ size_t Worksheet::CellTable::RowBlock::Read(const char* data)
 			case CODE::RK:
 			case CODE::FORMULA:
 				cellBlocks_.push_back(cellBlock);
-				if (cellBlocks_.size()%1000==0) cellBlocks_.reserve(cellBlocks_.size()+1000);
+				if (cellBlocks_.size()%10000==0) cellBlocks_.reserve(cellBlocks_.size()+10000);
 				bytesRead += cellBlocks_[cellBlocks_.size()-1].Read(data+bytesRead);
 				break;
 
@@ -4310,7 +4310,7 @@ size_t Worksheet::CellTable::Read(const char* data)
 	short code;
 	LittleEndian::Read(data, code, 0, 2);
 	RowBlock rowBlock;
-	rowBlocks_.reserve(1000);
+	rowBlocks_.reserve(10000);
 	while (code == CODE::ROW)
 	{
 		rowBlocks_.push_back(rowBlock);
