@@ -1133,8 +1133,12 @@ bool CSheQuTuanGouDlg::_____MakeTuiHuoFei(BasicExcel& excel)
 						wsprintfW(_szGoodsInfo, L"%s%d%s", _szGoodsInfo, _itB->ru_ku_shu_liang, _itB->dan_wei.c_str());
 						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
 						if(itGood != m_mapGoodsBaseInfo.end())
-						{
 							bs += _itB->ru_ku_shu_liang / (double)itGood->second.ban_shu_biao_zhun;
+						else
+						{
+							wchar_t _szBuffer[128] = { 0 };
+							wsprintfW(_szBuffer, L"------------------未找到产品基础数据=%s", _itB->chan_pin_ming.c_str());
+							THROW_ERROR(_szBuffer);
 						}
 						zl += _itB->zhong_liang;
 						tj += _itB->ti_ji;
@@ -1293,8 +1297,12 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 						wsprintfW(_szGoodsInfo, L"%s%d%s", _szGoodsInfo, _itB->chu_ku_shu_liang, _itB->dan_wei.c_str());
 						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
 						if(itGood != m_mapGoodsBaseInfo.end())
-						{
 							bs += _itB->chu_ku_shu_liang/(double)itGood->second.ban_shu_biao_zhun;
+						else
+						{
+							wchar_t _szBuffer[128] = { 0 };
+							wsprintfW(_szBuffer, L"------------------未找到产品基础数据=%s", _itB->chan_pin_ming.c_str());
+							THROW_ERROR(_szBuffer);
 						}
 						zl += _itB->zhong_liang;
 						tj += _itB->ti_ji;
@@ -1435,6 +1443,12 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 									{
 										nJS += __itB->chu_ku_shu_liang / __it->second.xiang_gui;
 									}
+								}
+								else
+								{
+									wchar_t _szBuffer[128] = { 0 };
+									wsprintfW(_szBuffer, L"------------------未找到产品基础数据=%s", _itB->chan_pin_ming.c_str());
+									THROW_ERROR(_szBuffer);
 								}
 								++__itB;
 							}
