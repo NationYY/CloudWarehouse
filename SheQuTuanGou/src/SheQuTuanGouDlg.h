@@ -77,4 +77,5 @@ public:
 	map<wstring, int> m_mapAfterRuKu;
 	map<wstring, int> m_mapAfterChuKu;
 	afx_msg void OnBnClickedButtonMakeAllZD();
+	std::set<std::wstring> m_setNoBeiZhu;
 };

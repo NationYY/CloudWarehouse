@@ -355,6 +355,7 @@ bool CSheQuTuanGouDlg::MakeZD(std::wstring strKeHuName)
 	m_vecChuKuInfo.clear();
 	m_vecChuKuInfo.resize(31);
 	m_listZengZhi.clear();
+	m_setNoBeiZhu.clear();
 	//先读取基本信息
 	LoadKuCun(dataExcel);
 	//读取入库信息
@@ -370,6 +371,14 @@ bool CSheQuTuanGouDlg::MakeZD(std::wstring strKeHuName)
 		return true;
 	}
 	MakeData(strKeHuName);
+	AddLog(L"未处理备注如下:");
+	std::set<std::wstring>::iterator itBZB = m_setNoBeiZhu.begin();
+	std::set<std::wstring>::iterator itBZE = m_setNoBeiZhu.end();
+	while(itBZB != itBZE)
+	{
+		AddLog(*itBZB);
+		++itBZB;
+	}
 	info = strKeHuName + L"账单生成完成";
 	AddLog(info);
 	return true;
@@ -956,8 +965,8 @@ bool CSheQuTuanGouDlg::_____MakeCangChuFei(BasicExcel& excel)
 		{
 			_itB->second.ku_cun += it->second;
 		}
-		if(_itB->second.ku_cun < 0)
-			_itB->second.ku_cun = 0;
+		//if(_itB->second.ku_cun < 0)
+		//	_itB->second.ku_cun = 0;
 		++_itB;
 	}
 	time_t tNow = time(NULL);
@@ -1312,7 +1321,7 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 					if(itB->bei_zhu != L"")
 					{
 						vec_wvals beizhus;
-						CFuncCommon::parse_pairs(itB->bei_zhu, beizhus);
+						CFuncCommon::parse_pairs(itB->bei_zhu, beizhus, L";");
 						for(int i=0; i<(int)beizhus.size(); ++i)
 						{
 							if(beizhus[i] == L"补货" || beizhus[i] == L"夜间补货")
@@ -1325,6 +1334,25 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 								double _bs = _wtof(szBS.c_str());
 								bs = max(_bs, bs);
 							}
+							else
+								m_setNoBeiZhu.insert(beizhus[i]);
+						}
+						beizhus.clear();
+						CFuncCommon::parse_pairs(itB->bei_zhu, beizhus, L"；");
+						for(int i = 0; i < (int)beizhus.size(); ++i)
+						{
+							if(beizhus[i] == L"补货" || beizhus[i] == L"夜间补货")
+							{
+								bh = true;
+							}
+							else if(beizhus[i].find(L"板") != wstring::npos)
+							{
+								wstring szBS = beizhus[i].substr(0, beizhus[i].find(L"板"));
+								double _bs = _wtof(szBS.c_str());
+								bs = max(_bs, bs);
+							}
+							else
+								m_setNoBeiZhu.insert(beizhus[i]);
 						}
 					}
 					if(itB->lei_xing == L"多多送货")
@@ -1546,8 +1574,20 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 				SHEET_CELL_INT(_sheet, r, nIndex[_1], _data.xiang_gui);
 				SHEET_CELL_STRING(_sheet, r, nIndex[_2], _data.zui_xiao_dan_wei);
 				SHEET_CELL_INT(_sheet, r, nIndex[_3], _data.ku_cun);
-				if(_data.ku_cun < 0)
-					_data.ku_cun = 0;
+				//if(_data.ku_cun < 0)
+				//	_data.ku_cun = 0;
+				int kucun_jianshu;
+				SHEET_CELL_INT(_sheet, r, nIndex[_4], kucun_jianshu);
+				int kucun_zuixiaodanwei;
+				SHEET_CELL_INT(_sheet, r, nIndex[_5], kucun_zuixiaodanwei);
+				if(_data.ku_cun >= 0 && (kucun_jianshu < 0 || kucun_zuixiaodanwei < 0))
+				{
+					wchar_t szBuffer[128] = { 0 };
+					wsprintf(szBuffer, L"------------------[第%d行公式有问题!]", r+1);
+					AddLog(szBuffer);
+				}
+
+
 				SHEET_CELL_DOUBLE(_sheet, r, nIndex[_6], _data.dan_jian_zhong_liang);
 				SHEET_CELL_DOUBLE(_sheet, r, nIndex[_7], _data.dan_jian_ti_ji);
 				SHEET_CELL_INT(_sheet, r, nIndex[_10], _data.ban_shu_biao_zhun);
@@ -1605,6 +1645,8 @@ bool CSheQuTuanGouDlg::LoadRuKu(BasicExcel& dataExcel)
 		_5,		//体积
 		_6,		//备注
 		_7,		//入库单位
+		_8,		//整件
+		_9,		//尾箱
 		_M,
 	};
 	BasicExcelWorksheet* _sheet = dataExcel.GetWorksheet(L"入库");
@@ -1638,6 +1680,10 @@ bool CSheQuTuanGouDlg::LoadRuKu(BasicExcel& dataExcel)
 				nIndex[_6] = c;
 			else if(strTitle == L"入库单位")
 				nIndex[_7] = c;
+			else if(strTitle == L"整件")
+				nIndex[_8] = c;
+			else if(strTitle == L"尾箱")
+				nIndex[_9] = c;
 		}
 		for(int i = 0; i < _M; ++i)
 		{
@@ -1659,6 +1705,20 @@ bool CSheQuTuanGouDlg::LoadRuKu(BasicExcel& dataExcel)
 			SHEET_CELL_DOUBLE(_sheet, r, nIndex[_5], detailInfo.ti_ji);
 			SHEET_CELL_STRING(_sheet, r, nIndex[_6], detailInfo.bei_zhu);
 			SHEET_CELL_STRING(_sheet, r, nIndex[_7], detailInfo.dan_wei);
+
+			int zheng_jian;
+			int wei_xiang;
+
+			SHEET_CELL_INT(_sheet, r, nIndex[_8], zheng_jian);
+			SHEET_CELL_INT(_sheet, r, nIndex[_9], wei_xiang);
+			if((zheng_jian > 0 || wei_xiang > 0) && (detailInfo.ru_ku_shu_liang < 0 || detailInfo.zhong_liang < 0 || detailInfo.ti_ji < 0 || detailInfo.dan_wei == L""))
+			{
+				wchar_t szBuffer[128] = { 0 };
+				wsprintf(szBuffer, L"------------------[第%d行公式有问题!]", r + 1);
+				AddLog(szBuffer);
+			}
+
+
 			if(ri_qi)
 			{
 				boost::gregorian::date _date(1900, boost::gregorian::Jan,1);
@@ -1758,6 +1818,7 @@ bool CSheQuTuanGouDlg::LoadChuKu(BasicExcel& dataExcel)
 		_6,		//贴标数
 		_7,		//备注
 		_8,		//出库单位
+		_9,		//出库件数
 		_M,
 	};
 	BasicExcelWorksheet* _sheet = dataExcel.GetWorksheet(L"出库");
@@ -1794,6 +1855,8 @@ bool CSheQuTuanGouDlg::LoadChuKu(BasicExcel& dataExcel)
 				nIndex[_7] = c;
 			else if(strTitle == L"出库单位")
 				nIndex[_8] = c;
+			else if(strTitle == L"出库件数")
+				nIndex[_9] = c;
 		}
 		for(int i = 0; i < _M; ++i)
 		{
@@ -1837,6 +1900,15 @@ bool CSheQuTuanGouDlg::LoadChuKu(BasicExcel& dataExcel)
 			SHEET_CELL_INT(_sheet, r, nIndex[_6], detailInfo.tie_biao);
 			SHEET_CELL_STRING(_sheet, r, nIndex[_7], detailInfo.bei_zhu);
 			SHEET_CELL_STRING(_sheet, r, nIndex[_8], detailInfo.dan_wei);
+
+			int chuku_jianshu;
+			SHEET_CELL_INT(_sheet, r, nIndex[_9], chuku_jianshu);
+			if(detailInfo.chu_ku_shu_liang > 0 && (chuku_jianshu < 0 || detailInfo.dan_wei == L"" || detailInfo.zhong_liang < 0 || detailInfo.ti_ji < 0))
+			{
+				wchar_t szBuffer[128] = { 0 };
+				wsprintf(szBuffer, L"------------------[第%d行公式有问题!]", r + 1);
+				AddLog(szBuffer);
+			}
 			if(bAfter && detailInfo.chan_pin_ming != L"")
 			{
 				map<wstring, int>::iterator itF = m_mapAfterChuKu.find(detailInfo.chan_pin_ming);

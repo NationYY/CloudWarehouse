@@ -5756,7 +5756,7 @@ int BasicExcelCell::GetInteger() const
 {
 	int val;
 	if (Get(val)) return val;
-	else return 0;
+	else return -1;
 }
 
 // Get a double value.
