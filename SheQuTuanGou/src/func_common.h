@@ -29,7 +29,7 @@ public:
 	static bool ParseKeyWStringInt(std::wstring src, map_key_wstring_val_int &out, const wchar_t* splitChar = L";", const wchar_t* assignChar = L"@");
 
 	static void GetFiles(string path, vector<string>& files);
-
+	static void Replace(std::wstring& strContent, std::wstring strReplace, std::wstring strDest);
 
 public:
 	static bool parse_pairs(std::wstring src, vec_wvals &out, const wchar_t * de = L";");

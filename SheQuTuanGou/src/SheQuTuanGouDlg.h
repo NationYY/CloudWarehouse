@@ -64,6 +64,8 @@ public:
 	int m_nRuKuDataCnt;
 	int m_nChuKuDataCnt;
 	int m_nKunCunCnt;
+	double m_dMeiTuanZL;
+	int m_nMeiTuanMaxDay;
 	map<wstring, sGoodsBaseInfo> m_mapGoodsBaseInfo;
 	vector< list<sRuKuBaseInfo> > m_vecRuKuInfo;
 	vector< list<sChuKuBaseInfo> > m_vecChuKuInfo;
@@ -78,4 +80,5 @@ public:
 	map<wstring, int> m_mapAfterChuKu;
 	afx_msg void OnBnClickedButtonMakeAllZD();
 	std::set<std::wstring> m_setNoBeiZhu;
+	std::set<std::wstring> m_noDataChanPinMing;
 };

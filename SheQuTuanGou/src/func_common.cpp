@@ -581,3 +581,22 @@ void CFuncCommon::GetFiles(string path, vector<string>& files)
 		_findclose(hFile);
 	}
 }
+
+void CFuncCommon::Replace(std::wstring& strContent, std::wstring strReplace, std::wstring strDest)
+{
+
+	while(true)
+	{
+		size_t pos = strContent.find(strReplace);
+		if(pos != std::wstring::npos)
+		{
+			WCHAR pBuf[1] = { L'\0' };
+			strContent.replace(pos, strReplace.length(), pBuf, 0);
+			strContent.insert(pos, strDest);
+		}
+		else
+		{
+			break;
+		}
+	}
+}

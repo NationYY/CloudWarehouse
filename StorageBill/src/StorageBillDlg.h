@@ -92,7 +92,7 @@ private:
 		return false;
 	}
 	bool IsYunDaKuaiDi(std::wstring strWuLiu){
-		if(strWuLiu == L"韵达快递(菜鸟)" || strWuLiu == L"韵达快递(拼多多)" || strWuLiu == L"韵达快递(京东)")
+		if(strWuLiu == L"韵达快递(菜鸟)" || strWuLiu == L"韵达快递(拼多多)" || strWuLiu == L"韵达快递(京东)" || strWuLiu == L"韵达快递(京东)(老网点)(停用)")
 			return true;
 		return false;
 	}

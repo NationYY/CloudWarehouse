@@ -263,6 +263,8 @@ void CSheQuTuanGouDlg::_LogicThread()
 			m_dTuiHuoFeiHeJi = 0;
 			m_dCangChuFeiHeJi = 0;
 			m_dZengZhiFeiHeJi = 0;
+			m_dMeiTuanZL = 0.0;
+			m_nMeiTuanMaxDay = 0;
 			list<wstring>::iterator it = m_listMakeSJNames.begin();
 			while(it != m_listMakeSJNames.end())
 			{
@@ -270,7 +272,6 @@ void CSheQuTuanGouDlg::_LogicThread()
 					goto __break_logic;
 				++it;
 			}
-			AddLog(L"账单全部生成完毕");
 			char szBuffer[128] = { 0 };
 			wstring _szInfo;
 			sprintf(szBuffer, "装卸费合计 %.1f", m_dZhuangXieFeiHeJi);
@@ -288,6 +289,18 @@ void CSheQuTuanGouDlg::_LogicThread()
 			sprintf(szBuffer, "增值费合计 %.1f", m_dZengZhiFeiHeJi);
 			_szInfo = CFuncCommon::String2WString(szBuffer);
 			AddLog(_szInfo);
+			sprintf(szBuffer, "美团截止%d日  日均送货%.1f公斤", m_nMeiTuanMaxDay, m_dMeiTuanZL/m_nMeiTuanMaxDay);
+			_szInfo = CFuncCommon::String2WString(szBuffer);
+			AddLog(_szInfo);
+			AddLog(L"未处理备注如下:");
+			std::set<std::wstring>::iterator itBZB = m_setNoBeiZhu.begin();
+			std::set<std::wstring>::iterator itBZE = m_setNoBeiZhu.end();
+			while(itBZB != itBZE)
+			{
+				AddLog(*itBZB);
+				++itBZB;
+			}
+			AddLog(L"账单全部生成完毕");
 		}
 	__break_logic:
 		m_bRun = false;
@@ -356,6 +369,7 @@ bool CSheQuTuanGouDlg::MakeZD(std::wstring strKeHuName)
 	m_vecChuKuInfo.resize(31);
 	m_listZengZhi.clear();
 	m_setNoBeiZhu.clear();
+	m_noDataChanPinMing.clear();
 	//先读取基本信息
 	LoadKuCun(dataExcel);
 	//读取入库信息
@@ -371,13 +385,13 @@ bool CSheQuTuanGouDlg::MakeZD(std::wstring strKeHuName)
 		return true;
 	}
 	MakeData(strKeHuName);
-	AddLog(L"未处理备注如下:");
-	std::set<std::wstring>::iterator itBZB = m_setNoBeiZhu.begin();
-	std::set<std::wstring>::iterator itBZE = m_setNoBeiZhu.end();
-	while(itBZB != itBZE)
+	std::set<std::wstring>::iterator itB = m_noDataChanPinMing.begin();
+	std::set<std::wstring>::iterator itE = m_noDataChanPinMing.end();
+	while(itB != itE)
 	{
-		AddLog(*itBZB);
-		++itBZB;
+		wstring info = L"------------------[" + (*itB) + L"]" + L" 缺少重量及体积数据";
+		AddLog(info);
+		++itB;
 	}
 	info = strKeHuName + L"账单生成完成";
 	AddLog(info);
@@ -729,6 +743,21 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 						wsprintfW(_szGoodsInfo, L"%s%d%s", _szGoodsInfo, _itB->ru_ku_shu_liang, _itB->dan_wei.c_str());
 						zl += _itB->zhong_liang;
 						tj += _itB->ti_ji;
+
+						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
+						if(itGood != m_mapGoodsBaseInfo.end())
+						{
+							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+						}
+						else
+						{
+							wchar_t _szBuffer[128] = { 0 };
+							wsprintfW(_szBuffer, L"------------------未找到产品基础数据=%s", _itB->chan_pin_ming.c_str());
+							THROW_ERROR(_szBuffer);
+						}
+
+
 						++_itB;
 					}
 					_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"云仓到货");
@@ -790,6 +819,18 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 						wsprintfW(_szGoodsInfo, L"%s%d%s", _szGoodsInfo, _itB->chu_ku_shu_liang, _itB->dan_wei.c_str());
 						zl += _itB->zhong_liang;
 						tj += _itB->ti_ji;
+						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
+						if(itGood != m_mapGoodsBaseInfo.end())
+						{
+							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+						}
+						else
+						{
+							wchar_t _szBuffer[128] = { 0 };
+							wsprintfW(_szBuffer, L"------------------未找到产品基础数据=%s", _itB->chan_pin_ming.c_str());
+							THROW_ERROR(_szBuffer);
+						}
 						++_itB;
 					}
 					_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"云仓调出");
@@ -1142,7 +1183,11 @@ bool CSheQuTuanGouDlg::_____MakeTuiHuoFei(BasicExcel& excel)
 						wsprintfW(_szGoodsInfo, L"%s%d%s", _szGoodsInfo, _itB->ru_ku_shu_liang, _itB->dan_wei.c_str());
 						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
 						if(itGood != m_mapGoodsBaseInfo.end())
+						{
 							bs += _itB->ru_ku_shu_liang / (double)itGood->second.ban_shu_biao_zhun;
+							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+						}
 						else
 						{
 							wchar_t _szBuffer[128] = { 0 };
@@ -1306,7 +1351,11 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 						wsprintfW(_szGoodsInfo, L"%s%d%s", _szGoodsInfo, _itB->chu_ku_shu_liang, _itB->dan_wei.c_str());
 						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
 						if(itGood != m_mapGoodsBaseInfo.end())
+						{
 							bs += _itB->chu_ku_shu_liang/(double)itGood->second.ban_shu_biao_zhun;
+							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+						}
 						else
 						{
 							wchar_t _szBuffer[128] = { 0 };
@@ -1320,26 +1369,12 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 					}
 					if(itB->bei_zhu != L"")
 					{
+						CFuncCommon::Replace(itB->bei_zhu, L"；", L";");
+						CFuncCommon::Replace(itB->bei_zhu, L"，", L";");
+						CFuncCommon::Replace(itB->bei_zhu, L",", L";");
 						vec_wvals beizhus;
 						CFuncCommon::parse_pairs(itB->bei_zhu, beizhus, L";");
 						for(int i=0; i<(int)beizhus.size(); ++i)
-						{
-							if(beizhus[i] == L"补货" || beizhus[i] == L"夜间补货")
-							{
-								bh = true;
-							}
-							else if(beizhus[i].find(L"板") != wstring::npos)
-							{
-								wstring szBS = beizhus[i].substr(0, beizhus[i].find(L"板"));
-								double _bs = _wtof(szBS.c_str());
-								bs = max(_bs, bs);
-							}
-							else
-								m_setNoBeiZhu.insert(beizhus[i]);
-						}
-						beizhus.clear();
-						CFuncCommon::parse_pairs(itB->bei_zhu, beizhus, L"；");
-						for(int i = 0; i < (int)beizhus.size(); ++i)
 						{
 							if(beizhus[i] == L"补货" || beizhus[i] == L"夜间补货")
 							{
@@ -1358,7 +1393,12 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 					if(itB->lei_xing == L"多多送货")
 						_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"多多买菜");
 					if(itB->lei_xing == L"美团送货")
+					{
 						_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"美团优选");
+						m_dMeiTuanZL += zl;
+						if(itB->day > m_nMeiTuanMaxDay)
+							m_nMeiTuanMaxDay = itB->day;
+					}
 					if(itB->lei_xing == L"盒马送货")
 						_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"盒马优选");
 					_sheet->Cell(nRecordRowIndex, 2)->SetWString(_szGoodsInfo);
@@ -1503,6 +1543,8 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 
 bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 {
+	const wchar_t* _pStr = NULL;
+
 	enum eT
 	{
 		_0 = 0,	//产品名
@@ -1530,8 +1572,8 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 		size_t maxCols = _sheet->GetTotalCols();
 		for(size_t c = 0; c < maxCols; ++c)
 		{
-			BasicExcelCell* cell = _sheet->Cell(0, c);
-			std::wstring strTitle = cell->GetWString();
+			wstring strTitle;
+			SHEET_CELL_STRING(_sheet, 0, c, strTitle);
 
 
 			if(strTitle == L"产品名")
@@ -1567,7 +1609,6 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 		for(size_t r = 1; r < maxRows; ++r)
 		{
 			sGoodsBaseInfo _data;
-			const wchar_t* _pStr = NULL;
 			SHEET_CELL_STRING(_sheet, r, nIndex[_0], _data.chan_pin_ming);
 			if(_data.chan_pin_ming != L"")
 			{
@@ -1591,11 +1632,6 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 				SHEET_CELL_DOUBLE(_sheet, r, nIndex[_6], _data.dan_jian_zhong_liang);
 				SHEET_CELL_DOUBLE(_sheet, r, nIndex[_7], _data.dan_jian_ti_ji);
 				SHEET_CELL_INT(_sheet, r, nIndex[_10], _data.ban_shu_biao_zhun);
-				if(_data.dan_jian_zhong_liang < DOUBLE_PRECISION && _data.dan_jian_ti_ji < DOUBLE_PRECISION)
-				{
-					wstring info = L"------------------[" + _data.chan_pin_ming + L"]" + L" 缺少重量及体积数据";
-					AddLog(info);
-				}
 				if(_data.ku_cun > 0)
 					m_nKunCunCnt += _data.ku_cun;
 				if(_data.ban_shu_biao_zhun == 0)
