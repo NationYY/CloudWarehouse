@@ -1056,35 +1056,37 @@ bool CStorageBillDlg::LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFai
 		int nDianPu = -1;
 		int nBaoZhuang = -1;
 		int nKeFuBeiZhu = -1;
+		int nBaoGuoShu = -1;
 		for(size_t c = 0; c < maxCols; ++c)
 		{
 			BasicExcelCell* cell = totalSheet->Cell(0, c);
 			std::wstring strTitle = cell->GetWString();
 			if(strTitle == L"货主")
 				nHuoZhu = c;
-			else if(strTitle == L"收件人")
-				nShouJianRen = c;
-			else if(strTitle == L"物流公司")
-				nWuLiuGongSi = c;
-			else if(strTitle == L"物流单号")
-				nWuLiuDanHao = c;
-			else if(strTitle == L"收件人地址")
-				nShouJianRenDiZhi = c;
-			else if(strTitle == L"实际重量")
-				nZhongLiang = c;
-			else if(strTitle == L"发货时间")
-				nFaHuoShijian = c;
 			else if(strTitle == L"原始单号")
 				nYuanShiDanHao = c;
 			else if(strTitle == L"店铺")
 				nDianPu = c;
-			else if(strTitle == L"包装")
-				nBaoZhuang = c;
+			else if(strTitle == L"物流单号")
+				nWuLiuDanHao = c;
+			else if(strTitle == L"物流公司")
+				nWuLiuGongSi = c;
+			else if(strTitle == L"收件人")
+				nShouJianRen = c;
+			else if(strTitle == L"收件人地址")
+				nShouJianRenDiZhi = c;
+			else if(strTitle == L"包裹数")
+				nBaoGuoShu = c;
+			else if(strTitle == L"实际重量")
+				nZhongLiang = c;
 			else if(strTitle == L"客服备注")
 				nKeFuBeiZhu = c;
-
+			else if(strTitle == L"发货时间")
+				nFaHuoShijian = c;
+			else if(strTitle == L"包装")
+				nBaoZhuang = c;
 		}
-		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1 || nYuanShiDanHao == -1 || nDianPu == -1 || nKeFuBeiZhu == -1)
+		if(nHuoZhu == -1 || nShouJianRen == -1 || nWuLiuGongSi == -1 || nWuLiuDanHao == -1 || nShouJianRenDiZhi == -1 || nZhongLiang == -1 || nFaHuoShijian == -1 || nYuanShiDanHao == -1 || nDianPu == -1 || nKeFuBeiZhu == -1 || nBaoGuoShu == -1)
 		{
 			wchar_t szBuffer[128] ={0};
 			wsprintfW(szBuffer, L"%s 有标题未找到", wfileName.c_str());
@@ -1107,6 +1109,7 @@ bool CStorageBillDlg::LoadXiaoShouChuKuDan(std::wstring wfileName, bool checkFai
 			SHEET_CELL_STRING(totalSheet, r, nDianPu, _data.strDianPu);
 			SHEET_CELL_STRING(totalSheet, r, nBaoZhuang, _data.strBaoZhuang);
 			SHEET_CELL_STRING(totalSheet, r, nKeFuBeiZhu, _data.strKeFuBeiZhu);
+			SHEET_CELL_INT(totalSheet, r, nBaoGuoShu, _data.nBaoGuoShu);
 			if(_data.strYuanShiDanHao != L"")
 				_data.bChaiFen = false;
 			const wchar_t* szZL = totalSheet->Cell(r, nZhongLiang)->GetWString();
@@ -3229,7 +3232,6 @@ bool CStorageBillDlg::Handle_YongChuangYaoHui()
 								}
 							}
 						}
-						
 						sheet->Cell(itB->nRow, eET_WuLiuFei)->SetWString(CFuncCommon::Double2WString(money+DOUBLE_PRECISION, 1).c_str());
 
 

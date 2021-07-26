@@ -128,6 +128,7 @@ struct sSalesInfo
 	std::wstring strDianPu;				//店铺
 	std::wstring strBaoZhuang;			//包装
 	std::wstring strKeFuBeiZhu;			//包装
+	int nBaoGuoShu;						//包裹数
 	int nRow;							//在输出表中的行数
 	int nBaoJiaJinE;					//保价金额
 	bool bChaiFen;						//是否是拆分订单
@@ -138,7 +139,7 @@ struct sSalesInfo
 	sSalesInfo(): strHuoZhu(L""), strShouJianRen(L""), strWuLiuGongSi(L""), strWuLiuDanHao(L""), strSheng(L""), strShouJianRenDiZhi(L""),
 		strZhongLiang(L""), strFaHuoShijian(L""), strHuoPinZongShuLiang(L""), strHuoPinMingXi(L""), nRow(0), strYuanShiDanHao(L""), 
 		strDianPu(L""),nBaoJiaJinE(0), bChaiFen(true), strBaoZhuang(L""), strKeFuBeiZhu(L""), bXiuGaiZhongLiang(L""), bKunLunShan(false), strShi(L""),
-		wuLiuFeiYong(0), zengZhiFeiYong(0)
+		wuLiuFeiYong(0), zengZhiFeiYong(0), nBaoGuoShu(0)
 	{
 	}
 };
