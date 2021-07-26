@@ -66,6 +66,7 @@ public:
 	int m_nKunCunCnt;
 	double m_dMeiTuanZL;
 	int m_nMeiTuanMaxDay;
+	wstring m_strCurKeHu;
 	map<wstring, sGoodsBaseInfo> m_mapGoodsBaseInfo;
 	vector< list<sRuKuBaseInfo> > m_vecRuKuInfo;
 	vector< list<sChuKuBaseInfo> > m_vecChuKuInfo;

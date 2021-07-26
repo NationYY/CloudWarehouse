@@ -345,6 +345,7 @@ void CSheQuTuanGouDlg::OnBnClickedButtonMakeSelZD()
 
 bool CSheQuTuanGouDlg::MakeZD(std::wstring strKeHuName)
 {
+	m_strCurKeHu = strKeHuName;
 	wstring info = L"读取" + strKeHuName;
 	AddLog(info);
 	boost::this_thread::sleep(boost::posix_time::millisec(200));
@@ -389,7 +390,7 @@ bool CSheQuTuanGouDlg::MakeZD(std::wstring strKeHuName)
 	std::set<std::wstring>::iterator itE = m_noDataChanPinMing.end();
 	while(itB != itE)
 	{
-		wstring info = L"------------------[" + (*itB) + L"]" + L" 缺少重量及体积数据";
+		wstring info = L"------------------[" + (*itB) + L"]" + L"------缺少重量及体积数据";
 		AddLog(info);
 		++itB;
 	}
@@ -747,8 +748,8 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
 						if(itGood != m_mapGoodsBaseInfo.end())
 						{
-							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
-								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+							if(itGood->second.ban_shu_biao_zhun <= 0)
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming+L"(一箱" + CFuncCommon::String2WString(CFuncCommon::ToString(itGood->second.xiang_gui)) + itGood->second.zui_xiao_dan_wei + L")");
 						}
 						else
 						{
@@ -823,7 +824,7 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 						if(itGood != m_mapGoodsBaseInfo.end())
 						{
 							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
-								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming+L"(一箱" + CFuncCommon::String2WString(CFuncCommon::ToString(itGood->second.xiang_gui)) + itGood->second.zui_xiao_dan_wei + L")");
 						}
 						else
 						{
@@ -1006,8 +1007,12 @@ bool CSheQuTuanGouDlg::_____MakeCangChuFei(BasicExcel& excel)
 		{
 			_itB->second.ku_cun += it->second;
 		}
-		//if(_itB->second.ku_cun < 0)
-		//	_itB->second.ku_cun = 0;
+		if(m_strCurKeHu != L"G060船夫食品")
+		{
+			if(_itB->second.ku_cun < 0)
+				_itB->second.ku_cun = 0;
+		}
+		
 		++_itB;
 	}
 	time_t tNow = time(NULL);
@@ -1087,7 +1092,7 @@ bool CSheQuTuanGouDlg::_____MakeCangChuFei(BasicExcel& excel)
 			{
 				if(itB->second.ku_cun > 0)
 				{
-					if(itB->second.ban_shu_biao_zhun)
+					if(itB->second.ban_shu_biao_zhun > 0)
 					{
 						double _bs = itB->second.ku_cun / (double)itB->second.ban_shu_biao_zhun;
 						if(_bs > 1)
@@ -1104,7 +1109,21 @@ bool CSheQuTuanGouDlg::_____MakeCangChuFei(BasicExcel& excel)
 							bs += 0.5;
 					}
 					else
+					{
 						bs += 1;
+						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(itB->second.chan_pin_ming);
+						if(itGood != m_mapGoodsBaseInfo.end())
+						{
+							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
+								m_noDataChanPinMing.insert(itB->second.chan_pin_ming + L"(一箱" + CFuncCommon::String2WString(CFuncCommon::ToString(itGood->second.xiang_gui)) + itGood->second.zui_xiao_dan_wei + L")");
+						}
+						else
+						{
+							wchar_t _szBuffer[128] = { 0 };
+							wsprintfW(_szBuffer, L"------------------未找到产品基础数据=%s", itB->second.chan_pin_ming.c_str());
+							THROW_ERROR(_szBuffer);
+						}
+					}
 				}
 				++itB;
 			}
@@ -1184,9 +1203,12 @@ bool CSheQuTuanGouDlg::_____MakeTuiHuoFei(BasicExcel& excel)
 						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
 						if(itGood != m_mapGoodsBaseInfo.end())
 						{
-							bs += _itB->ru_ku_shu_liang / (double)itGood->second.ban_shu_biao_zhun;
+							if(itGood->second.ban_shu_biao_zhun > 0)
+								bs += _itB->ru_ku_shu_liang / (double)itGood->second.ban_shu_biao_zhun;
+							else
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming+L"(一箱" + CFuncCommon::String2WString(CFuncCommon::ToString(itGood->second.xiang_gui)) + itGood->second.zui_xiao_dan_wei + L")");
 							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
-								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming+L"(一箱" + CFuncCommon::String2WString(CFuncCommon::ToString(itGood->second.xiang_gui)) + itGood->second.zui_xiao_dan_wei + L")");
 						}
 						else
 						{
@@ -1352,9 +1374,12 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 						map<wstring, sGoodsBaseInfo>::iterator itGood = m_mapGoodsBaseInfo.find(_itB->chan_pin_ming);
 						if(itGood != m_mapGoodsBaseInfo.end())
 						{
-							bs += _itB->chu_ku_shu_liang/(double)itGood->second.ban_shu_biao_zhun;
+							if(itGood->second.ban_shu_biao_zhun > 0)
+								bs += _itB->chu_ku_shu_liang/(double)itGood->second.ban_shu_biao_zhun;
+							else
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming+L"(一箱" + CFuncCommon::String2WString(CFuncCommon::ToString(itGood->second.xiang_gui)) + itGood->second.zui_xiao_dan_wei + L")");
 							if(itGood->second.dan_jian_zhong_liang < DOUBLE_PRECISION && itGood->second.dan_jian_ti_ji < DOUBLE_PRECISION)
-								m_noDataChanPinMing.insert(_itB->chan_pin_ming);
+								m_noDataChanPinMing.insert(_itB->chan_pin_ming+L"(一箱" + CFuncCommon::String2WString(CFuncCommon::ToString(itGood->second.xiang_gui)) + itGood->second.zui_xiao_dan_wei + L")");
 						}
 						else
 						{
@@ -1437,6 +1462,8 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 								song_huo_fei = song_huo_fei*1.3;
 							song_huo_fei += tbs*tie_biao_fei;
 							m_dSongHuoFeiHeJi += song_huo_fei;
+							if(song_huo_fei < 0)
+								int a=3;
 							_sheet->Cell(nRecordRowIndex, 8)->SetDouble(song_huo_fei);
 						}
 						break;
@@ -1447,6 +1474,8 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 								song_huo_fei += mei_tuan_jia_shou;
 							song_huo_fei += tbs*tie_biao_fei;
 							m_dSongHuoFeiHeJi += song_huo_fei;
+							if(song_huo_fei < 0)
+								int a = 3;
 							_sheet->Cell(nRecordRowIndex, 8)->SetDouble(song_huo_fei);
 						}
 						break;
@@ -1458,6 +1487,8 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 							  if(bh)
 								  song_huo_fei = song_huo_fei*1.3;
 							  m_dSongHuoFeiHeJi += song_huo_fei;
+							  if(song_huo_fei < 0)
+								  int a = 3;
 							  _sheet->Cell(nRecordRowIndex, 8)->SetDouble(song_huo_fei);
 						}
 						break;
@@ -1474,6 +1505,8 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 								  song_huo_fei = song_huo_fei*1.3;
 							  song_huo_fei += tbs*tie_biao_fei;
 							  m_dSongHuoFeiHeJi += song_huo_fei;
+							  if(song_huo_fei < 0)
+								  int a = 3;
 							  _sheet->Cell(nRecordRowIndex, 8)->SetDouble(song_huo_fei);
 						}
 						break;
@@ -1489,6 +1522,8 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 								  song_huo_fei = song_huo_fei*1.3;
 							  song_huo_fei += tbs*tie_biao_fei;
 							  m_dSongHuoFeiHeJi += song_huo_fei;
+							  if(song_huo_fei < 0)
+								  int a = 3;
 							  _sheet->Cell(nRecordRowIndex, 8)->SetDouble(song_huo_fei);
 						}
 						break;
@@ -1521,6 +1556,8 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 								++__itB;
 							}
 							m_dSongHuoFeiHeJi += nJS*song_tui_tie_yi_jian;
+							if(nJS*song_tui_tie_yi_jian < 0)
+								int a = 3;
 							_sheet->Cell(nRecordRowIndex, 8)->SetDouble(nJS*song_tui_tie_yi_jian);
 							break;
 						}
@@ -1615,8 +1652,13 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 				SHEET_CELL_INT(_sheet, r, nIndex[_1], _data.xiang_gui);
 				SHEET_CELL_STRING(_sheet, r, nIndex[_2], _data.zui_xiao_dan_wei);
 				SHEET_CELL_INT(_sheet, r, nIndex[_3], _data.ku_cun);
-				//if(_data.ku_cun < 0)
-				//	_data.ku_cun = 0;
+
+				if(m_strCurKeHu != L"G060船夫食品")
+				{
+					if(_data.ku_cun < 0)
+						_data.ku_cun = 0;
+				}
+				
 				int kucun_jianshu;
 				SHEET_CELL_INT(_sheet, r, nIndex[_4], kucun_jianshu);
 				int kucun_zuixiaodanwei;
@@ -1634,6 +1676,8 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 				SHEET_CELL_INT(_sheet, r, nIndex[_10], _data.ban_shu_biao_zhun);
 				if(_data.ku_cun > 0)
 					m_nKunCunCnt += _data.ku_cun;
+				if(_data.ban_shu_biao_zhun == -1)
+					_data.ban_shu_biao_zhun = 0;
 				if(_data.ban_shu_biao_zhun == 0)
 				{
 					int nZLCnt = 0;
@@ -1656,6 +1700,12 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 				else
 					_data.bPaoHuo = true;
 				_data.ban_shu_biao_zhun = _data.ban_shu_biao_zhun*_data.xiang_gui;
+				if(_data.ban_shu_biao_zhun < 0)
+				{
+					wchar_t szBuffer[128] = { 0 };
+					wsprintf(szBuffer, L"------------------[%s板数标准为负!]", _data.chan_pin_ming.c_str());
+					AddLog(szBuffer);
+				}
 				m_mapGoodsBaseInfo[_data.chan_pin_ming] = _data;
 			}
 		}
