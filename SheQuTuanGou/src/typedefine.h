@@ -59,6 +59,10 @@ struct sChuKuDetailInfo
 	double ti_ji;
 	int tie_biao;
 	wstring bei_zhu;
+	sChuKuDetailInfo(): chan_pin_ming(L""), dan_wei(L""), bei_zhu(L""), chu_ku_shu_liang(0), 
+		zhong_liang(0.0), ti_ji(0.0), tie_biao(0)
+	{
+	}
 };
 
 struct sChuKuBaseInfo
