@@ -67,6 +67,7 @@ private:
 	bool Handle_KaDuoGe();
 	bool Handle_XiaoBaiXiong();
 	bool Handle_AiWeiEr();
+	bool Handle_YouGouYiHou();
 	bool LoadSFData();
 	bool LoadBSKDData();
 	bool LoadZTKYData();
@@ -92,7 +93,7 @@ private:
 		return false;
 	}
 	bool IsYunDaKuaiDi(std::wstring strWuLiu){
-		if(strWuLiu == L"韵达快递(菜鸟)" || strWuLiu == L"韵达快递(拼多多)" || strWuLiu == L"韵达快递(京东)" || strWuLiu == L"韵达快递(京东)(老网点)(停用)")
+		if(strWuLiu == L"韵达快递(菜鸟)" || strWuLiu == L"韵达快递(拼多多)" || strWuLiu == L"韵达快递(京东)" || strWuLiu == L"韵达快递(京东)(老网点)(停用)" || strWuLiu == L"韵达快递(抖店)")
 			return true;
 		return false;
 	}
@@ -117,7 +118,7 @@ private:
 		return false;
 	}
 	bool IsZhongTongKuaiYun(std::wstring strWuLiu){
-		if(strWuLiu == L"中通快运" || strWuLiu == L"中通快运(菜鸟)" || strWuLiu == L"中通快运(拼多多)")
+		if(strWuLiu == L"中通快运" || strWuLiu == L"中通快运(菜鸟)" || strWuLiu == L"中通快运(拼多多)" || strWuLiu == L"中通快运(线下)")
 			return true;
 		return false;
 	}
