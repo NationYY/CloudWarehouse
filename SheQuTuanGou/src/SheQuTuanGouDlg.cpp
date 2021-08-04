@@ -413,10 +413,17 @@ int song_tui_tie_bao_gan_yi_dun = 0;	//送退贴包干吨
 int song_huo_fei_yi_dun = 0;	//送货费一吨
 int song_huo_fei_yi_fang = 0;	//送货费一方
 int song_huo_fei_bao_di	= 0;	//送货费保底
+int bu_huo_fei_bao_di = 0;		//补货费保底
 int tui_huo_fei_yi_dun = 0;		//退货费一吨
 int tui_huo_fei_yi_fang = 0;	//退货费一方
 int tui_huo_fei_bao_yue = 0;	//退货费包月
 double song_tui_tie_yi_jian = 0;	//送退贴一件
+int duo_duo_song_tie_bao_gan_yi_dun = 0;//多多送贴包干一吨
+int duo_duo_song_huo_fei_yi_tuo = 0;	//多多送货费一板
+int mei_tuan_song_huo_fei_yi_tuo = 0;	//美团送货费一板
+int duo_duo_tui_huo_fei_yi_tuo = 0;		//多多退货费一板
+int duo_duo_tui_huo_fei_ban_tuo = 0;	//多多退货费半板
+int mei_tuan_song_tui_tie_bao_gan_yi_dun = 0;	//美团送退贴包干吨
 void ClearPrice()
 {
 	shou_fei_mo_shi = 0;		//收费模式
@@ -425,19 +432,26 @@ void ClearPrice()
 	song_huo_fei_ban_tuo = 0;	//送货费半板
 	tui_huo_fei_yi_tuo = 0;		//退货费一板
 	tui_huo_fei_ban_tuo = 0;	//退货费半板
-	tie_biao_fei = 0;			//贴标费
+	tie_biao_fei = 0;		//贴标费
 	mei_tuan_jia_shou = 0;		//美团加收
 	zhuang_xie_zhong_huo = 0;	//装卸重货
 	zhuang_xie_pao_huo = 0;		//装卸泡货
 	xie_song_tui_bao_gan = 0;	//卸送退包干
-	song_tui_tie_bao_gan_yi_dun = 0;	//送退贴包干
+	song_tui_tie_bao_gan_yi_dun = 0;	//送退贴包干吨
 	song_huo_fei_yi_dun = 0;	//送货费一吨
 	song_huo_fei_yi_fang = 0;	//送货费一方
 	song_huo_fei_bao_di = 0;	//送货费保底
+	bu_huo_fei_bao_di = 0;		//补货费保底
 	tui_huo_fei_yi_dun = 0;		//退货费一吨
 	tui_huo_fei_yi_fang = 0;	//退货费一方
 	tui_huo_fei_bao_yue = 0;	//退货费包月
 	song_tui_tie_yi_jian = 0;	//送退贴一件
+	duo_duo_song_tie_bao_gan_yi_dun = 0;//多多送贴包干一吨
+	duo_duo_song_huo_fei_yi_tuo = 0;	//多多送货费一板
+	mei_tuan_song_huo_fei_yi_tuo = 0;	//美团送货费一板
+	duo_duo_tui_huo_fei_yi_tuo = 0;		//多多退货费一板
+	duo_duo_tui_huo_fei_ban_tuo = 0;	//多多退货费半板
+	mei_tuan_song_tui_tie_bao_gan_yi_dun = 0;	//美团送退贴包干吨
 }
 bool CSheQuTuanGouDlg::LoadPrice(std::wstring strKeHuName)
 {
@@ -487,6 +501,8 @@ bool CSheQuTuanGouDlg::LoadPrice(std::wstring strKeHuName)
 			  zhuang_xie_zhong_huo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
 			  wsprintfW(szBuffer, L"%s_装卸泡货", strKeHuName.c_str());
 			  zhuang_xie_pao_huo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_补货费保底", strKeHuName.c_str());
+			  bu_huo_fei_bao_di = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
 		}
 		break;
 	case 1:
@@ -694,6 +710,60 @@ bool CSheQuTuanGouDlg::LoadPrice(std::wstring strKeHuName)
 			  zhuang_xie_pao_huo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
 		}
 		break;
+	case 8:
+		{
+			  wsprintfW(szBuffer, L"%s_仓储费", strKeHuName.c_str());
+			  GetPrivateProfileString(L"Price", szBuffer, L"", szResult, 128, PRICE_FILE);
+			  if(StrCmpW(szResult, L"") == 0)
+			  {
+				  wchar_t _szBuffer[128] = { 0 };
+				  wsprintfW(_szBuffer, L"------------------%s 仓储费 未配置", strKeHuName.c_str());
+				  THROW_ERROR(_szBuffer);
+			  }
+			  cang_chu_fei = _wtof(szResult);
+			  wsprintfW(szBuffer, L"%s_多多送贴包干吨", strKeHuName.c_str());
+			  duo_duo_song_tie_bao_gan_yi_dun = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_多多退货费一板", strKeHuName.c_str());
+			  duo_duo_tui_huo_fei_yi_tuo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);;
+			  wsprintfW(szBuffer, L"%s_多多退货费半板", strKeHuName.c_str());
+			  duo_duo_tui_huo_fei_ban_tuo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_美团送退贴包干吨", strKeHuName.c_str());
+			  mei_tuan_song_tui_tie_bao_gan_yi_dun = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_美团加收", strKeHuName.c_str());
+			  mei_tuan_jia_shou = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_装卸重货", strKeHuName.c_str());
+			  zhuang_xie_zhong_huo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_装卸泡货", strKeHuName.c_str());
+			  zhuang_xie_pao_huo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+		}
+		break;
+	case 9:
+		{
+			  wsprintfW(szBuffer, L"%s_仓储费", strKeHuName.c_str());
+			  GetPrivateProfileString(L"Price", szBuffer, L"", szResult, 128, PRICE_FILE);
+			  if(StrCmpW(szResult, L"") == 0)
+			  {
+				  wchar_t _szBuffer[128] = { 0 };
+				  wsprintfW(_szBuffer, L"------------------%s 仓储费 未配置", strKeHuName.c_str());
+				  THROW_ERROR(_szBuffer);
+			  }
+			  cang_chu_fei = _wtof(szResult);
+			  wsprintfW(szBuffer, L"%s_多多送货费一板", strKeHuName.c_str());
+			  duo_duo_song_huo_fei_yi_tuo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_美团送货费一板", strKeHuName.c_str());
+			  mei_tuan_song_huo_fei_yi_tuo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);;
+			  wsprintfW(szBuffer, L"%s_退货费一板", strKeHuName.c_str());
+			  tui_huo_fei_yi_tuo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);;
+			  wsprintfW(szBuffer, L"%s_退货费半板", strKeHuName.c_str());
+			  tui_huo_fei_ban_tuo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_美团加收", strKeHuName.c_str());
+			  mei_tuan_jia_shou = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_装卸重货", strKeHuName.c_str());
+			  zhuang_xie_zhong_huo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+			  wsprintfW(szBuffer, L"%s_装卸泡货", strKeHuName.c_str());
+			  zhuang_xie_pao_huo = GetPrivateProfileInt(L"Price", szBuffer, 0, PRICE_FILE);
+		}
+		break;
 	default:
 		{
 			wchar_t _szBuffer[128] = { 0 };
@@ -735,6 +805,7 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 					double zl = 0;
 					double tj = 0;
 					double zhuang_xie_fei = 0;
+					bool bFei = true;
 					while(_itB != _itE)
 					{
 						if(wcslen(_szGoodsInfo) > 0)
@@ -758,37 +829,59 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 							THROW_ERROR(_szBuffer);
 						}
 
-
+						if(_itB->bei_zhu != L"")
+						{
+							CFuncCommon::Replace(_itB->bei_zhu, L"；", L";");
+							CFuncCommon::Replace(_itB->bei_zhu, L"，", L";");
+							CFuncCommon::Replace(_itB->bei_zhu, L",", L";");
+							vec_wvals beizhus;
+							CFuncCommon::parse_pairs(_itB->bei_zhu, beizhus, L";");
+							for(int i = 0; i < (int)beizhus.size(); ++i)
+							{
+								if(beizhus[i] == L"自装" || beizhus[i] == L"自卸")
+								{
+									bFei = false;
+									break;
+								}
+							}
+						}
 						++_itB;
 					}
 					_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"云仓到货");
 					_sheet->Cell(nRecordRowIndex, 2)->SetWString(_szGoodsInfo);
 					_sheet->Cell(nRecordRowIndex, 3)->SetDouble(zl);
 					_sheet->Cell(nRecordRowIndex, 4)->SetDouble(tj);
-					switch(shou_fei_mo_shi)
+					
+					
+					if(bFei)
 					{
-					case 0:
-					case 3:
-					case 4:
-					case 6:
-					case 2:
+						switch(shou_fei_mo_shi)
 						{
-							  zhuang_xie_fei = max(zl/1000.0*zhuang_xie_zhong_huo, tj*zhuang_xie_pao_huo);
-							  m_dZhuangXieFeiHeJi += zhuang_xie_fei;
-							  _sheet->Cell(nRecordRowIndex, 5)->SetDouble(zhuang_xie_fei);
-						}
-						break;
-					case 1:
-					case 5:
-						_sheet->Cell(nRecordRowIndex, 5)->SetDouble(0);
-						break;
-					default:
+						case 0:
+						case 3:
+						case 4:
+						case 6:
+						case 2:
+						case 8:
+						case 9:
 						{
-							wchar_t _szBuffer[128] = { 0 };
-							wsprintfW(_szBuffer, L"------------------未处理的收费方式-装卸 类型=%d", shou_fei_mo_shi);
-							THROW_ERROR(_szBuffer);
+								  zhuang_xie_fei = max(zl / 1000.0*zhuang_xie_zhong_huo, tj*zhuang_xie_pao_huo);
+								  m_dZhuangXieFeiHeJi += zhuang_xie_fei;
+								  _sheet->Cell(nRecordRowIndex, 5)->SetDouble(zhuang_xie_fei);
 						}
-						break;
+							break;
+						case 1:
+						case 5:
+							_sheet->Cell(nRecordRowIndex, 5)->SetDouble(0);
+							break;
+						default:
+						{
+								   wchar_t _szBuffer[128] = { 0 };
+								   wsprintfW(_szBuffer, L"------------------未处理的收费方式-装卸 类型=%d", shou_fei_mo_shi);
+								   THROW_ERROR(_szBuffer);
+						}
+							break;
+						}
 					}
 					nRecordRowIndex++;
 				}
@@ -811,6 +904,7 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 					wchar_t _szGoodsInfo[512] = { 0 };
 					double zl = 0;
 					double tj = 0;
+					bool bFei = true;
 					while(_itB != _itE)
 					{
 						if(wcslen(_szGoodsInfo) > 0)
@@ -832,44 +926,65 @@ bool CSheQuTuanGouDlg::_____MakeZhuangXieFei(BasicExcel& excel)
 							wsprintfW(_szBuffer, L"------------------未找到产品基础数据=%s", _itB->chan_pin_ming.c_str());
 							THROW_ERROR(_szBuffer);
 						}
+						if(_itB->bei_zhu != L"")
+						{
+							CFuncCommon::Replace(_itB->bei_zhu, L"；", L";");
+							CFuncCommon::Replace(_itB->bei_zhu, L"，", L";");
+							CFuncCommon::Replace(_itB->bei_zhu, L",", L";");
+							vec_wvals beizhus;
+							CFuncCommon::parse_pairs(_itB->bei_zhu, beizhus, L";");
+							for(int i = 0; i < (int)beizhus.size(); ++i)
+							{
+								if(beizhus[i] == L"自装" || beizhus[i] == L"自卸")
+								{
+									bFei = false;
+									break;
+								}
+							}
+						}
 						++_itB;
 					}
 					_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"云仓调出");
 					_sheet->Cell(nRecordRowIndex, 2)->SetWString(_szGoodsInfo);
 					_sheet->Cell(nRecordRowIndex, 3)->SetDouble(zl);
 					_sheet->Cell(nRecordRowIndex, 4)->SetDouble(tj);
-					switch(shou_fei_mo_shi)
+					if(bFei)
 					{
-					case 0:
-					case 2:
-					case 3:
-					case 4:
-					case 6:
+						switch(shou_fei_mo_shi)
 						{
-							 double zhuang_xie_fei = max(zl / 1000.0*zhuang_xie_zhong_huo, tj*zhuang_xie_pao_huo);
-							 m_dZhuangXieFeiHeJi += zhuang_xie_fei;
-							 _sheet->Cell(nRecordRowIndex, 5)->SetDouble(zhuang_xie_fei);
-						}
-						break;
-					case 1:
-					case 5:
+						case 0:
+						case 2:
+						case 3:
+						case 4:
+						case 6:
+						case 8:
+						case 9:
 						{
-							  double zhuang_xie_fei = max(zl / 1000.0*zhuang_xie_zhong_huo, tj*zhuang_xie_pao_huo);		 
-							  if(zl > 500 || tj > 1.5)
-							  {
-								  zhuang_xie_fei = zhuang_xie_fei*2;
-							  }
-							  m_dZhuangXieFeiHeJi += zhuang_xie_fei;
-							  _sheet->Cell(nRecordRowIndex, 5)->SetDouble(zhuang_xie_fei);
+								  double zhuang_xie_fei = max(zl / 1000.0*zhuang_xie_zhong_huo, tj*zhuang_xie_pao_huo);
+								  m_dZhuangXieFeiHeJi += zhuang_xie_fei;
+								  _sheet->Cell(nRecordRowIndex, 5)->SetDouble(zhuang_xie_fei);
 						}
-						break;
-					default:
+							break;
+						case 1:
+						case 5:
 						{
-							 wchar_t _szBuffer[128] = { 0 };
-							 wsprintfW(_szBuffer, L"------------------未处理的收费方式-装卸 类型=%d", shou_fei_mo_shi);
-							 THROW_ERROR(_szBuffer);
+								  double zhuang_xie_fei = max(zl / 1000.0*zhuang_xie_zhong_huo, tj*zhuang_xie_pao_huo);
+								  if(zl > 500 || tj > 1.5)
+								  {
+									  zhuang_xie_fei = zhuang_xie_fei * 2;
+								  }
+								  m_dZhuangXieFeiHeJi += zhuang_xie_fei;
+								  _sheet->Cell(nRecordRowIndex, 5)->SetDouble(zhuang_xie_fei);
 						}
-						break;
+							break;
+						default:
+						{
+								   wchar_t _szBuffer[128] = { 0 };
+								   wsprintfW(_szBuffer, L"------------------未处理的收费方式-装卸 类型=%d", shou_fei_mo_shi);
+								   THROW_ERROR(_szBuffer);
+						}
+							break;
+						}
 					}
 					nRecordRowIndex++;
 				}
@@ -1139,6 +1254,10 @@ bool CSheQuTuanGouDlg::_____MakeCangChuFei(BasicExcel& excel)
 			_sheet->Cell(nRecordRowIndex, 1)->SetDouble(bs);
 			_sheet->Cell(nRecordRowIndex, 2)->SetDouble(bs*cang_chu_fei);
 			m_dCangChuFeiHeJi += bs*cang_chu_fei;
+			if(bs*cang_chu_fei > 2000)
+			{
+				int a = 3;
+			}
 			nRecordRowIndex++;
 		}
 		{
@@ -1220,8 +1339,12 @@ bool CSheQuTuanGouDlg::_____MakeTuiHuoFei(BasicExcel& excel)
 						tj += _itB->ti_ji;
 						++_itB;
 					}
+					bool bDuoDuo = false;
 					if(itB->lei_xing == L"多多退货")
+					{
+						bDuoDuo = true;
 						_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"多多买菜");
+					}
 					if(itB->lei_xing == L"美团退货")
 						_sheet->Cell(nRecordRowIndex, 1)->SetWString(L"美团优选");
 					_sheet->Cell(nRecordRowIndex, 2)->SetWString(_szGoodsInfo);
@@ -1257,6 +1380,8 @@ bool CSheQuTuanGouDlg::_____MakeTuiHuoFei(BasicExcel& excel)
 							  double tui_huo_fei = GetTuiHuoFei(bs, tui_huo_fei_yi_tuo, tui_huo_fei_ban_tuo);
 							  m_dTuiHuoFeiHeJi += tui_huo_fei;
 							  _sheet->Cell(nRecordRowIndex, 6)->SetDouble(tui_huo_fei);
+							  if(tui_huo_fei < 0)
+								  int a = 3;
 						}
 						break;
 					case 3:
@@ -1266,6 +1391,8 @@ bool CSheQuTuanGouDlg::_____MakeTuiHuoFei(BasicExcel& excel)
 							  double tui_huo_fei = max(tui_huo_fei1, tui_huo_fei2);
 							  m_dTuiHuoFeiHeJi += tui_huo_fei;
 							  _sheet->Cell(nRecordRowIndex, 6)->SetDouble(tui_huo_fei);
+							  if(tui_huo_fei < 0)
+								  int a = 3;
 						}
 						break;
 					case 1:
@@ -1274,6 +1401,27 @@ bool CSheQuTuanGouDlg::_____MakeTuiHuoFei(BasicExcel& excel)
 					case 5:
 						{	
 							_sheet->Cell(nRecordRowIndex, 6)->SetDouble(0);
+						}
+						break;
+					case 8:
+						{
+							  if(bDuoDuo)
+							  {
+								  double tui_huo_fei = GetTuiHuoFei(bs, duo_duo_tui_huo_fei_yi_tuo, duo_duo_tui_huo_fei_ban_tuo);
+								  m_dTuiHuoFeiHeJi += tui_huo_fei;
+								  _sheet->Cell(nRecordRowIndex, 6)->SetDouble(tui_huo_fei);
+								  if(tui_huo_fei < 0)
+									  int a = 3;
+							  }
+						}
+						break;
+					case 9:
+						{
+								double tui_huo_fei = GetTuiHuoFei(bs, tui_huo_fei_yi_tuo, tui_huo_fei_ban_tuo);
+								m_dTuiHuoFeiHeJi += tui_huo_fei;
+								_sheet->Cell(nRecordRowIndex, 6)->SetDouble(tui_huo_fei);
+								if(tui_huo_fei < 0)
+									int a = 3;
 						}
 						break;
 					default:
@@ -1459,7 +1607,10 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 							if(itB->lei_xing == L"美团送货" || itB->lei_xing == L"盒马送货")
 								song_huo_fei += mei_tuan_jia_shou;
 							if(bh)
+							{
 								song_huo_fei = song_huo_fei*1.3;
+								song_huo_fei = max(song_huo_fei, bu_huo_fei_bao_di);
+							}
 							song_huo_fei += tbs*tie_biao_fei;
 							m_dSongHuoFeiHeJi += song_huo_fei;
 							if(song_huo_fei < 0)
@@ -1561,6 +1712,40 @@ bool CSheQuTuanGouDlg::_____MakeSongHuoFei(BasicExcel& excel)
 							_sheet->Cell(nRecordRowIndex, 8)->SetDouble(nJS*song_tui_tie_yi_jian);
 							break;
 						}
+						break;
+					case 8:
+						{
+							  int suo_huo_price = duo_duo_song_tie_bao_gan_yi_dun;
+							  if(itB->lei_xing == L"美团送货")
+								  suo_huo_price = mei_tuan_song_tui_tie_bao_gan_yi_dun;
+							  double song_huo_fei = zl / 1000.0*suo_huo_price;
+							  if(itB->lei_xing == L"美团送货" || itB->lei_xing == L"盒马送货")
+								  song_huo_fei += mei_tuan_jia_shou;
+							  if(bh)
+								  song_huo_fei = song_huo_fei*1.3;
+							  m_dSongHuoFeiHeJi += song_huo_fei;
+							  _sheet->Cell(nRecordRowIndex, 8)->SetDouble(song_huo_fei);
+						}
+						break;
+					case 9:
+						{
+							  int suo_huo_price = duo_duo_song_huo_fei_yi_tuo;
+							  if(itB->lei_xing == L"美团送货")
+								  suo_huo_price = mei_tuan_song_huo_fei_yi_tuo;
+							  double song_huo_fei = nbs*suo_huo_price;
+							  if(dXS > DOUBLE_PRECISION)
+								 song_huo_fei += suo_huo_price;
+							  if(itB->lei_xing == L"美团送货" || itB->lei_xing == L"盒马送货")
+								  song_huo_fei += mei_tuan_jia_shou;
+							  if(bh)
+								  song_huo_fei = song_huo_fei*1.3;
+							  song_huo_fei += tbs*tie_biao_fei;
+							  m_dSongHuoFeiHeJi += song_huo_fei;
+							  if(song_huo_fei < 0)
+								  int a = 3;
+							  _sheet->Cell(nRecordRowIndex, 8)->SetDouble(song_huo_fei);
+						}
+						break;
 					default:
 						{
 							wchar_t _szBuffer[128] = { 0 };
@@ -1652,13 +1837,6 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 				SHEET_CELL_INT(_sheet, r, nIndex[_1], _data.xiang_gui);
 				SHEET_CELL_STRING(_sheet, r, nIndex[_2], _data.zui_xiao_dan_wei);
 				SHEET_CELL_INT(_sheet, r, nIndex[_3], _data.ku_cun);
-
-				if(m_strCurKeHu != L"G060船夫食品")
-				{
-					if(_data.ku_cun < 0)
-						_data.ku_cun = 0;
-				}
-				
 				int kucun_jianshu;
 				SHEET_CELL_INT(_sheet, r, nIndex[_4], kucun_jianshu);
 				int kucun_zuixiaodanwei;
@@ -1669,7 +1847,11 @@ bool CSheQuTuanGouDlg::LoadKuCun(BasicExcel& dataExcel)
 					wsprintf(szBuffer, L"------------------[第%d行公式有问题!]", r+1);
 					AddLog(szBuffer);
 				}
-
+				if(m_strCurKeHu != L"G060船夫食品")
+				{
+					if(_data.ku_cun < 0)
+						_data.ku_cun = 0;
+				}
 
 				SHEET_CELL_DOUBLE(_sheet, r, nIndex[_6], _data.dan_jian_zhong_liang);
 				SHEET_CELL_DOUBLE(_sheet, r, nIndex[_7], _data.dan_jian_ti_ji);
